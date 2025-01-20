@@ -1,0 +1,16 @@
+[
+    {
+      "id": "post1",
+      "title": "The Power of Revenue Operations",
+      "date": "2023-01-12",
+      "tags": ["RevOps", "Sales", "Strategy"],
+      "content": "Revenue operations (RevOps) is a critical framework for aligning sales, marketing, and customer success teams to improve operational efficiency and drive growth. In this post, we dive deep into the importance of RevOps and how companies can implement it effectively."
+    },
+    {
+      "id": "post2",
+      "title": "Building SDR Teams from Scratch",
+      "date": "2023-05-20",
+      "tags": ["SDR", "Sales", "Team Building"],
+      "content": "Building a successful Sales Development Representative (SDR) team can be a game-changer for your sales process. This post explores the steps to establish a high-performing SDR team that delivers consistent results."
+    }
+  ]

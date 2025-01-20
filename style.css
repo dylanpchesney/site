@@ -3,6 +3,8 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
+    background-color: #ffffff;  /* Light background */
+    color: #333;
   }
   header {
     background: #f5f5f5;
@@ -13,41 +15,230 @@ body {
     display: flex;
     justify-content: center;
     padding: 0;
+    margin: 0;
   }
   nav ul li {
     margin: 0 1em;
+    align-items: center;
+    display: flex;
   }
   nav ul li a {
     text-decoration: none;
     color: #333;
+    display: flex;
+    align-items: center;
   }
+  nav ul li img {
+    height: auto;
+    width: 35px;
+    vertical-align: middle;
+  }
+  /* Avatar styling */
+.header-avatar img {
+    display: block;
+    margin: 0 auto;  /* Center the avatar */
+    width: 35px;  /* Adjust size as needed */
+    transition: all 0.3s ease;  /* Smooth transition on hover */
+  }
+  
+  /* Hover effect */
+  .header-avatar img:hover {
+    transform: scale(1.1);  /* Slight zoom on hover */
+    filter: drop-shadow(0 0 15px #004C54);  /* Green glow around the edges */
+}
+  
+  /* Active (click) effect */
+  .header-avatar img:active {
+    transform: scale(1);  /* Reset zoom effect on click */
+    filter: drop-shadow(0 0 20px #004C54);  /* Stronger green glow on click */
+}
   main {
-    padding: 2em;
+    padding: 4em;
     max-width: 800px;
     margin: 0 auto;
+    word-wrap: normal;   /* Allow long words to break and wrap to the next line */
+  white-space: normal;
+  text-align: justify;
   }
   footer {
     text-align: center;
+    vertical-align: text-bottom;
     background: #f5f5f5;
-    padding: 1em 100;
     position: fixed;
     bottom: 0;
     width: 100%;
+    height: fit-content;
+    font-size: larger;
+
   }
-  .dark-mode {
-    background-color: #333;
-    color: #fff;
+  p {
+    margin-bottom: 20px;  /* Adjust this value to control the space */
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+a {
+    color: #333;  /* Default color for links */
+    text-decoration: none;
   }
-  button {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 10px;
-    background-color: #fff;
+  a:visited {
+    color: #333;  /* Keep the same color as the default link color (or any color you choose) */
+  }
+  footer a:hover {
+    font-size: 1.6em; /* Increase font size */
+    color: #004C54; /* Change color to midnight green */
+  }
+  footer a {
     color: #333;
-    border: 1px solid #333;
-    cursor: pointer;
-    font-size: 16px;
-    font-family: "Vollkorn";
-    border-radius: 12px;
+    text-decoration: none;
+    padding: 5px;
+    transition: all 0.3s ease;
   }
+
+/* Style for highlighted text */
+::selection {
+    background-color: #004C54;  /* Midnight green (Philadelphia Eagles color) */
+    color: white;               /* Text color turns white */
+  }
+  
+  /* For WebKit browsers like Chrome and Safari */
+  ::-moz-selection {
+    background-color: #004C54;
+    color: white;
+  }
+  /* Style for the About Me section */
+.about-me {
+    padding: 0px;
+  }
+  
+  /* Container to hold the image and text */
+  .about-container {
+    display: flex;  /* Enable flexbox layout */
+    align-items: center;  /* Vertically align items to the center */
+    gap: 40px;  /* Add space between image and text */
+  }
+  
+  /* Image styling */
+  .about-image {
+    max-height: 400px;  /* Limit the image width */
+    height: auto;  /* Maintain the aspect ratio */
+    border-radius: 5px;
+    border: 0px solid transparent;
+    background-image: radial-gradient(circle, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.3) 100%);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 2s ease-out;  /* Apply fade-in animation */
+    opacity: 0;  /* Ensure it starts invisible */
+    animation-fill-mode: forwards;  /* Keep the final animation state */
+  }
+  
+  /* Text styling */
+  .about-text {
+    max-width: 800px;  /* Limit the width of the text block */
+  }
+  
+  .about-text h2 {
+    font-size: 1.5em;  /* Adjust the size of the heading */
+    margin-bottom: 5px;  /* Add some space below the title */
+  }
+  
+  .about-text p {
+    font-size: 1em;  /* Adjust the size of the paragraph text */
+    line-height: 1.6;  /* Add spacing between lines for readability */
+    text-align: justify;
+  }
+  
+  /* Button styling */
+  .cta-button {
+    display: inline-block;
+    background-color: #f5f5f5;  /* Light gray background */
+    color: black;  /* Black text */
+    padding: 10px 20px;  /* Space inside the button */
+    text-decoration: none;  /* Remove underline */
+    font-size: 1em;  /* Set font size */
+    border-radius: 5px;  /* Rounded corners */
+    transition: all 0.3s ease;  /* Smooth transition on hover */
+    border: 1px solid black;
+  }
+  
+  .cta-button:hover {
+    background-color: #004C54;  /* Midnight green background (Philadelphia Eagles color) */
+    color: white;  /* White text on hover */
+    box-shadow: 0 0 10px 3px #004C54;
+    transition: box-shadow 0.2s ease;
+  }
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #121212;  /* Dark background */
+      color: #fff;  /* Light text */
+    }
+    
+    /* You can also change other elements to suit dark mode */
+    header, footer {
+      background-color: #333;  /* Darker header/footer */
+    }
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;  /* Fully transparent */
+      transform: translateY(20px);  /* Slight movement down */
+    }
+    to {
+      opacity: 1;  /* Fully visible */
+      transform: translateY(0);  /* Reset position */
+    }
+  }
+  .container {
+    display: flex;
+    margin-top: 20px;
+  }
+  
+  .sidebar {
+    width: 250px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    margin-right: 20px;
+  }
+  
+  #searchBar {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  #postList {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  #postList li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  #postList li a {
+    color: #004C54;
+    text-decoration: none;
+    font-size: 1.1em;
+  }
+  
+  #postList li a:hover {
+    text-decoration: underline;
+  }
+  
+  .content {
+    flex-grow: 1;
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .content h2 {
+    font-size: 2em;
+    color: #004C54;
+  }
+  
