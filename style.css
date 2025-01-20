@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Quicksand, sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
@@ -33,4 +33,17 @@ body {
     position: fixed;
     bottom: 0;
     width: 100%;
+  }
+  .quicksand-heading {
+    font-family: "Quicksand", serif;
+    font-optical-sizing: auto;
+    font-weight: 600; /* Example: Semi-Bold */
+    font-style: normal;
+  }
+  
+  .quicksand-body {
+    font-family: "Quicksand", serif;
+    font-optical-sizing: auto;
+    font-weight: 400; /* Example: Regular */
+    font-style: normal;
   }
