@@ -101,7 +101,7 @@ footer {
   max-width: 1000px; /* Ensures text doesn't exceed 1000px */
   margin: 0 auto; /* Centers it on the page */
   padding: 0 20px; /* Prevents text from touching screen edges */
-  text-align: left; /* Keeps text aligned to the left */
+  text-align: justify; /* Keeps text aligned to the left */
 }
 
 /* About Me Section */
@@ -129,8 +129,69 @@ footer {
 /* Text section */
 .about-text {
   flex-grow: 1; /* Takes up remaining space */
-  max-width: 600px; /* Prevents text from stretching too wide */
-  text-align: left; /* Keeps text aligned left */
+  max-width: 1000px; /* Prevents text from stretching too wide */
+  text-align: justify; /* Keeps text aligned */
+}
+/* CTA Button Styles */
+.cta-buttons {
+  display: flex;
+  gap: 100px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* Base Button Style */
+.cta-button {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 1em;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: all 0.2s ease-in-out;
+  border: 1.5px solid transparent;
+}
+
+/* Contact Me Button (Green Theme) */
+.contact {
+  color: #000000;
+  border-color: #004953;
+  background-color: white;
+}
+
+.contact:hover {
+  background-color: #004953;
+  color: white;
+  letter-spacing: 1px; /* Increase spacing between letters */
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* LinkedIn Button (Blue Theme) */
+.linkedin {
+  color: #000000;
+  border-color: #0077b5;
+  background-color: white;
+}
+
+.linkedin:hover {
+  background-color: #0077b5;
+  color: white;
+  letter-spacing: 1px; /* Increase spacing between letters */
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3);
+
+}
+
+/* Remove Visited Link Styling */
+a:visited {
+  color: inherit;
+}
+
+/* Add button shadow effect on click */
+.cta-button:active {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  transform: scale(0.98);
+  letter-spacing: 2px; /* Increase spacing between letters */
 }
 
 /* Responsive Design */
@@ -145,18 +206,24 @@ footer {
 
   .about-container {
     flex-wrap: nowrap; /* Prevents stacking */
-    flex-direction: row; /* Keeps layout horizontal */
+    flex-direction: column-reverse; /* Keeps layout horizontal */
     align-items: center; /* Keeps alignment */
     gap: 10px; /* Reduce spacing for smaller screens */
+    max-width: 100%; /* Ensures content stays within screen */
+    margin: 0 auto; /* Centers the container */
   }
 
   .about-image {
-    max-width: 200px; /* Shrinks image slightly */
+    max-width: 50%; /* Ensures it scales down relative to its container */
+    width: auto; /* Prevents it from stretching */
+    height: auto; /* Maintains aspect ratio */
+    margin-bottom: 20px; /* Adds space between image and text */
   }
 
   .about-text {
-    font-size: 0.9em; /* Slightly smaller text for readability */
+    font-size: 1em; /* Keeps text readable */
     max-width: 100%; /* Allows text to take available space */
+    text-align: justify;
   }
 
   .banner {
