@@ -1,282 +1,158 @@
+@font-face {
+  font-family: 'Avenir LT Std';
+  src: url('fonts/AvenirLTStd-Black.woff2') format('woff2'),
+       url('fonts/AvenirLTStd-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir LT Std';
+  src: url('fonts/AvenirLTStd-Roman.woff2') format('woff2'),
+       url('fonts/AvenirLTStd-Roman.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir LT Std';
+  src: url('fonts/AvenirLTStd-Book.woff2') format('woff2'),
+       url('fonts/AvenirLTStd-Book.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 body {
-    font-family: "Vollkorn", sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    background-color: #ffffff;  /* Light background */
-    color: #333;
-  }
-  header {
-    background: #f5f5f5;
-    padding: 1em 0;
-  }
-  nav ul {
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    padding: 0;
-    margin: 0;
-  }
-  nav ul li {
-    margin: 0 1em;
-    align-items: center;
-    display: flex;
-  }
-  nav ul li a {
-    text-decoration: none;
-    color: #333;
-    display: flex;
-    align-items: center;
-  }
-  nav ul li img {
-    height: auto;
-    width: 35px;
-    vertical-align: middle;
-  }
-  /* Avatar styling */
-.header-avatar img {
-    display: block;
-    margin: 0 auto;  /* Center the avatar */
-    width: 35px;  /* Adjust size as needed */
-    transition: all 0.3s ease;  /* Smooth transition on hover */
-  }
-  
-  /* Hover effect */
-  .header-avatar img:hover {
-    transform: scale(1.1);  /* Slight zoom on hover */
-    filter: drop-shadow(0 0 15px #004C54);  /* Green glow around the edges */
+  font-family: 'Avenir LT Std', sans-serif;
+  font-weight: normal;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+  color: #333;
 }
-  
-  /* Active (click) effect */
-  .header-avatar img:active {
-    transform: scale(1);  /* Reset zoom effect on click */
-    filter: drop-shadow(0 0 20px #004C54);  /* Stronger green glow on click */
-}
-  main {
-    padding: 4em;
-    max-width: 100%;
-    margin: 0 auto;
-    word-wrap: normal;   /* Allow long words to break and wrap to the next line */
-  white-space: normal;
-  text-align: justify;
-  }
-  footer {
-    text-align: center;
-    vertical-align: text-bottom;
-    background: #f5f5f5;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    height: fit-content;
-    font-size: larger;
 
-  }
-  p {
-    margin-bottom: 20px;  /* Adjust this value to control the space */
-    transition: color 0.3s ease, transform 0.3s ease;
+/* Sticky Header */
+header {
+  background: #f5f5f500;
+  padding: 1em 0;
+  position: static;
+  top: 0;
+  z-index: 1000; /* Ensures it stays above other elements */
+  width: 100%;
+  max-width: 1222px; /* Matches banner width */
+  margin: 0 auto; /* Centers the header */
 }
-a {
-    color: #333;  /* Default color for links */
-    text-decoration: none;
-  }
-  a:visited {
-    color: #333;  /* Keep the same color as the default link color (or any color you choose) */
-  }
-  footer a:hover {
-    font-size: 1.6em; /* Increase font size */
-    color: #004C54; /* Change color to midnight green */
-  }
-  footer a {
-    color: #333;
-    text-decoration: none;
-    padding: 5px;
-    transition: all 0.3s ease;
-  }
 
-/* Style for highlighted text */
-::selection {
-    background-color: #004C54;  /* Midnight green (Philadelphia Eagles color) */
-    color: white;               /* Text color turns white */
-  }
-  
-  /* For WebKit browsers like Chrome and Safari */
-  ::-moz-selection {
-    background-color: #004C54;
-    color: white;
-  }
-  /* Style for the About Me section */
+/* Navigation */
+nav ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+nav ul li {
+  margin: 0 1em;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+}
+
+/* Main Content */
+main {
+  padding: 4em;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  background: #f5f5f5;
+  width: 100%;
+  padding: 1em;
+}
+
+/* Banner Section */
+.banner {
+  display: flex;
+  justify-content: center; /* Centers horizontally */
+  align-items: center;
+  width: 100%;
+  max-width: 1222px; /* Matches header width */
+  margin: 0 auto; /* Centers the banner */
+  padding: 0 20px; /* Prevents potential overflow */
+}
+
+.banner img {
+  width: 100%; /* Ensures it scales correctly */
+  height: auto; /* Maintains aspect ratio */
+  display: block; /* Prevents unwanted spacing */
+}
+
+/* About Me Section */
 .about-me {
-    padding: 0px;
-  }
-  
-  /* Container to hold the image and text */
-  .about-container {
-    display: flex;  /* Enable flexbox layout */
-    align-items: center;  /* Vertically align items to the center */
-    gap: 40px;  /* Add space between image and text */
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  /* Image styling */
-  .about-image {
-    max-height: 400px;  /* Limit the image width */
-    height: auto;  /* Maintain the aspect ratio */
-    border-radius: 5px;
-    border: 0px solid transparent;
-    background-image: radial-gradient(circle, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.3) 100%);
-    background-origin: border-box;
-    background-clip: content-box, border-box;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+}
 
-  }
-  .about-text2 {
-    max-width: 800px;  /* Restrict width to 800px */
-    margin: 0 auto;    /* Center the text block horizontally */
-    padding: 0 20px;   /* Optional: Add some padding on the sides for better spacing */
-  }
-  /* Text styling */
-  .about-text {
-    max-width: 800px;  /* Limit the width of the text block */
-  }
-  
-  .about-text h2 {
-    font-size: 1.5em;  /* Adjust the size of the heading */
-    margin-bottom: 5px;  /* Add some space below the title */
-  }
-  
-  .about-text p {
-    font-size: 1em;  /* Adjust the size of the paragraph text */
-    line-height: 1.6;  /* Add spacing between lines for readability */
-    text-align: justify;
-  }
-  
-  /* Button styling */
-  .cta-button {
-    display: inline-block;
-    background-color: #f5f5f5;  /* Light gray background */
-    color: black;  /* Black text */
-    padding: 10px 20px;  /* Space inside the button */
-    text-decoration: none;  /* Remove underline */
-    font-size: 1em;  /* Set font size */
-    border-radius: 5px;  /* Rounded corners */
-    transition: all 0.3s ease;  /* Smooth transition on hover */
-    border: 1px solid black;
-  }
-  
-  .cta-button:hover {
-    background-color: #004C54;  /* Midnight green background (Philadelphia Eagles color) */
-    color: white;  /* White text on hover */
-    box-shadow: 0 0 10px 3px #004C54;
-    transition: box-shadow 0.2s ease;
-  }
-  @media (prefers-color-scheme: dark) {
-    body {
-      background-color: #121212;  /* Dark background */
-      color: #fff;  /* Light text */
-    }
-    
-    /* You can also change other elements to suit dark mode */
-    header, footer {
-      background-color: #333;  /* Darker header/footer */
-    }
-  }
-  @keyframes fadeIn {
-    from {
-      opacity: 0;  /* Fully transparent */
-      transform: translateY(20px);  /* Slight movement down */
-    }
-    to {
-      opacity: 1;  /* Fully visible */
-      transform: translateY(0);  /* Reset position */
-    }
-  }
-  .container {
-    display: flex;
-    margin-top: 20px;
-    max-width: 100%;
-    width: 100%;
-    margin: 0 auto;
-  }
-  
-  .sidebar {
-    width: 250px;
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    margin-right: 20px;
-  }
-  
-  #searchBar {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.about-container {
+  display: flex;
+  flex-wrap: wrap; /* Allows wrapping for smaller screens */
+  align-items: center;
+  gap: 20px; /* Space between image and text */
+}
+
+.about-image {
+  max-width: 300px; /* Limits image size */
+  width: 100%; /* Ensures responsiveness */
+}
+
+.about-text {
+  flex-grow: 1; /* Allows text to take up available space */
+}
+
+.about-text h2 {
+  font-size: 1.8em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  header,
+  footer {
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
     box-sizing: border-box;
   }
-  
-  #postList {
-    list-style-type: none;
-    padding-left: 0;
-  }
-  
-  #postList li {
-    padding: 1px;
-    border-bottom: 1px solid #ddd;
-  }
-  .post-container {
-    display: flex;
-    flex-direction: column; /* Stack the title and date vertically */
-}
 
-.post-title {
-    font-size: .9em; /* Larger font for the title */
-    color: #004C54; /* Title color */
-    margin-bottom: 1px; /* Space between title and date */
-}
+  .about-container {
+    flex-direction: column; /* Stacks image and text vertically */
+    text-align: center; /* Centers content */
+    gap: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+  }
 
-.post-date {
-    font-size: 0.9em; /* Smaller font size for the date */
-    color: #555; /* Dark gray for the date */
-    margin-bottom: 10px; /* Space between date and excerpt */
-}
-  #postList li a {
-    color: #004C54;
-    text-decoration: none;
-    font-size: 1.1em;
+  .about-image {
+    max-width: none;
+    width: auto;
+    height: auto;
   }
-  
-  #postList li a:hover {
-    text-decoration: underline;
-  }
-  
-  .content {
-    flex-grow: 1;
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    max-width: calc(100% - 270px); /* Ensures the content doesn't overflow into sidebar space */
-  }
-  
-  .content h2 {
-    font-size: 2em;
-    color: #004C54;
-  }
-  @media (max-width: 768px) {
-    .container {
-        flex-direction: column; /* Stack sidebar and content vertically on smaller screens */
-        margin-top: 0;
-    }
 
-    .sidebar {
-        width: 500px; /* Sidebar takes up full width on smaller screens */
-        margin-bottom: 20px;
-    }
+  .banner {
+    max-width: 95%; /* Prevents overflow */
+    padding: 0 10px; /* Ensures spacing on smaller screens */
+  }
 
-    .content {
-        width: 800px; /* Content section takes up full width */
-    }
+  .banner img {
+    width: 100%;
+    max-width: none; /* Allows it to shrink naturally */
+  }
 }
