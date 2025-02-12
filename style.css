@@ -34,7 +34,7 @@ body {
   color: #333;
 }
 
-/* Sticky Header */
+/* Header */
 header {
   background: #f5f5f500;
   padding: 1em 0;
@@ -66,8 +66,8 @@ nav ul li a {
 
 /* Main Content */
 main {
-  padding: 4em;
-  max-width: 100%;
+  padding: 0 20px;
+  max-width: 1222px;
   margin: 0 auto;
 }
 
@@ -87,7 +87,7 @@ footer {
   width: 100%;
   max-width: 1222px; /* Matches header width */
   margin: 0 auto; /* Centers the banner */
-  padding: 0 20px; /* Prevents potential overflow */
+  padding: 0 10px; /* Prevents potential overflow */
 }
 
 .banner img {
@@ -96,29 +96,41 @@ footer {
   display: block; /* Prevents unwanted spacing */
 }
 
+/* Opener paragraph design*/
+.opener {
+  max-width: 1000px; /* Ensures text doesn't exceed 1000px */
+  margin: 0 auto; /* Centers it on the page */
+  padding: 0 20px; /* Prevents text from touching screen edges */
+  text-align: left; /* Keeps text aligned to the left */
+}
+
 /* About Me Section */
 .about-me {
   padding: 20px;
 }
 
+/* Keep image and text side by side */
 .about-container {
   display: flex;
-  flex-wrap: wrap; /* Allows wrapping for smaller screens */
-  align-items: center;
+  flex-wrap: nowrap; /* Prevent stacking */
+  align-items: flex-start; /* Align top left */
   gap: 20px; /* Space between image and text */
+  max-width: 1000px; /* Keeps content aligned with other sections */
+  margin: 0 auto; /* Centers section */
 }
 
+/* Image styling */
 .about-image {
-  max-width: 300px; /* Limits image size */
-  width: 100%; /* Ensures responsiveness */
+  max-width: 300px; /* Limits size */
+  width: 100%; /* Keeps responsiveness */
+  height: auto; /* Maintains aspect ratio */
 }
 
+/* Text section */
 .about-text {
-  flex-grow: 1; /* Allows text to take up available space */
-}
-
-.about-text h2 {
-  font-size: 1.8em;
+  flex-grow: 1; /* Takes up remaining space */
+  max-width: 600px; /* Prevents text from stretching too wide */
+  text-align: left; /* Keeps text aligned left */
 }
 
 /* Responsive Design */
@@ -132,18 +144,19 @@ footer {
   }
 
   .about-container {
-    flex-direction: column; /* Stacks image and text vertically */
-    text-align: center; /* Centers content */
-    gap: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    box-sizing: border-box;
+    flex-wrap: nowrap; /* Prevents stacking */
+    flex-direction: row; /* Keeps layout horizontal */
+    align-items: center; /* Keeps alignment */
+    gap: 10px; /* Reduce spacing for smaller screens */
   }
 
   .about-image {
-    max-width: none;
-    width: auto;
-    height: auto;
+    max-width: 200px; /* Shrinks image slightly */
+  }
+
+  .about-text {
+    font-size: 0.9em; /* Slightly smaller text for readability */
+    max-width: 100%; /* Allows text to take available space */
   }
 
   .banner {
