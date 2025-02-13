@@ -140,7 +140,7 @@ footer {
   background-size: 200% 200%;
   animation: bounce 6s infinite ease-in-out, colorChange 5s infinite linear;
   mix-blend-mode: screen; /* Allows better transparency */
-  opacity: 0.8; /* Makes the ball semi-transparent */
+  opacity: 100; /* Makes the ball semi-transparent */
 }
 
 /* Expanded Bouncing Movement */
