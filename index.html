@@ -8,18 +8,27 @@
   <link rel="icon" type="image/x-icon" href="images/favicon.ico">
 </head>
 <body>
-  <header>
-    <nav>
-      <ul>
-        <li><a href="index.html" class="header-avatar">
-            <img src="images/avatar.png" alt="Home" width="35" height="auto" class="avatar"></a></li>
-      </ul>
-    </nav>
-  </header>
+ <!-- Header (Avatar Stays Centered) -->
+<header>
+  <nav>
+    <ul>
+      <li><a href="index.html" class="header-avatar">
+        <img src="images/avatar.png" alt="Home" width="35" height="auto">
+      </a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- Fun Mode Toggle (Now Positioned Above Banner) -->
+<div class="toggle-container">
+  <label class="switch">
+    <input type="checkbox" id="fun-toggle">
+    <span class="slider"></span>
+  </label>
+</div>
   <main>
     <div class="banner">
       <img src="images/DYLANtest.png" alt="DYLAN CHESNEY BANNER" class="name-image">
-      <div class="gradient-ball"></div>
     </div>
     <div class="thin-fade-line"></div>
     <div class="opener">
@@ -43,6 +52,11 @@
           </div>
         </div>
       </section>
+      <!-- Fun Mode Section (Initially Hidden) -->
+<div id="fun-mode-section" class="hidden-section">
+  <h3>Welcome to Fun Mode!</h3>
+  <p>Things just got a little more exciting.</p>
+</div>
   </main>
   <footer>
     <p>Written in code by me, but compiled with espresso.</p>

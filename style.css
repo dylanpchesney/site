@@ -32,6 +32,30 @@ body {
   padding: 0;
   background-color: #ffffff;
   color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  transition: background-color 1.5s ease-in-out;
+}
+
+/* Push Content Down to Prevent Footer Overlap */
+body.fun-mode main {
+  padding-bottom: 100px; /* Creates space so footer doesn't overlap */
+}
+
+/* Ensure Footer Stays at the Bottom in Fun Mode */
+body.fun-mode footer {
+  position: relative; /* Resets any absolute/fixed positioning */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  margin-top: auto; /* Pushes footer to bottom */
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #30BAFF 60%);
+}
+body.fun-mode.active {
+  background-color: #30BAFF !important; /* Ensures the background stays */
+  color: white; /* Adjust text color for better contrast */
 }
 /* Make the whole page stretch to push footer down */
 html, body {
@@ -71,7 +95,135 @@ header {
     height: auto;
     animation: glow-animation 7s infinite ease-in-out;
   }
+/* iOS-Style Toggle Container */
+.toggle-container {
+  position: absolute;
+  top: 20px;
+  right: 40px;
+  z-index: 1001; /* Keeps it above other elements */
+}
 
+/* iOS-Style Toggle */
+.switch {
+  position: relative;
+  width: 50px;
+  height: 26px;
+  display: inline-block;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #30BAFF;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* Toggle ON State */
+input:checked + .slider {
+  background-color: #ff9800;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+
+/* Banner Change in Fun Mode */
+.banner.fun-mode img {
+  content: url("images/DCOrangeBanner.png"); /* Replace with fun banner image */
+}
+
+/* New Section That Appears in Fun Mode */
+/* Fun Mode Section - Initially Hidden */
+.hidden-section {
+  display: none; /* Keep it hidden initially */
+  max-width: 1000px; /* Matches the opener width */
+  margin: 30px auto; /* Centers and adds spacing */
+  padding: 0 20px;
+  text-align: justify;
+  opacity: 0; /* Start as invisible */
+  transition: opacity 1.5s ease-in-out;
+}
+
+/* Show Fun Mode Section when Fun Mode is Active */
+body.fun-mode .hidden-section {
+  display: block;
+  opacity: 1; /* Fade in */
+}
+
+/* Wave Effects (Covers the Screen) */
+.wave-top, .wave-bottom {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  z-index: 9999; /* Ensure it covers everything */
+  background-color: #30BAFF;
+  animation: waveIn 1.5s ease-in-out forwards; /* Slower transition */
+}
+
+/* Top Wave Starts from Top */
+.wave-top {
+  top: -50%;
+}
+
+/* Bottom Wave Starts from Bottom */
+.wave-bottom {
+  bottom: -50%;
+}
+
+/* Hide Content During Transition */
+body.transitioning * {
+  opacity: 0; /* Hide all elements */
+  transition: opacity 1s ease-in-out; /* Smooth reappearance */
+}
+
+/* Keyframe Animation for the Dual Wave Effect */
+@keyframes waveIn {
+  100% {
+    top: 0;
+    bottom: 0;
+  }
+}
+
+/* Reverse Animation (Wave Back Out to White) */
+.wave-top.reverse, .wave-bottom.reverse {
+  animation: waveOut 1.5s ease-in-out forwards;
+}
+
+@keyframes waveOut {
+  0% {
+    top: 0;
+    bottom: 0;
+  }
+  100% {
+    top: -50%;
+    bottom: -50%;
+  }
+}
 /* Navigation */
 nav ul {
   list-style: none;
@@ -105,9 +257,17 @@ footer {
   width: 100%;
   padding-top: 2em;
   padding-bottom: .1em;
-  margin-top: auto; /* Pushes footer to the bottom */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   font-size: 0.9em;
   color: #000000;
+}
+
+/* Change Footer Text Color in Fun Mode */
+body.fun-mode footer {
+  color: white !important;
 }
 
 /* Banner Section */
@@ -119,8 +279,6 @@ footer {
   max-width: 1222px; /* Matches header width */
   margin: 0 auto; /* Centers the banner */
   padding: 0 10px; /* Prevents potential overflow */
-  position: relative; /* Ensures ball is positioned within banner */
-  overflow: hidden; /* Prevents ball from escaping */
 }
 
 /* Ensures the letters act as a clipping mask */
@@ -128,44 +286,6 @@ footer {
   width: 100%;
   max-width: 1222px;
   display: block;
-}
-
-/* Bigger & More Visible Gradient Ball */
-.gradient-ball {
-  position: absolute;
-  width: 80px; /* Increased size */
-  height: 80px; /* Increased size */
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 87, 51, 0.8) 0%, rgba(51, 255, 87, 0.8) 50%, rgba(51, 87, 255, 0.8) 100%);
-  background-size: 200% 200%;
-  animation: bounce 6s infinite ease-in-out, colorChange 5s infinite linear;
-  mix-blend-mode: screen; /* Allows better transparency */
-  opacity: 100; /* Makes the ball semi-transparent */
-}
-
-/* Expanded Bouncing Movement */
-@keyframes bounce {
-  0%, 100% {
-    transform: translate(-200px, 0);
-  }
-  25% {
-    transform: translate(150px, -50px);
-  }
-  50% {
-    transform: translate(0px, 120px);
-  }
-  75% {
-    transform: translate(-150px, -30px);
-  }
-}
-
-/* Color Cycling Effect */
-@keyframes colorChange {
-  0% { background: radial-gradient(circle, rgba(255, 87, 51, 0.8), rgba(51, 255, 87, 0.8)); }
-  25% { background: radial-gradient(circle, rgba(51, 255, 87, 0.8), rgba(51, 87, 255, 0.8)); }
-  50% { background: radial-gradient(circle, rgba(51, 87, 255, 0.8), rgba(255, 51, 170, 0.8)); }
-  75% { background: radial-gradient(circle, rgba(255, 51, 170, 0.8), rgba(255, 87, 51, 0.8)); }
-  100% { background: radial-gradient(circle, rgba(255, 87, 51, 0.8), rgba(51, 255, 87, 0.8)); }
 }
 
 /* Opener paragraph design*/
@@ -184,6 +304,7 @@ footer {
   background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, #333 50%, rgba(0, 0, 0, 0) 100%);
   margin: 30px auto; /* Centers the line */
 }
+
 
 /* About Me Section */
 .about-me {
@@ -205,6 +326,12 @@ footer {
   max-width: 300px; /* Limits size */
   width: 100%; /* Keeps responsiveness */
   height: auto; /* Maintains aspect ratio */
+}
+
+/* Ensure Headshot is Visible in Fun Mode */
+body.fun-mode .about-image {
+  opacity: 1 !important; /* Forces it to be visible */
+  transform: scale(1) translateY(0) !important; /* Keeps normal size & position */
 }
 
 /* Text section */
@@ -262,6 +389,17 @@ footer {
   background-color: #0077b5 !important;
   color: white !important;
   box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure LinkedIn Button Text Stays Black in Fun Mode */
+body.fun-mode .linkedin {
+  color: #000000 !important; /* Force black text */
+}
+
+/* Override .hover-effect only for LinkedIn in Fun Mode */
+body.fun-mode .linkedin.hover-effect {
+  background-color: #0077b5 !important;
+  color: white !important; /* White only on hover */
 }
 
 /* Remove Visited Link Styling */
@@ -333,5 +471,26 @@ a:visited {
   .banner img {
     width: 100%;
     max-width: none; /* Allows it to shrink naturally */
+  }
+  /* Ensure Footer Stays at the Bottom in Fun Mode (Only on Mobile) */
+  body.fun-mode footer {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    margin-top: auto;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #30BAFF 60%);
+  }
+
+  /* Prevent Footer from Floating in Normal Mode (Only on Mobile) */
+  body:not(.fun-mode) footer {
+    position: relative;
+    bottom: 0;
+    margin-top: auto;
+  }
+
+  /* Push Content Down in Fun Mode to Prevent Overlap (Only on Mobile) */
+  body.fun-mode main {
+    padding-bottom: 100px;
   }
 }
