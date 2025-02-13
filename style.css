@@ -51,6 +51,26 @@ header {
   max-width: 1222px; /* Matches banner width */
   margin: 0 auto; /* Centers the header */
 }
+/* Glowing affect on the header avatar */
+
+@keyframes glow-animation {
+    0% {
+      filter: drop-shadow(0px 0px 5px rgba(48, 186, 255, 0.5));
+    }
+    50% {
+      filter: drop-shadow(0px 0px 25px rgba(48, 186, 255, 1));
+    }
+    100% {
+      filter: drop-shadow(0px 0px 5px rgba(48, 186, 255, 0.5));
+    }
+  }
+  /* design of the header-avatar */
+
+  .header-avatar {
+    width: 35x;
+    height: auto;
+    animation: glow-animation 7s infinite ease-in-out;
+  }
 
 /* Navigation */
 nav ul {
@@ -80,13 +100,14 @@ main {
 /* Footer */
 footer {
   text-align: center;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #dbdbdb 50%);
+  line-height: .75;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #30BAFF 60%);
   width: 100%;
-  padding-top: 3em;
+  padding-top: 2em;
   padding-bottom: .1em;
   margin-top: auto; /* Pushes footer to the bottom */
   font-size: 0.9em;
-  color: #333;
+  color: #000000;
 }
 
 /* Banner Section */
@@ -98,12 +119,53 @@ footer {
   max-width: 1222px; /* Matches header width */
   margin: 0 auto; /* Centers the banner */
   padding: 0 10px; /* Prevents potential overflow */
+  position: relative; /* Ensures ball is positioned within banner */
+  overflow: hidden; /* Prevents ball from escaping */
 }
 
-.banner img {
-  width: 100%; /* Ensures it scales correctly */
-  height: auto; /* Maintains aspect ratio */
-  display: block; /* Prevents unwanted spacing */
+/* Ensures the letters act as a clipping mask */
+.name-image {
+  width: 100%;
+  max-width: 1222px;
+  display: block;
+}
+
+/* Bigger & More Visible Gradient Ball */
+.gradient-ball {
+  position: absolute;
+  width: 80px; /* Increased size */
+  height: 80px; /* Increased size */
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 87, 51, 0.8) 0%, rgba(51, 255, 87, 0.8) 50%, rgba(51, 87, 255, 0.8) 100%);
+  background-size: 200% 200%;
+  animation: bounce 6s infinite ease-in-out, colorChange 5s infinite linear;
+  mix-blend-mode: screen; /* Allows better transparency */
+  opacity: 0.8; /* Makes the ball semi-transparent */
+}
+
+/* Expanded Bouncing Movement */
+@keyframes bounce {
+  0%, 100% {
+    transform: translate(-200px, 0);
+  }
+  25% {
+    transform: translate(150px, -50px);
+  }
+  50% {
+    transform: translate(0px, 120px);
+  }
+  75% {
+    transform: translate(-150px, -30px);
+  }
+}
+
+/* Color Cycling Effect */
+@keyframes colorChange {
+  0% { background: radial-gradient(circle, rgba(255, 87, 51, 0.8), rgba(51, 255, 87, 0.8)); }
+  25% { background: radial-gradient(circle, rgba(51, 255, 87, 0.8), rgba(51, 87, 255, 0.8)); }
+  50% { background: radial-gradient(circle, rgba(51, 87, 255, 0.8), rgba(255, 51, 170, 0.8)); }
+  75% { background: radial-gradient(circle, rgba(255, 51, 170, 0.8), rgba(255, 87, 51, 0.8)); }
+  100% { background: radial-gradient(circle, rgba(255, 87, 51, 0.8), rgba(51, 255, 87, 0.8)); }
 }
 
 /* Opener paragraph design*/
@@ -177,12 +239,13 @@ footer {
   color: #000000;
   border-color: #004953;
   background-color: white;
+  transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out, box-shadow 0.8s ease-in-out;
 }
 
-.contact:hover {
-  background-color: #004953;
-  color: white;
-  letter-spacing: 1px; /* Increase spacing between letters */
+.contact:hover,
+.contact.hover-effect {
+  background-color: #004953 !important;
+  color: white !important;
   box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3);
 }
 
@@ -191,14 +254,14 @@ footer {
   color: #000000;
   border-color: #0077b5;
   background-color: white;
+  transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out, box-shadow 0.8s ease-in-out;
 }
 
-.linkedin:hover {
-  background-color: #0077b5;
-  color: white;
-  letter-spacing: 1px; /* Increase spacing between letters */
+.linkedin:hover,
+.linkedin.hover-effect {
+  background-color: #0077b5 !important;
+  color: white !important;
   box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3);
-
 }
 
 /* Remove Visited Link Styling */
@@ -210,7 +273,12 @@ a:visited {
 .cta-button:active {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
   transform: scale(0.98);
-  letter-spacing: 2px; /* Increase spacing between letters */
+}
+
+.hover-effect {
+  background-color: #004953 !important;
+  color: white !important;
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3);
 }
 
 /* Responsive Design */
@@ -233,12 +301,23 @@ a:visited {
   }
 
   .about-image {
-    max-width: 75%; /* Ensures it scales down relative to its container */
-    width: auto; /* Prevents it from stretching */
-    height: auto; /* Maintains aspect ratio */
-    margin-bottom: 10px; /* Adds space between image and text */
-    margin-top: 20px;
-  }
+      max-width: 75%; /* Keeps responsiveness */
+      width: auto; /* Prevents stretching */
+      height: auto; /* Maintains aspect ratio */
+      margin-bottom: 10px; /* Adds space between image and text */
+      margin-top: 20px;
+  
+      /* Animation - Starts Small & Lower */
+      opacity: 0;
+      transform: scale(0.5) translateY(50px); /* Start tiny & shifted down */
+      transition: transform 1s ease-out, opacity 1s ease-out;
+    }
+  
+    .about-image.in-view {
+      opacity: 1;
+      transform: scale(1) translateY(0); /* Grows & moves into place */
+    }
+  
 
   .about-text {
     font-size: 1em; /* Keeps text readable */
