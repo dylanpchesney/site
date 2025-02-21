@@ -159,19 +159,20 @@ input:checked + .slider:before {
 /* New Section That Appears in Fun Mode */
 /* Fun Mode Section - Initially Hidden */
 .hidden-section {
-  display: none; /* Keep it hidden initially */
-  max-width: 1000px; /* Matches the opener width */
-  margin: 30px auto; /* Centers and adds spacing */
+  display: none;
+  max-width: 1000px;
+  margin: 0 auto; /* Changed from 30px auto to 0 auto to match other sections */
   padding: 0 20px;
   text-align: justify;
-  opacity: 0; /* Start as invisible */
+  opacity: 0;
   transition: opacity 1.5s ease-in-out;
 }
 
 /* Show Fun Mode Section when Fun Mode is Active */
 body.fun-mode .hidden-section {
   display: block;
-  opacity: 1; /* Fade in */
+  opacity: 1;
+  margin-top: 30px; /* Add specific top margin here instead */
 }
 
 /* Wave Effects (Covers the Screen) */
