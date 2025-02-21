@@ -91,7 +91,7 @@ header {
   /* design of the header-avatar */
 
   .header-avatar {
-    width: 35x;
+    width: 35px;
     height: auto;
     animation: glow-animation 7s infinite ease-in-out;
   }
