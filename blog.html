@@ -17,15 +17,17 @@
         </a></li>
       </ul>
     </nav>
+    <div class="splash-toggle-row">
+      <span class="splash-label">Splash</span>
+      <span class="splash-arrow">&#8594;</span>
+      <div class="toggle-container">
+        <label class="switch">
+          <input type="checkbox" id="fun-toggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
   </header>
-
-  <!-- Fun Mode Toggle -->
-  <div class="toggle-container">
-    <label class="switch">
-      <input type="checkbox" id="fun-toggle">
-      <span class="slider"></span>
-    </label>
-  </div>
 
   <main>
     <div class="banner">
@@ -37,8 +39,9 @@
     <div class="blog-container">
       <!-- Left Sidebar -->
       <div class="blog-sidebar">
-        <div class="sidebar-header">
-          <h3>Posts</h3>
+        <div class="sidebar-header" style="display: flex; flex-direction: column; align-items: flex-start;">
+          <img src="images/micropen.png" alt="Micro-Blog Icon" class="microblog-sidebar-icon" />
+          <span class="microblog-title">Micro-Blog</span>
         </div>
         <div class="post-list" id="post-list">
           <!-- Posts will be dynamically inserted here -->
