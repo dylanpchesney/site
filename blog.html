@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dylan Chesney - Micro Blog</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+</head>
+<body>
+  <!-- Header (Avatar Stays Centered) -->
+  <header>
+    <nav>
+      <ul>
+        <li><a href="index.html" class="header-avatar">
+          <img src="images/avatar.png" alt="Home" width="35" height="auto">
+        </a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Fun Mode Toggle -->
+  <div class="toggle-container">
+    <label class="switch">
+      <input type="checkbox" id="fun-toggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <main>
+    <div class="banner">
+      <img src="images/DYLANtest.png" alt="DYLAN CHESNEY BANNER" class="name-image">
+    </div>
+    <div class="thin-fade-line"></div>
+
+    <!-- Blog Container -->
+    <div class="blog-container">
+      <!-- Left Sidebar -->
+      <div class="blog-sidebar">
+        <div class="sidebar-header">
+          <h3>Posts</h3>
+        </div>
+        <div class="post-list" id="post-list">
+          <!-- Posts will be dynamically inserted here -->
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="blog-content">
+        <div class="timeline" id="timeline">
+          <!-- Blog posts will be dynamically inserted here -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Written in code by me, but compiled with espresso.</p>
+    <p>© 2024 - Dylan Chesney</p>
+  </footer>
+
+  <script src="blog-posts.js"></script>
+  <script src="script.js"></script>
+</body>
+</html> 
