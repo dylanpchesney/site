@@ -121,10 +121,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /** Blog Functionality **/
   function initializeBlog() {
-    if (!document.querySelector('.blog-container')) return;
+    console.log('Initializing blog...');
+    if (!document.querySelector('.blog-container')) {
+      console.log('No blog container found, skipping initialization');
+      return;
+    }
 
     const postList = document.getElementById('post-list');
     const timeline = document.getElementById('timeline');
+    
+    console.log('Blog posts:', blogPosts);
+    console.log('Post list element:', postList);
+    console.log('Timeline element:', timeline);
 
     // Sort posts by date (newest first)
     const sortedPosts = [...blogPosts].sort((a, b) => 
@@ -226,6 +234,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Initialize blog when DOM is loaded
   document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing blog...');
     initializeBlog();
   });
 });
