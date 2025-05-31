@@ -151,12 +151,14 @@ document.addEventListener("DOMContentLoaded", function () {
       timeline.appendChild(postElement);
     });
 
-    // Set first post as active
+    // Set first post as active after all elements are created
     if (sortedPosts.length > 0) {
-      const firstPreview = postList.firstChild;
-      const firstPost = timeline.firstChild;
-      firstPreview.classList.add('active');
-      firstPost.classList.add('active');
+      const firstPreview = postList.querySelector('.post-preview');
+      const firstPost = timeline.querySelector('.blog-post');
+      if (firstPreview && firstPost) {
+        firstPreview.classList.add('active');
+        firstPost.classList.add('active');
+      }
     }
   }
 
@@ -180,7 +182,9 @@ document.addEventListener("DOMContentLoaded", function () {
       preview.classList.add('active');
       // Scroll to corresponding post
       const postElement = document.querySelector(`.blog-post[data-post-id="${post.id}"]`);
-      postElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (postElement) {
+        postElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     });
 
     return preview;
