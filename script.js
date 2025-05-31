@@ -14,26 +14,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /** Headshot Expand Effect on Mobile **/
   const image = document.querySelector(".about-image");
-
-  function checkImageVisibility() {
-    const rect = image.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.8) {
-      image.classList.add("in-view");
+  if (image) {
+    function checkImageVisibility() {
+      const rect = image.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.8) {
+        image.classList.add("in-view");
+      }
     }
-  }
-
-  const debouncedCheckImageVisibility = debounce(checkImageVisibility, 100);
-
-  if (window.innerWidth <= 768 && image) {
-    document.addEventListener("scroll", debouncedCheckImageVisibility);
-    checkImageVisibility();
+    const debouncedCheckImageVisibility = debounce(checkImageVisibility, 100);
+    if (window.innerWidth <= 768) {
+      document.addEventListener("scroll", debouncedCheckImageVisibility);
+      checkImageVisibility();
+    }
   }
 
   /** CTA Button Hover Effect **/
   const contactButton = document.querySelector(".contact");
   const linkedinButton = document.querySelector(".linkedin");
-
-  // Only run CTA button effects if we're on the home page
   if (contactButton && linkedinButton) {
     function triggerHoverEffect() {
       setTimeout(() => {
@@ -49,7 +46,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 1750); // Contact button fades back (was 1000ms)
       }, 1500); // Initial delay before animation starts (was 1000ms)
     }
-
     function checkButtonVisibility() {
       const rect = contactButton.getBoundingClientRect();
       if (rect.top < window.innerHeight * 0.8) {
@@ -57,9 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
         document.removeEventListener("scroll", debouncedCheckButtonVisibility);
       }
     }
-
     const debouncedCheckButtonVisibility = debounce(checkButtonVisibility, 100);
-
     if (window.innerWidth > 768) {
       setTimeout(triggerHoverEffect, 2000);
     } else {
