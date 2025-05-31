@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const debouncedCheckImageVisibility = debounce(checkImageVisibility, 100);
 
-  if (window.innerWidth <= 768) {
+  if (window.innerWidth <= 768 && image) {
     document.addEventListener("scroll", debouncedCheckImageVisibility);
     checkImageVisibility();
   }
@@ -33,36 +33,39 @@ document.addEventListener("DOMContentLoaded", function () {
   const contactButton = document.querySelector(".contact");
   const linkedinButton = document.querySelector(".linkedin");
 
-  function triggerHoverEffect() {
-    setTimeout(() => {
-      contactButton.classList.add("hover-effect");
+  // Only run CTA button effects if we're on the home page
+  if (contactButton && linkedinButton) {
+    function triggerHoverEffect() {
       setTimeout(() => {
-        contactButton.classList.remove("hover-effect");
+        contactButton.classList.add("hover-effect");
         setTimeout(() => {
-          linkedinButton.classList.add("hover-effect");
+          contactButton.classList.remove("hover-effect");
           setTimeout(() => {
-            linkedinButton.classList.remove("hover-effect");
-          }, 1750); // Slowed down (was 1000ms)
-        }, 1000); // Small delay before LinkedIn animation (was 500ms)
-      }, 1750); // Contact button fades back (was 1000ms)
-    }, 1500); // Initial delay before animation starts (was 1000ms)
-  }
-
-  function checkButtonVisibility() {
-    const rect = contactButton.getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.8) {
-      triggerHoverEffect();
-      document.removeEventListener("scroll", debouncedCheckButtonVisibility);
+            linkedinButton.classList.add("hover-effect");
+            setTimeout(() => {
+              linkedinButton.classList.remove("hover-effect");
+            }, 1750); // Slowed down (was 1000ms)
+          }, 1000); // Small delay before LinkedIn animation (was 500ms)
+        }, 1750); // Contact button fades back (was 1000ms)
+      }, 1500); // Initial delay before animation starts (was 1000ms)
     }
-  }
 
-  const debouncedCheckButtonVisibility = debounce(checkButtonVisibility, 100);
+    function checkButtonVisibility() {
+      const rect = contactButton.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.8) {
+        triggerHoverEffect();
+        document.removeEventListener("scroll", debouncedCheckButtonVisibility);
+      }
+    }
 
-  if (window.innerWidth > 768) {
-    setTimeout(triggerHoverEffect, 2000);
-  } else {
-    document.addEventListener("scroll", debouncedCheckButtonVisibility);
-    checkButtonVisibility();
+    const debouncedCheckButtonVisibility = debounce(checkButtonVisibility, 100);
+
+    if (window.innerWidth > 768) {
+      setTimeout(triggerHoverEffect, 2000);
+    } else {
+      document.addEventListener("scroll", debouncedCheckButtonVisibility);
+      checkButtonVisibility();
+    }
   }
 
   /** Fun Mode Toggle with Dual Wave Effect **/
@@ -71,53 +74,58 @@ document.addEventListener("DOMContentLoaded", function () {
   const banner = document.querySelector(".banner img");
   const funModeSection = document.getElementById("fun-mode-section");
 
-  funToggle.addEventListener("change", function () {
-    body.classList.add("transitioning");
+  if (funToggle) {
+    funToggle.addEventListener("change", function () {
+      body.classList.add("transitioning");
 
-    const waveTop = document.createElement("div");
-    const waveBottom = document.createElement("div");
-    waveTop.classList.add("wave-top");
-    waveBottom.classList.add("wave-bottom");
-    document.body.appendChild(waveTop);
-    document.body.appendChild(waveBottom);
+      const waveTop = document.createElement("div");
+      const waveBottom = document.createElement("div");
+      waveTop.classList.add("wave-top");
+      waveBottom.classList.add("wave-bottom");
+      document.body.appendChild(waveTop);
+      document.body.appendChild(waveBottom);
 
-    if (body.classList.contains("fun-mode")) {
-      waveTop.classList.add("reverse");
-      waveBottom.classList.add("reverse");
-
-      setTimeout(() => {
-        body.classList.remove("fun-mode");
-        body.classList.remove("active");
-        banner.src = "images/DYLANtest.png";
-        funModeSection.classList.remove("hidden-section");
-        funModeSection.style.opacity = "0";
+      if (body.classList.contains("fun-mode")) {
+        waveTop.classList.add("reverse");
+        waveBottom.classList.add("reverse");
 
         setTimeout(() => {
-          waveTop.remove();
-          waveBottom.remove();
-          body.classList.remove("transitioning");
-          funModeSection.style.display = "none";
-        }, 1500);
-      }, 500);
-    } else {
-      setTimeout(() => {
-        body.classList.add("fun-mode");
-        body.classList.add("active");
-        banner.src = "images/DCOrangeBanner.png";
-        funModeSection.style.display = "block";
-        
-        setTimeout(() => {
-          funModeSection.style.opacity = "1";
+          body.classList.remove("fun-mode");
+          body.classList.remove("active");
+          if (banner) banner.src = "images/DYLANtest.png";
+          if (funModeSection) {
+            funModeSection.classList.remove("hidden-section");
+            funModeSection.style.opacity = "0";
+          }
+
+          setTimeout(() => {
+            waveTop.remove();
+            waveBottom.remove();
+            body.classList.remove("transitioning");
+            if (funModeSection) funModeSection.style.display = "none";
+          }, 1500);
         }, 500);
-
+      } else {
         setTimeout(() => {
-          waveTop.remove();
-          waveBottom.remove();
-          body.classList.remove("transitioning");
-        }, 1500);
-      }, 500);
-    }
-  });
+          body.classList.add("fun-mode");
+          body.classList.add("active");
+          if (banner) banner.src = "images/DCOrangeBanner.png";
+          if (funModeSection) {
+            funModeSection.style.display = "block";
+            setTimeout(() => {
+              funModeSection.style.opacity = "1";
+            }, 500);
+          }
+
+          setTimeout(() => {
+            waveTop.remove();
+            waveBottom.remove();
+            body.classList.remove("transitioning");
+          }, 1500);
+        }, 500);
+      }
+    });
+  }
 
   /** Blog Functionality **/
   function initializeBlog() {
@@ -210,13 +218,15 @@ document.addEventListener("DOMContentLoaded", function () {
       <div class="post-content collapsed">
         ${previewContent}
       </div>
-      <button class="expand-button">Read More</button>
+      <button class="expand-button">Show More...</button>
     `;
 
     const expandButton = postElement.querySelector('.expand-button');
     const contentDiv = postElement.querySelector('.post-content');
 
-    expandButton.addEventListener('click', () => {
+    function toggleExpand(e) {
+      // Prevent if clicking a link
+      if (e && e.target.closest('a')) return;
       if (contentDiv.classList.contains('collapsed')) {
         contentDiv.textContent = fullContent;
         contentDiv.classList.remove('collapsed');
@@ -224,9 +234,15 @@ document.addEventListener("DOMContentLoaded", function () {
       } else {
         contentDiv.textContent = previewContent;
         contentDiv.classList.add('collapsed');
-        expandButton.textContent = 'Read More';
+        expandButton.textContent = 'Show More Again';
       }
+    }
+
+    expandButton.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleExpand();
     });
+    postElement.addEventListener('click', toggleExpand);
 
     return postElement;
   }
@@ -237,8 +253,5 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Initialize blog when DOM is loaded
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing blog...');
-    initializeBlog();
-  });
+  initializeBlog();
 });
