@@ -1,3 +1,4 @@
+// Define blog posts data
 const blogPosts = [
   {
     id: 1,
@@ -35,4 +36,7 @@ const blogPosts = [
 
     The future of tech stack integration lies in creating unified experiences that make complex systems feel simple and intuitive.`
   }
-]; 
+];
+
+// Make blogPosts available globally
+window.blogPosts = blogPosts; 
