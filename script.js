@@ -118,4 +118,114 @@ document.addEventListener("DOMContentLoaded", function () {
       }, 500);
     }
   });
+
+  /** Blog Functionality **/
+  function initializeBlog() {
+    if (!document.querySelector('.blog-container')) return;
+
+    const postList = document.getElementById('post-list');
+    const timeline = document.getElementById('timeline');
+
+    // Sort posts by date (newest first)
+    const sortedPosts = [...blogPosts].sort((a, b) => 
+      new Date(b.date) - new Date(a.date)
+    );
+
+    // Create sidebar post previews
+    sortedPosts.forEach(post => {
+      const preview = createPostPreview(post);
+      postList.appendChild(preview);
+    });
+
+    // Create timeline posts
+    sortedPosts.forEach(post => {
+      const postElement = createBlogPost(post);
+      timeline.appendChild(postElement);
+    });
+
+    // Set first post as active
+    if (sortedPosts.length > 0) {
+      const firstPreview = postList.firstChild;
+      const firstPost = timeline.firstChild;
+      firstPreview.classList.add('active');
+      firstPost.classList.add('active');
+    }
+  }
+
+  function createPostPreview(post) {
+    const preview = document.createElement('div');
+    preview.className = 'post-preview';
+    preview.dataset.postId = post.id;
+
+    preview.innerHTML = `
+      <h4>${post.shortTitle}</h4>
+      <div class="post-date">${formatDate(post.date)}</div>
+      <div class="post-tags">
+        ${post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')}
+      </div>
+    `;
+
+    preview.addEventListener('click', () => {
+      // Remove active class from all previews
+      document.querySelectorAll('.post-preview').forEach(p => p.classList.remove('active'));
+      // Add active class to clicked preview
+      preview.classList.add('active');
+      // Scroll to corresponding post
+      const postElement = document.querySelector(`.blog-post[data-post-id="${post.id}"]`);
+      postElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    return preview;
+  }
+
+  function createBlogPost(post) {
+    const postElement = document.createElement('article');
+    postElement.className = 'blog-post';
+    postElement.dataset.postId = post.id;
+
+    const content = post.content.split('\n\n');
+    const previewContent = content[0];
+    const fullContent = content.join('\n\n');
+
+    postElement.innerHTML = `
+      <h2>${post.title}</h2>
+      <div class="post-meta">
+        <span class="post-date">${formatDate(post.date)}</span>
+        <div class="post-tags">
+          ${post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')}
+        </div>
+      </div>
+      <div class="post-content collapsed">
+        ${previewContent}
+      </div>
+      <button class="expand-button">Read More</button>
+    `;
+
+    const expandButton = postElement.querySelector('.expand-button');
+    const contentDiv = postElement.querySelector('.post-content');
+
+    expandButton.addEventListener('click', () => {
+      if (contentDiv.classList.contains('collapsed')) {
+        contentDiv.textContent = fullContent;
+        contentDiv.classList.remove('collapsed');
+        expandButton.textContent = 'Show Less';
+      } else {
+        contentDiv.textContent = previewContent;
+        contentDiv.classList.add('collapsed');
+        expandButton.textContent = 'Read More';
+      }
+    });
+
+    return postElement;
+  }
+
+  function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+  }
+
+  // Initialize blog when DOM is loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    initializeBlog();
+  });
 });
