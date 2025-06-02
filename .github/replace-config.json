@@ -1,0 +1,13 @@
+{
+  "files": "contentful-config.js",
+  "from": [
+    "CONTENTFUL_SPACE_ID",
+    "CONTENTFUL_DELIVERY_TOKEN",
+    "CONTENTFUL_PREVIEW_TOKEN"
+  ],
+  "to": [
+    "${CONTENTFUL_SPACE_ID}",
+    "${CONTENTFUL_DELIVERY_TOKEN}",
+    "${CONTENTFUL_PREVIEW_TOKEN}"
+  ]
+} 

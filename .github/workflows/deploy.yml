@@ -29,11 +29,9 @@ jobs:
         
       - name: Replace environment variables
         run: |
-          replace-in-file --configFile ./.github/replace-config.js
-        env:
-          CONTENTFUL_SPACE_ID: ${{ secrets.CONTENTFUL_SPACE_ID }}
-          CONTENTFUL_DELIVERY_TOKEN: ${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}
-          CONTENTFUL_PREVIEW_TOKEN: ${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}
+          sed -i "s/CONTENTFUL_SPACE_ID/${{ secrets.CONTENTFUL_SPACE_ID }}/g" contentful-config.js
+          sed -i "s/CONTENTFUL_DELIVERY_TOKEN/${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}/g" contentful-config.js
+          sed -i "s/CONTENTFUL_PREVIEW_TOKEN/${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}/g" contentful-config.js
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
