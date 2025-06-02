@@ -9,6 +9,43 @@ let currentSearchQuery = '';
 let isLoading = false;
 let hasMorePosts = true;
 
+// Fallback function for when Contentful is not available
+window.fallbackFetchBlogPosts = function(page = 1, searchQuery = '') {
+  console.log('Using fallback blog posts - page:', page, 'search:', searchQuery);
+  
+  const posts = window.blogPosts || [];
+  let filteredPosts = posts;
+  
+  // Apply search filter if provided
+  if (searchQuery && searchQuery.trim()) {
+    const query = searchQuery.toLowerCase();
+    filteredPosts = posts.filter(post => 
+      post.title.toLowerCase().includes(query) ||
+      post.content.toLowerCase().includes(query) ||
+      post.tags.some(tag => tag.toLowerCase().includes(query))
+    );
+  }
+  
+  // Apply pagination
+  const postsPerPage = 3;
+  const startIndex = (page - 1) * postsPerPage;
+  const endIndex = startIndex + postsPerPage;
+  const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+  
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  
+  return Promise.resolve({
+    posts: paginatedPosts,
+    pagination: {
+      currentPage: page,
+      totalPages: totalPages,
+      totalPosts: filteredPosts.length,
+      hasNextPage: page < totalPages,
+      hasPreviousPage: page > 1
+    }
+  });
+};
+
 // Debounce helper function
 function debounce(func, wait) {
   let timeout;
@@ -25,6 +62,12 @@ function debounce(func, wait) {
 // Initialize blog functionality
 function initializeBlog() {
   console.log('Initializing blog functionality...');
+  
+  // Ensure we have a fetchBlogPosts function available
+  if (!window.fetchBlogPosts) {
+    console.log('Contentful fetchBlogPosts not available, using fallback');
+    window.fetchBlogPosts = window.fallbackFetchBlogPosts;
+  }
   
   // Initialize search functionality
   const searchInput = document.getElementById('search-input');

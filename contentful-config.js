@@ -10,34 +10,10 @@ const contentfulConfig = {
 // Function to check if environment variables are properly set
 function checkConfig() {
     console.log('Checking configuration...');
-    console.log('Current config:', {
-        space: contentfulConfig.space,
-        deliveryToken: contentfulConfig.deliveryToken ? 'Set' : 'Not set',
-        previewToken: contentfulConfig.previewToken ? 'Set' : 'Not set',
-        environment: contentfulConfig.environment,
-        postsPerPage: contentfulConfig.postsPerPage
-    });
+    console.log('Current hostname:', window.location.hostname);
     
-    // Add detailed debugging
-    console.log('Raw values:', {
-        space: contentfulConfig.space,
-        deliveryToken: contentfulConfig.deliveryToken,
-        previewToken: contentfulConfig.previewToken,
-        environment: contentfulConfig.environment,
-        postsPerPage: contentfulConfig.postsPerPage
-    });
-    
-    // Check if we're in production and if the values are still placeholders
     const isProduction = window.location.hostname !== '127.0.0.1' && window.location.hostname !== 'localhost';
-    if (isProduction) {
-        console.log('Running in production mode');
-        if (contentfulConfig.space === 'CONTENTFUL_SPACE_ID' ||
-            contentfulConfig.deliveryToken === 'CONTENTFUL_DELIVERY_TOKEN' ||
-            contentfulConfig.previewToken === 'CONTENTFUL_PREVIEW_TOKEN') {
-            console.error('Production environment detected but placeholders are still present');
-            console.error('This indicates that the GitHub Actions workflow did not properly replace the placeholders');
-        }
-    }
+    console.log('Environment:', isProduction ? 'Production' : 'Development');
     
     const missingVars = [];
     if (contentfulConfig.space === 'CONTENTFUL_SPACE_ID') missingVars.push('SPACE_ID');
@@ -54,9 +30,8 @@ function checkConfig() {
 // Function to initialize the configuration
 async function initializeConfig() {
     console.log('Initializing configuration...');
-    console.log('Current hostname:', window.location.hostname);
     
-    // Check if we're in development mode (LiveServer)
+    // Check if we're in development mode
     if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
         try {
             const devConfig = await import('./contentful-config.dev.js');
@@ -65,8 +40,6 @@ async function initializeConfig() {
         } catch (error) {
             console.error('Development configuration not found. Using placeholder values.');
         }
-    } else {
-        console.log('Running in production mode');
     }
     
     if (!checkConfig()) {

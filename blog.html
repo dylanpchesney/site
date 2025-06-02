@@ -69,27 +69,37 @@
     <p>© 2024 - Dylan Chesney</p>
   </footer>
 
-  <!-- Add error handling for script loading -->
-  <script>
-    window.onerror = function(msg, url, lineNo, columnNo, error) {
-      console.error('Error: ' + msg + '\nURL: ' + url + '\nLine: ' + lineNo + '\nColumn: ' + columnNo + '\nError object: ' + JSON.stringify(error));
-      return false;
-    };
-  </script>
+  <!-- Load fallback blog posts first -->
+  <script src="blog-posts.js"></script>
   
-  <!-- Contentful Configuration -->
+  <!-- Load and initialize Contentful configuration -->
   <script type="module">
-    import contentfulModule from './contentful-config.js';
+    console.log('Loading Contentful configuration...');
     
-    // Initialize the configuration
-    contentfulModule.initializeConfig().then(() => {
-      // Make fetchBlogPosts available globally after initialization
-      window.fetchBlogPosts = contentfulModule.fetchBlogPosts;
-      // Load the main script
-      const script = document.createElement('script');
-      script.src = 'script.js';
-      document.body.appendChild(script);
-    });
+    try {
+      // Import the contentful module
+      const contentfulModule = await import('./contentful-config.js');
+      console.log('Contentful module loaded');
+      
+      // Initialize the configuration
+      await contentfulModule.initializeConfig();
+      console.log('Contentful config initialized');
+      
+      // Make fetchBlogPosts available globally
+      window.fetchBlogPosts = contentfulModule.default.fetchBlogPosts;
+      console.log('fetchBlogPosts function available globally');
+      
+    } catch (error) {
+      console.error('Error loading Contentful configuration:', error);
+      console.log('Using fallback blog posts only');
+    }
+    
+    // Load the main script
+    const script = document.createElement('script');
+    script.src = 'script.js';
+    script.onload = () => console.log('Main script loaded successfully');
+    script.onerror = (error) => console.error('Error loading main script:', error);
+    document.body.appendChild(script);
   </script>
 </body>
 </html> 

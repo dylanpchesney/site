@@ -29,33 +29,30 @@ jobs:
           echo "Checking if secrets are set..."
           if [ -n "${{ secrets.CONTENTFUL_SPACE_ID }}" ]; then
             echo "CONTENTFUL_SPACE_ID is set"
-            echo "Length of SPACE_ID: ${#CONTENTFUL_SPACE_ID}"
           else
             echo "CONTENTFUL_SPACE_ID is not set"
           fi
           if [ -n "${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}" ]; then
             echo "CONTENTFUL_DELIVERY_TOKEN is set"
-            echo "Length of DELIVERY_TOKEN: ${#CONTENTFUL_DELIVERY_TOKEN}"
           else
             echo "CONTENTFUL_DELIVERY_TOKEN is not set"
           fi
           if [ -n "${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}" ]; then
             echo "CONTENTFUL_PREVIEW_TOKEN is set"
-            echo "Length of PREVIEW_TOKEN: ${#CONTENTFUL_PREVIEW_TOKEN}"
           else
             echo "CONTENTFUL_PREVIEW_TOKEN is not set"
           fi
           
-      - name: Replace environment variables
+      - name: Create production config
         env:
           SPACE_ID: ${{ secrets.CONTENTFUL_SPACE_ID }}
           DELIVERY_TOKEN: ${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}
           PREVIEW_TOKEN: ${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}
         run: |
-          echo "Starting environment variable replacement..."
+          echo "Creating production configuration..."
           
-          # Create a Node.js script to handle the replacement
-          cat > replace.js << 'EOF'
+          # Read the complete template file and inject the production values
+          node -e "
           const fs = require('fs');
           
           // Get environment variables
@@ -63,97 +60,42 @@ jobs:
           const deliveryToken = process.env.DELIVERY_TOKEN;
           const previewToken = process.env.PREVIEW_TOKEN;
           
-          // Log the lengths of the values (not the actual values)
-          console.log('Space ID length:', spaceId ? spaceId.length : 0);
-          console.log('Delivery Token length:', deliveryToken ? deliveryToken.length : 0);
-          console.log('Preview Token length:', previewToken ? previewToken.length : 0);
+          console.log('Environment variables available:', {
+            spaceId: !!spaceId,
+            deliveryToken: !!deliveryToken,
+            previewToken: !!previewToken
+          });
           
           if (!spaceId || !deliveryToken || !previewToken) {
-            console.error('Missing environment variables');
+            console.error('Missing required environment variables');
             process.exit(1);
           }
           
-          // Create the config content
-          const configContent = [
-            '// Contentful API Configuration',
-            'const contentfulConfig = {',
-            `    space: '${spaceId}',`,
-            `    deliveryToken: '${deliveryToken}',`,
-            `    previewToken: '${previewToken}',`,
-            "    environment: 'master',",
-            '    postsPerPage: 3',
-            '};',
-            '',
-            '// Function to check if environment variables are properly set',
-            'function checkConfig() {',
-            "    console.log('Checking configuration...');",
-            "    console.log('Current hostname:', window.location.hostname);",
-            '    ',
-            "    const isProduction = window.location.hostname !== '127.0.0.1' && window.location.hostname !== 'localhost';",
-            "    console.log('Environment:', isProduction ? 'Production' : 'Development');",
-            '    ',
-            '    const missingVars = [];',
-            "    if (contentfulConfig.space === 'CONTENTFUL_SPACE_ID') missingVars.push('SPACE_ID');",
-            "    if (contentfulConfig.deliveryToken === 'CONTENTFUL_DELIVERY_TOKEN') missingVars.push('DELIVERY_TOKEN');",
-            "    if (contentfulConfig.previewToken === 'CONTENTFUL_PREVIEW_TOKEN') missingVars.push('PREVIEW_TOKEN');",
-            '    ',
-            '    if (missingVars.length > 0) {',
-            "        console.error('Missing or invalid environment variables:', missingVars.join(', '));",
-            '        return false;',
-            '    }',
-            '    return true;',
-            '}',
-            '',
-            '// Function to initialize the configuration',
-            'async function initializeConfig() {',
-            "    console.log('Initializing configuration...');",
-            '    ',
-            "    // Check if we're in development mode",
-            "    if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {",
-            '        try {',
-            "            const devConfig = await import('./contentful-config.dev.js');",
-            '            Object.assign(contentfulConfig, devConfig.contentfulConfig);',
-            "            console.log('Using development configuration');",
-            '        } catch (error) {',
-            "            console.error('Development configuration not found. Using placeholder values.');",
-            '        }',
-            '    }',
-            '    ',
-            '    if (!checkConfig()) {',
-            "        console.error('Configuration is invalid. Using fallback posts.');",
-            '        return contentfulConfig;',
-            '    }',
-            '    ',
-            "    console.log('Contentful config loaded successfully');",
-            '    return contentfulConfig;',
-            '}',
-            '',
-            '// Export the configuration and functions',
-            'export { contentfulConfig, checkConfig, initializeConfig };'
-          ].join('\n');
+          // Read the template file
+          const templateContent = fs.readFileSync('contentful-config.template.js', 'utf8');
           
-          // Write the config content
-          fs.writeFileSync('contentful-config.js', configContent);
+          // Replace placeholders with actual values
+          const productionContent = templateContent
+            .replace(/space: 'CONTENTFUL_SPACE_ID'/g, \`space: '\${spaceId}'\`)
+            .replace(/deliveryToken: 'CONTENTFUL_DELIVERY_TOKEN'/g, \`deliveryToken: '\${deliveryToken}'\`)
+            .replace(/previewToken: 'CONTENTFUL_PREVIEW_TOKEN'/g, \`previewToken: '\${previewToken}'\`);
           
-          // Verify the replacements
+          // Write the production config
+          fs.writeFileSync('contentful-config.js', productionContent);
+          
+          console.log('Production config created successfully');
+          
+          // Verify the file doesn't contain placeholders
           const finalContent = fs.readFileSync('contentful-config.js', 'utf8');
           if (finalContent.includes('CONTENTFUL_SPACE_ID') ||
               finalContent.includes('CONTENTFUL_DELIVERY_TOKEN') ||
               finalContent.includes('CONTENTFUL_PREVIEW_TOKEN')) {
-            console.error('WARNING: Some placeholders were not replaced');
-            console.error('First few lines of the file:');
-            console.error(finalContent.split('\n').slice(0, 5).join('\n'));
+            console.error('ERROR: Placeholders still found in config file');
             process.exit(1);
           }
           
-          console.log('Successfully replaced all placeholders');
-          EOF
-          
-          # Run the Node.js script
-          node replace.js
-          
-          # Add a timestamp to prevent caching
-          echo "// Last updated: $(date)" >> contentful-config.js
+          console.log('Config file validation passed');
+          "
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
