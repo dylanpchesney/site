@@ -1,251 +1,397 @@
-document.addEventListener("DOMContentLoaded", function () {
-  // Debounce helper function
-  function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
+console.log('Main script starting...');
+
+// Move the initialization code outside the DOMContentLoaded event
+console.log('Setting up initialization...');
+
+// Blog-related variables
+let currentPage = 1;
+let currentSearchQuery = '';
+let isLoading = false;
+let hasMorePosts = true;
+
+// Debounce helper function
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
       clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
+      func(...args);
     };
-  }
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
 
-  /** Headshot Expand Effect on Mobile **/
-  const image = document.querySelector(".about-image");
-  if (image) {
-    function checkImageVisibility() {
-      const rect = image.getBoundingClientRect();
-      if (rect.top < window.innerHeight * 0.8) {
-        image.classList.add("in-view");
-      }
-    }
-    const debouncedCheckImageVisibility = debounce(checkImageVisibility, 100);
-    if (window.innerWidth <= 768) {
-      document.addEventListener("scroll", debouncedCheckImageVisibility);
-      checkImageVisibility();
-    }
-  }
-
-  /** CTA Button Hover Effect **/
-  const contactButton = document.querySelector(".contact");
-  const linkedinButton = document.querySelector(".linkedin");
-  if (contactButton && linkedinButton) {
-    function triggerHoverEffect() {
-      setTimeout(() => {
-        contactButton.classList.add("hover-effect");
-        setTimeout(() => {
-          contactButton.classList.remove("hover-effect");
-          setTimeout(() => {
-            linkedinButton.classList.add("hover-effect");
-            setTimeout(() => {
-              linkedinButton.classList.remove("hover-effect");
-            }, 1750); // Slowed down (was 1000ms)
-          }, 1000); // Small delay before LinkedIn animation (was 500ms)
-        }, 1750); // Contact button fades back (was 1000ms)
-      }, 1500); // Initial delay before animation starts (was 1000ms)
-    }
-    function checkButtonVisibility() {
-      const rect = contactButton.getBoundingClientRect();
-      if (rect.top < window.innerHeight * 0.8) {
-        triggerHoverEffect();
-        document.removeEventListener("scroll", debouncedCheckButtonVisibility);
-      }
-    }
-    const debouncedCheckButtonVisibility = debounce(checkButtonVisibility, 100);
-    if (window.innerWidth > 768) {
-      setTimeout(triggerHoverEffect, 2000);
-    } else {
-      document.addEventListener("scroll", debouncedCheckButtonVisibility);
-      checkButtonVisibility();
-    }
-  }
-
-  /** Fun Mode Toggle with Dual Wave Effect **/
-  const funToggle = document.getElementById("fun-toggle");
-  const body = document.body;
-  const banner = document.querySelector(".banner img");
-  const funModeSection = document.getElementById("fun-mode-section");
-
-  if (funToggle) {
-    funToggle.addEventListener("change", function () {
-      body.classList.add("transitioning");
-
-      const waveTop = document.createElement("div");
-      const waveBottom = document.createElement("div");
-      waveTop.classList.add("wave-top");
-      waveBottom.classList.add("wave-bottom");
-      document.body.appendChild(waveTop);
-      document.body.appendChild(waveBottom);
-
-      if (body.classList.contains("fun-mode")) {
-        waveTop.classList.add("reverse");
-        waveBottom.classList.add("reverse");
-
-        setTimeout(() => {
-          body.classList.remove("fun-mode");
-          body.classList.remove("active");
-          if (banner) banner.src = "images/DYLANtest.png";
-          if (funModeSection) {
-            funModeSection.classList.remove("hidden-section");
-            funModeSection.style.opacity = "0";
-          }
-
-          setTimeout(() => {
-            waveTop.remove();
-            waveBottom.remove();
-            body.classList.remove("transitioning");
-            if (funModeSection) funModeSection.style.display = "none";
-          }, 1500);
-        }, 500);
-      } else {
-        setTimeout(() => {
-          body.classList.add("fun-mode");
-          body.classList.add("active");
-          if (banner) banner.src = "images/DCOrangeBanner.png";
-          if (funModeSection) {
-            funModeSection.style.display = "block";
-            setTimeout(() => {
-              funModeSection.style.opacity = "1";
-            }, 500);
-          }
-
-          setTimeout(() => {
-            waveTop.remove();
-            waveBottom.remove();
-            body.classList.remove("transitioning");
-          }, 1500);
-        }, 500);
+// Initialize blog functionality
+function initializeBlog() {
+  console.log('Initializing blog functionality...');
+  
+  // Initialize search functionality
+  const searchInput = document.getElementById('search-input');
+  const searchButton = document.getElementById('search-button');
+  
+  console.log('Search elements found:', {
+    searchInput: searchInput ? 'found' : 'not found',
+    searchButton: searchButton ? 'found' : 'not found'
+  });
+  
+  if (searchInput && searchButton) {
+    // Search on button click
+    searchButton.addEventListener('click', () => {
+      console.log('Search button clicked');
+      const searchQuery = searchInput.value.trim();
+      currentPage = 1;
+      hasMorePosts = true;
+      loadBlogPosts(1, searchQuery);
+    });
+    
+    // Search on Enter key
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        console.log('Search input enter pressed');
+        const searchQuery = searchInput.value.trim();
+        currentPage = 1;
+        hasMorePosts = true;
+        loadBlogPosts(1, searchQuery);
       }
     });
   }
+  
+  // Infinite scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && hasMorePosts && !isLoading) {
+        console.log('Intersection observer triggered');
+        loadBlogPosts(currentPage + 1, currentSearchQuery, true);
+      }
+    });
+  }, {
+    rootMargin: '100px'
+  });
+  
+  // Observe the last post in the timeline
+  const observeLastPost = () => {
+    const posts = document.querySelectorAll('.blog-post');
+    if (posts.length > 0) {
+      observer.observe(posts[posts.length - 1]);
+    }
+  };
+  
+  // Initial load
+  console.log('Starting initial blog post load...');
+  loadBlogPosts().then(() => {
+    console.log('Initial blog posts loaded');
+    observeLastPost();
+  });
+  
+  // Observe new posts as they're added
+  const timeline = document.querySelector('.timeline');
+  if (timeline) {
+    const timelineObserver = new MutationObserver(() => {
+      observeLastPost();
+    });
+    
+    timelineObserver.observe(timeline, {
+      childList: true
+    });
+  }
+}
 
-  /** Blog Functionality **/
-  function initializeBlog() {
-    console.log('Initializing blog...');
-    if (!document.querySelector('.blog-container')) {
-      console.log('No blog container found, skipping initialization');
+// Wait for DOM to be ready
+document.addEventListener("DOMContentLoaded", function () {
+  console.log('DOM Content Loaded');
+  initializeBlog();
+});
+
+// Also try to initialize if DOM is already loaded
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  console.log('DOM already loaded, initializing immediately');
+  initializeBlog();
+}
+
+/** Headshot Expand Effect on Mobile **/
+const image = document.querySelector(".about-image");
+if (image) {
+  function checkImageVisibility() {
+    const rect = image.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.8) {
+      image.classList.add("in-view");
+    }
+  }
+  const debouncedCheckImageVisibility = debounce(checkImageVisibility, 100);
+  if (window.innerWidth <= 768) {
+    document.addEventListener("scroll", debouncedCheckImageVisibility);
+    checkImageVisibility();
+  }
+}
+
+/** CTA Button Hover Effect **/
+const contactButton = document.querySelector(".contact");
+const linkedinButton = document.querySelector(".linkedin");
+if (contactButton && linkedinButton) {
+  function triggerHoverEffect() {
+    setTimeout(() => {
+      contactButton.classList.add("hover-effect");
+      setTimeout(() => {
+        contactButton.classList.remove("hover-effect");
+        setTimeout(() => {
+          linkedinButton.classList.add("hover-effect");
+          setTimeout(() => {
+            linkedinButton.classList.remove("hover-effect");
+          }, 1750); // Slowed down (was 1000ms)
+        }, 1000); // Small delay before LinkedIn animation (was 500ms)
+      }, 1750); // Contact button fades back (was 1000ms)
+    }, 1500); // Initial delay before animation starts (was 1000ms)
+  }
+  function checkButtonVisibility() {
+    const rect = contactButton.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.8) {
+      triggerHoverEffect();
+      document.removeEventListener("scroll", debouncedCheckButtonVisibility);
+    }
+  }
+  const debouncedCheckButtonVisibility = debounce(checkButtonVisibility, 100);
+  if (window.innerWidth > 768) {
+    setTimeout(triggerHoverEffect, 2000);
+  } else {
+    document.addEventListener("scroll", debouncedCheckButtonVisibility);
+    checkButtonVisibility();
+  }
+}
+
+/** Fun Mode Toggle with Dual Wave Effect **/
+const funToggle = document.getElementById("fun-toggle");
+const body = document.body;
+const banner = document.querySelector(".banner img");
+const funModeSection = document.getElementById("fun-mode-section");
+
+if (funToggle) {
+  funToggle.addEventListener("change", function () {
+    body.classList.add("transitioning");
+
+    const waveTop = document.createElement("div");
+    const waveBottom = document.createElement("div");
+    waveTop.classList.add("wave-top");
+    waveBottom.classList.add("wave-bottom");
+    document.body.appendChild(waveTop);
+    document.body.appendChild(waveBottom);
+
+    if (body.classList.contains("fun-mode")) {
+      waveTop.classList.add("reverse");
+      waveBottom.classList.add("reverse");
+
+      setTimeout(() => {
+        body.classList.remove("fun-mode");
+        body.classList.remove("active");
+        if (banner) banner.src = "images/DYLANtest.png";
+        if (funModeSection) {
+          funModeSection.classList.remove("hidden-section");
+          funModeSection.style.opacity = "0";
+        }
+
+        setTimeout(() => {
+          waveTop.remove();
+          waveBottom.remove();
+          body.classList.remove("transitioning");
+          if (funModeSection) funModeSection.style.display = "none";
+        }, 1500);
+      }, 500);
+    } else {
+      setTimeout(() => {
+        body.classList.add("fun-mode");
+        body.classList.add("active");
+        if (banner) banner.src = "images/DCOrangeBanner.png";
+        if (funModeSection) {
+          funModeSection.style.display = "block";
+          setTimeout(() => {
+            funModeSection.style.opacity = "1";
+          }, 500);
+        }
+
+        setTimeout(() => {
+          waveTop.remove();
+          waveBottom.remove();
+          body.classList.remove("transitioning");
+        }, 1500);
+      }, 500);
+    }
+  });
+}
+
+/** Blog Functionality **/
+async function loadBlogPosts(page = 1, searchQuery = '', append = false) {
+  if (isLoading || (!hasMorePosts && append)) {
+    console.log('Skipping loadBlogPosts - isLoading:', isLoading, 'hasMorePosts:', hasMorePosts, 'append:', append);
+    return;
+  }
+  
+  try {
+    isLoading = true;
+    console.log('Starting loadBlogPosts - page:', page, 'search:', searchQuery, 'append:', append);
+    
+    const result = await fetchBlogPosts(page, searchQuery);
+    console.log('fetchBlogPosts result:', result);
+    
+    const { posts, pagination } = result;
+    
+    console.log('Received posts:', posts);
+    console.log('Pagination info:', pagination);
+    
+    // Update current page and search query
+    currentPage = pagination.currentPage;
+    currentSearchQuery = searchQuery;
+    hasMorePosts = pagination.hasNextPage;
+    
+    // Get containers
+    const postList = document.querySelector('.post-list');
+    const timeline = document.querySelector('.timeline');
+    
+    console.log('Containers found:', { 
+      postList: postList ? 'found' : 'not found', 
+      timeline: timeline ? 'found' : 'not found' 
+    });
+    
+    if (!postList || !timeline) {
+      console.error('Required containers not found');
       return;
     }
-
-    const postList = document.getElementById('post-list');
-    const timeline = document.getElementById('timeline');
     
-    console.log('Blog posts:', blogPosts);
-    console.log('Post list element:', postList);
-    console.log('Timeline element:', timeline);
-
-    // Sort posts by date (newest first)
-    const sortedPosts = [...blogPosts].sort((a, b) => 
-      new Date(b.date) - new Date(a.date)
-    );
-
-    // Create sidebar post previews
-    sortedPosts.forEach(post => {
+    // Clear existing posts if not appending
+    if (!append) {
+      console.log('Clearing existing posts');
+      postList.innerHTML = '';
+      timeline.innerHTML = '';
+    }
+    
+    // Add posts to both sidebar and main content
+    posts.forEach(post => {
+      console.log('Creating elements for post:', post.id);
       const preview = createPostPreview(post);
-      postList.appendChild(preview);
-    });
-
-    // Create timeline posts
-    sortedPosts.forEach(post => {
       const postElement = createBlogPost(post);
+      postList.appendChild(preview);
       timeline.appendChild(postElement);
+      console.log('Post elements added to DOM');
     });
-
-    // Set first post as active after all elements are created
-    if (sortedPosts.length > 0) {
+    
+    // Set first post as active if it's the first page
+    if (page === 1 && posts.length > 0) {
       const firstPreview = postList.querySelector('.post-preview');
       const firstPost = timeline.querySelector('.blog-post');
       if (firstPreview && firstPost) {
         firstPreview.classList.add('active');
         firstPost.classList.add('active');
+        console.log('First post set as active');
       }
     }
+    
+  } catch (error) {
+    console.error('Error in loadBlogPosts:', error);
+    console.error('Error stack:', error.stack);
+  } finally {
+    isLoading = false;
+    console.log('Finished loadBlogPosts');
   }
+}
 
-  function createPostPreview(post) {
-    const preview = document.createElement('div');
-    preview.className = 'post-preview';
-    preview.dataset.postId = post.id;
+function createPostPreview(post) {
+  const preview = document.createElement('div');
+  preview.className = 'post-preview';
+  preview.dataset.postId = post.id;
 
-    preview.innerHTML = `
-      <h4>${post.shortTitle}</h4>
-      <div class="post-date">${formatDate(post.date)}</div>
+  preview.innerHTML = `
+    <h4>${post.shortTitle}</h4>
+    <div class="post-date">${formatDate(post.date)}</div>
+    <div class="post-tags">
+      ${post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')}
+    </div>
+  `;
+
+  preview.addEventListener('click', () => {
+    // Remove active class from all previews
+    document.querySelectorAll('.post-preview').forEach(p => p.classList.remove('active'));
+    // Add active class to clicked preview
+    preview.classList.add('active');
+    // Scroll to corresponding post
+    const postElement = document.querySelector(`.blog-post[data-post-id="${post.id}"]`);
+    if (postElement) {
+      postElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+
+  return preview;
+}
+
+function createBlogPost(post) {
+  const postElement = document.createElement('article');
+  postElement.className = 'blog-post';
+  postElement.dataset.postId = post.id;
+
+  // Create post header with image if available
+  let headerHtml = `
+    <h2>${post.title}</h2>
+    <div class="post-meta">
+      <span class="post-date">${formatDate(post.date)}</span>
       <div class="post-tags">
         ${post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')}
       </div>
+    </div>
+  `;
+
+  // Add featured image if available
+  if (post.featuredImage) {
+    headerHtml = `
+      <div class="post-featured-image">
+        <img src="${post.featuredImage}" alt="${post.title}" loading="lazy">
+      </div>
+      ${headerHtml}
     `;
-
-    preview.addEventListener('click', () => {
-      // Remove active class from all previews
-      document.querySelectorAll('.post-preview').forEach(p => p.classList.remove('active'));
-      // Add active class to clicked preview
-      preview.classList.add('active');
-      // Scroll to corresponding post
-      const postElement = document.querySelector(`.blog-post[data-post-id="${post.id}"]`);
-      if (postElement) {
-        postElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-
-    return preview;
   }
 
-  function createBlogPost(post) {
-    const postElement = document.createElement('article');
-    postElement.className = 'blog-post';
-    postElement.dataset.postId = post.id;
+  postElement.innerHTML = `
+    ${headerHtml}
+    <div class="post-content collapsed">
+      ${post.content}
+    </div>
+    <button class="expand-button">Show More...</button>
+  `;
 
-    const content = post.content.split('\n\n');
-    const previewContent = content[0];
-    const fullContent = content.join('\n\n');
+  const expandButton = postElement.querySelector('.expand-button');
+  const contentDiv = postElement.querySelector('.post-content');
 
-    postElement.innerHTML = `
-      <h2>${post.title}</h2>
-      <div class="post-meta">
-        <span class="post-date">${formatDate(post.date)}</span>
-        <div class="post-tags">
-          ${post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')}
-        </div>
-      </div>
-      <div class="post-content collapsed">
-        ${previewContent}
-      </div>
-      <button class="expand-button">Show More...</button>
-    `;
+  function toggleExpand(e) {
+    // Prevent if clicking a link
+    if (e && e.target.closest('a')) return;
 
-    const expandButton = postElement.querySelector('.expand-button');
-    const contentDiv = postElement.querySelector('.post-content');
-
-    function toggleExpand(e) {
-      // Prevent if clicking a link
-      if (e && e.target.closest('a')) return;
-      if (contentDiv.classList.contains('collapsed')) {
-        contentDiv.textContent = fullContent;
-        contentDiv.classList.remove('collapsed');
-        expandButton.textContent = 'Show Less';
-      } else {
-        contentDiv.textContent = previewContent;
-        contentDiv.classList.add('collapsed');
-        expandButton.textContent = 'Show More Again';
-      }
+    if (contentDiv.classList.contains('collapsed')) {
+      contentDiv.classList.remove('collapsed');
+      expandButton.textContent = 'Show Less';
+    } else {
+      contentDiv.classList.add('collapsed');
+      expandButton.textContent = 'Show More Again';
     }
-
-    expandButton.addEventListener('click', function(e) {
-      e.stopPropagation();
-      toggleExpand();
-    });
-    postElement.addEventListener('click', toggleExpand);
-
-    return postElement;
   }
 
-  function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('en-US', options);
-  }
+  expandButton.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggleExpand();
+  });
+  postElement.addEventListener('click', toggleExpand);
 
-  // Initialize blog when DOM is loaded
-  initializeBlog();
-});
+  return postElement;
+}
+
+function formatDate(dateString) {
+  // Create date object and adjust for timezone
+  const date = new Date(dateString);
+  // Add the timezone offset to ensure the date is displayed correctly
+  const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+  const adjustedDate = new Date(date.getTime() + userTimezoneOffset);
+  
+  const options = { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    timeZone: 'UTC' // Force UTC to prevent timezone conversion
+  };
+  return adjustedDate.toLocaleDateString('en-US', options);
+}
