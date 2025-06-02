@@ -47,6 +47,10 @@ jobs:
           fi
           
       - name: Replace environment variables
+        env:
+          SPACE_ID: ${{ secrets.CONTENTFUL_SPACE_ID }}
+          DELIVERY_TOKEN: ${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}
+          PREVIEW_TOKEN: ${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}
         run: |
           echo "Starting environment variable replacement..."
           
@@ -57,11 +61,26 @@ jobs:
           // Read the original file
           const content = fs.readFileSync('contentful-config.js', 'utf8');
           
+          // Get environment variables
+          const spaceId = process.env.SPACE_ID;
+          const deliveryToken = process.env.DELIVERY_TOKEN;
+          const previewToken = process.env.PREVIEW_TOKEN;
+          
+          // Log the lengths of the values (not the actual values)
+          console.log('Space ID length:', spaceId ? spaceId.length : 0);
+          console.log('Delivery Token length:', deliveryToken ? deliveryToken.length : 0);
+          console.log('Preview Token length:', previewToken ? previewToken.length : 0);
+          
+          if (!spaceId || !deliveryToken || !previewToken) {
+            console.error('Missing environment variables');
+            process.exit(1);
+          }
+          
           // Replace the placeholders with actual values
           const replaced = content
-            .replace(/'CONTENTFUL_SPACE_ID'/, `'${process.env.CONTENTFUL_SPACE_ID}'`)
-            .replace(/'CONTENTFUL_DELIVERY_TOKEN'/, `'${process.env.CONTENTFUL_DELIVERY_TOKEN}'`)
-            .replace(/'CONTENTFUL_PREVIEW_TOKEN'/, `'${process.env.CONTENTFUL_PREVIEW_TOKEN}'`);
+            .replace(/'CONTENTFUL_SPACE_ID'/, `'${spaceId}'`)
+            .replace(/'CONTENTFUL_DELIVERY_TOKEN'/, `'${deliveryToken}'`)
+            .replace(/'CONTENTFUL_PREVIEW_TOKEN'/, `'${previewToken}'`);
           
           // Write the modified content back
           fs.writeFileSync('contentful-config.js', replaced);
@@ -75,6 +94,8 @@ jobs:
           
           if (hasPlaceholders) {
             console.error('WARNING: Some placeholders were not replaced');
+            console.error('First few lines of the file:');
+            console.error(finalContent.split('\n').slice(0, 5).join('\n'));
             process.exit(1);
           }
           
