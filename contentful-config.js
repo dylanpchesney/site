@@ -34,9 +34,17 @@ async function initializeConfig() {
     // Check if we're in development mode
     if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
         try {
-            const devConfig = await import('./contentful-config.dev.js');
+            // Try to load the local development config first
+            let devConfig;
+            try {
+                devConfig = await import('./contentful-config.dev.local.js');
+                console.log('Using local development configuration');
+            } catch (error) {
+                // Fallback to the template dev config
+                devConfig = await import('./contentful-config.dev.js');
+                console.log('Using template development configuration');
+            }
             Object.assign(contentfulConfig, devConfig.contentfulConfig);
-            console.log('Using development configuration');
         } catch (error) {
             console.error('Development configuration not found. Using placeholder values.');
         }
