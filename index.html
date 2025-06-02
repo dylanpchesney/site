@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/x-icon" href="images/favicon.ico">
   
+  <!-- Preload critical images -->
+  <link rel="preload" as="image" href="images/headshot.jpg">
+  <link rel="preload" as="image" href="images/DYLANtest.png">
+  
   <!-- Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-0ZMZ5WZ968"></script>
   <script>
@@ -49,7 +53,13 @@
       </div>
     <section class="about-me">
         <div class="about-container">
-          <img src="images/headshot.jpg" alt="Dylan Chesney - headshot" class="about-image">
+          <img src="images/headshot.jpg" 
+               alt="Dylan Chesney - headshot" 
+               class="about-image"
+               width="300" 
+               height="400" 
+               decoding="async"
+               fetchpriority="high">
           <div class="about-text">
             <h3>About Me</h3>
             <p>
