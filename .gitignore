@@ -1,0 +1,26 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+contentfulkeys.env
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# ... existing code ... 
+
+CONTENTFUL_SPACE_ID=your_space_id_here
+CONTENTFUL_DELIVERY_TOKEN=your_delivery_token_here
+CONTENTFUL_PREVIEW_TOKEN=your_preview_token_here 

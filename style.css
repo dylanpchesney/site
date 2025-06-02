@@ -1,0 +1,1232 @@
+@font-face {
+  font-family: 'Avenir LT Std';
+  src: url('fonts/AvenirLTStd-Black.woff2') format('woff2'),
+       url('fonts/AvenirLTStd-Black.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir LT Std';
+  src: url('fonts/AvenirLTStd-Roman.woff2') format('woff2'),
+       url('fonts/AvenirLTStd-Roman.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Avenir LT Std';
+  src: url('fonts/AvenirLTStd-Book.woff2') format('woff2'),
+       url('fonts/AvenirLTStd-Book.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+body {
+  font-family: 'Avenir LT Std', sans-serif;
+  font-weight: normal;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  transition: background-color 1.5s ease-in-out;
+}
+
+/* Push Content Down to Prevent Footer Overlap */
+body.fun-mode main {
+  padding-bottom: 100px; /* Creates space so footer doesn't overlap */
+}
+
+/* Ensure Footer Stays at the Bottom in Fun Mode */
+body.fun-mode footer {
+  position: relative; /* Resets any absolute/fixed positioning */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  margin-top: auto; /* Pushes footer to bottom */
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #30BAFF 60%);
+}
+body.fun-mode.active {
+  background-color: #30BAFF !important; /* Ensures the background stays */
+  color: white; /* Adjust text color for better contrast */
+}
+/* Make the whole page stretch to push footer down */
+html, body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+header {
+  background: #f5f5f500;
+  padding: 1em 0;
+  position: relative;
+  top: 0;
+  z-index: 1000; /* Ensures it stays above other elements */
+  width: 100%;
+  max-width: 1222px; /* Matches banner width */
+  margin: 0 auto; /* Centers the header */
+}
+/* Glowing affect on the header avatar */
+
+@keyframes glow-animation {
+    0% {
+      filter: drop-shadow(0px 0px 5px rgba(48, 186, 255, 0.5));
+    }
+    50% {
+      filter: drop-shadow(0px 0px 25px rgba(48, 186, 255, 1));
+    }
+    100% {
+      filter: drop-shadow(0px 0px 5px rgba(48, 186, 255, 0.5));
+    }
+  }
+  /* design of the header-avatar */
+
+  .header-avatar {
+    width: 35px;
+    height: auto;
+    animation: glow-animation 7s infinite ease-in-out;
+  }
+/* iOS-Style Toggle Container */
+.toggle-container {
+  display: flex;
+  align-items: center;
+  /* position: absolute; */
+  /* top: 20px; */
+  /* right: 40px; */
+  z-index: 1001;
+}
+
+/* iOS-Style Toggle */
+.switch {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 50px;
+  height: 26px;
+  display: inline-block;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #30BAFF;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* Toggle ON State */
+input:checked + .slider {
+  background-color: #ff9800;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+
+/* Banner Change in Fun Mode */
+.banner.fun-mode img {
+  content: url("images/DCOrangeBanner.png"); /* Replace with fun banner image */
+}
+
+/* New Section That Appears in Fun Mode */
+/* Fun Mode Section - Initially Hidden */
+.hidden-section {
+  display: none;
+  max-width: 1000px;
+  margin: 0 auto; /* Changed from 30px auto to 0 auto to match other sections */
+  padding: 0 20px;
+  text-align: justify;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+
+/* Show Fun Mode Section when Fun Mode is Active */
+body.fun-mode .hidden-section {
+  display: block;
+  opacity: 1;
+  margin-top: 30px; /* Add specific top margin here instead */
+}
+
+/* Wave Effects (Covers the Screen) */
+.wave-top, .wave-bottom {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  z-index: 9999; /* Ensure it covers everything */
+  background-color: #30BAFF;
+  animation: waveIn 1.5s ease-in-out forwards; /* Slower transition */
+}
+
+/* Top Wave Starts from Top */
+.wave-top {
+  top: -50%;
+}
+
+/* Bottom Wave Starts from Bottom */
+.wave-bottom {
+  bottom: -50%;
+}
+
+/* Hide Content During Transition */
+body.transitioning * {
+  opacity: 0; /* Hide all elements */
+  transition: opacity 1s ease-in-out; /* Smooth reappearance */
+}
+
+/* Keyframe Animation for the Dual Wave Effect */
+@keyframes waveIn {
+  100% {
+    top: 0;
+    bottom: 0;
+  }
+}
+
+/* Reverse Animation (Wave Back Out to White) */
+.wave-top.reverse, .wave-bottom.reverse {
+  animation: waveOut 1.5s ease-in-out forwards;
+}
+
+@keyframes waveOut {
+  0% {
+    top: 0;
+    bottom: 0;
+  }
+  100% {
+    top: -50%;
+    bottom: -50%;
+  }
+}
+/* Navigation */
+nav ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+}
+
+nav ul li {
+  margin: 0 1em;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+}
+
+/* Main Content */
+main {
+  padding: 0 20px;
+  max-width: 1222px;
+  margin: 0 auto;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  line-height: .75;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #30BAFF 60%);
+  width: 100%;
+  padding-top: 2em;
+  padding-bottom: .1em;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-size: 0.9em;
+  color: #000000;
+}
+
+/* Change Footer Text Color in Fun Mode */
+body.fun-mode footer {
+  color: white !important;
+}
+
+/* Banner Section */
+.banner {
+  display: flex;
+  justify-content: center; /* Centers horizontally */
+  align-items: center;
+  width: 100%;
+  max-width: 1222px; /* Matches header width */
+  margin: 0 auto; /* Centers the banner */
+  padding: 0 10px; /* Prevents potential overflow */
+}
+
+/* Ensures the letters act as a clipping mask */
+.name-image {
+  width: 100%;
+  max-width: 1222px;
+  display: block;
+}
+
+/* Opener paragraph design*/
+.opener {
+  max-width: 1000px; /* Ensures text doesn't exceed 1000px */
+  margin: 0 auto; /* Centers it on the page */
+  padding: 0; /* Remove padding from opener */
+  text-align: justify; /* Keeps text aligned to the left */
+  font-size: 1em; /* Match the default body font size */
+}
+
+.opener h3 {
+  font-size: 1.2em; /* Match the about-text h3 size */
+  margin-bottom: 0.5em;
+}
+
+.opener p {
+  font-size: 1em; /* Match the about-text paragraph size */
+  line-height: 1.6; /* Match the body line height */
+}
+
+.thin-fade-line {
+  position: relative;
+  width: 110%; /* Controls line width */
+  left: -5%;
+  height: 1px; /* Adjust thickness */
+  background: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, #333 50%, rgba(0, 0, 0, 0) 100%);
+  margin: 30px auto; /* Centers the line */
+}
+
+
+/* About Me Section */
+.about-me {
+  padding: 0;  /* Remove the padding from the section */
+}
+
+/* Keep image and text side by side */
+.about-container {
+  display: flex;
+  flex-wrap: nowrap; /* Prevent stacking */
+  align-items: flex-start; /* Align top left */
+  gap: 20px; /* Space between image and text */
+  max-width: 1000px; /* Keeps content aligned with other sections */
+  margin: 0 auto; /* Centers section */
+}
+
+/* Image styling */
+.about-image {
+  max-width: 300px; /* Limits size */
+  width: 100%; /* Keeps responsiveness */
+  height: auto; /* Maintains aspect ratio */
+}
+
+/* Ensure Headshot is Visible in Fun Mode */
+body.fun-mode .about-image {
+  opacity: 1 !important; /* Forces it to be visible */
+  transform: scale(1) translateY(0) !important; /* Keeps normal size & position */
+}
+
+/* Text section */
+.about-text {
+  flex-grow: 1; /* Takes up remaining space */
+  max-width: 1000px; /* Prevents text from stretching too wide */
+  text-align: justify; /* Keeps text aligned */
+}
+/* CTA Button Styles */
+.cta-buttons {
+  display: flex;
+  gap: 100px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* Base Button Style */
+.cta-button {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 1em;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: all 0.2s ease-in-out;
+  border: 1.5px solid transparent;
+}
+
+/* Contact Me Button (Green Theme) */
+.contact {
+  color: #000000;
+  border-color: #004953;
+  background-color: white;
+  transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out, box-shadow 0.8s ease-in-out;
+}
+
+.contact:hover,
+.contact.hover-effect {
+  background-color: #004953 !important;
+  color: white !important;
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* LinkedIn Button (Blue Theme) */
+.linkedin {
+  color: #000000;
+  border-color: #0077b5;
+  background-color: white;
+  transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out, box-shadow 0.8s ease-in-out;
+}
+
+.linkedin:hover,
+.linkedin.hover-effect {
+  background-color: #0077b5 !important;
+  color: white !important;
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Ensure LinkedIn Button Text Stays Black in Fun Mode */
+body.fun-mode .linkedin {
+  color: #000000 !important; /* Force black text */
+}
+
+/* Override .hover-effect only for LinkedIn in Fun Mode */
+body.fun-mode .linkedin.hover-effect {
+  background-color: #0077b5 !important;
+  color: white !important; /* White only on hover */
+}
+
+/* Remove Visited Link Styling */
+a:visited {
+  color: inherit;
+}
+
+/* Add button shadow effect on click */
+.cta-button:active {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  transform: scale(0.98);
+}
+
+.hover-effect {
+  background-color: #004953 !important;
+  color: white !important;
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .splash-toggle-row .splash-label,
+  .splash-toggle-row .splash-arrow {
+    font-size: 0.85em !important;
+  }
+  .splash-toggle-row {
+    right: 0;
+    padding-right: 8px;
+  }
+  header,
+  footer {
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .about-container {
+    flex-wrap: nowrap; /* Prevents stacking */
+    flex-direction: column-reverse; /* Keeps layout horizontal */
+    align-items: center; /* Keeps alignment */
+    gap: 10px; /* Reduce spacing for smaller screens */
+    max-width: 100%; /* Ensures content stays within screen */
+    margin: 0 auto; /* Centers the container */
+  }
+
+  .about-image {
+    max-width: 75% !important;
+    width: auto !important;
+    height: auto !important;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    display: block !important;
+    opacity: 1 !important;
+  }
+
+  .about-text,
+  .opener,
+  .thin-fade-line,
+  .banner {
+    word-break: break-word;
+    white-space: normal;
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .banner {
+    max-width: 95%; /* Prevents overflow */
+    padding: 0 10px; /* Ensures spacing on smaller screens */
+  }
+
+  .banner img {
+    width: 100%;
+    max-width: none; /* Allows it to shrink naturally */
+  }
+  /* Ensure Footer Stays at the Bottom in Fun Mode (Only on Mobile) */
+  body.fun-mode footer {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    margin-top: auto;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #30BAFF 60%);
+  }
+
+  /* Prevent Footer from Floating in Normal Mode (Only on Mobile) */
+  body:not(.fun-mode) footer {
+    position: relative;
+    bottom: 0;
+    margin-top: auto;
+  }
+
+  /* Push Content Down in Fun Mode to Prevent Overlap (Only on Mobile) */
+  body.fun-mode main {
+    padding-bottom: 100px;
+  }
+
+  /* Home page only: text and layout fixes */
+  .about-text,
+  .opener,
+  .thin-fade-line,
+  .banner {
+    word-break: break-word;
+    white-space: normal;
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  /* Mini CTA buttons in a row */
+  .cta-buttons {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .cta-button {
+    min-width: 90px;
+    max-width: 120px;
+    width: auto;
+    font-size: 1em;
+    padding: 8px 0;
+    border-radius: 6px;
+    text-align: center;
+    flex: 1 1 auto;
+  }
+  /* Always show about image */
+  .about-image {
+    opacity: 1 !important;
+    display: block !important;
+  }
+  /* Hide Splash text and arrow on mobile */
+  .splash-label,
+  .splash-arrow {
+    display: none !important;
+  }
+}
+
+/* Blog Styles */
+.blog-container {
+  display: flex;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: calc(100vh - 400px); /* Ensure minimum height to push footer down */
+  flex: 1; /* Allow container to grow and push footer down */
+}
+
+/* Sidebar Styles */
+.blog-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  background: #fff !important;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-radius: 8px;
+  padding: 20px;
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+}
+
+.sidebar-header {
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.post-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.post-preview {
+  padding: 15px;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #eee;
+}
+
+.post-preview:hover {
+  transform: translateX(5px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post-preview.active {
+  border-color: #30BAFF;
+  background: #f0f9ff;
+}
+
+.post-preview h4 {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.post-date {
+  font-size: 0.85em;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.post-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.post-tag {
+  font-size: 0.75em;
+  padding: 1.5px 7px 1.5px 7px;
+  background: #30BAFF !important;
+  border-radius: 6px !important;
+  color: #fff !important;
+  font-weight: normal;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1.1;
+  margin-top: 0;
+  margin-bottom: 0;
+  border: none;
+  box-shadow: none;
+}
+
+/* Main Content Area */
+.blog-content {
+  flex-grow: 1;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.blog-post {
+  border: 1px solid #eee;
+  background: white;
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.blog-post h2 {
+  margin: 0 0 15px 0;
+  color: #333;
+}
+
+.blog-post .post-meta {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  color: #666;
+  font-size: 0.9em;
+  align-items: baseline;
+}
+
+.blog-post .post-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.blog-post .post-date {
+  display: flex;
+  align-items: center;
+}
+
+.blog-post .post-content {
+  line-height: 1.6;
+  color: #444;
+}
+
+.blog-post .post-content.collapsed {
+  max-height: 100px;
+  overflow: hidden;
+  position: relative;
+}
+
+.blog-post .post-content.collapsed::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: linear-gradient(transparent, white);
+}
+
+/* Micro-Blog Sidebar Icon and Title */
+.microblog-sidebar-icon {
+  height: 38px;
+  width: auto;
+  margin-bottom: 8px;
+  margin-top: 2px;
+  margin-left: 2px;
+}
+.microblog-title {
+  font-size: 1.25em;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 10px;
+  margin-left: 2px;
+}
+
+/* Expand Button as Blue Bold Link */
+.expand-button {
+  display: inline;
+  margin-top: 18px;
+  padding: 0;
+  background: none;
+  color: #30BAFF;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: bold;
+  box-shadow: none;
+  letter-spacing: 0.2px;
+  transition: color 0.2s;
+  vertical-align: baseline;
+}
+.expand-button:hover {
+  color: #0099ff;
+  text-decoration: underline;
+  background: none;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Fun Mode Styles for Blog */
+body.fun-mode .blog-sidebar {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+body.fun-mode .post-preview {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+body.fun-mode .post-preview.active {
+  background: rgba(48, 186, 255, 0.2);
+}
+
+body.fun-mode .blog-post {
+  background: #ffffff !important;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Ensure Footer Stays at Bottom for Blog Page */
+body:has(.blog-container) {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body:has(.blog-container) main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+body:has(.blog-container) footer {
+  position: relative;
+  margin-top: auto;
+}
+
+/* Fun Mode Footer Adjustments for Blog */
+body.fun-mode:has(.blog-container) footer {
+  position: relative;
+  margin-top: auto;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #30BAFF 60%);
+}
+
+/* Responsive Design for Blog */
+@media (max-width: 768px) {
+  .blog-container {
+    flex-direction: column;
+    padding: 10px;
+    min-height: calc(100vh - 300px); /* Adjust for mobile */
+  }
+
+  .blog-sidebar {
+    width: 100%;
+    position: static;
+    margin-bottom: 20px;
+  }
+
+  .post-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 10px;
+  }
+
+  .post-preview {
+    margin-bottom: 0;
+  }
+
+  .blog-content {
+    max-width: 100%;
+  }
+}
+
+/* Micro-Blog CTA Button (Blue Theme) */
+.microblog {
+  color: #000000;
+  border-color: #30BAFF;
+  background-color: white;
+  transition: background-color 0.8s, color 0.8s, box-shadow 0.8s;
+}
+
+.microblog:hover,
+.microblog.hover-effect {
+  background-color: #30BAFF !important;
+  color: white !important;
+  box-shadow: 0px 4px 5px rgba(0, 0, 0, 0.3);
+}
+
+body.fun-mode .microblog {
+  color: #000000 !important;
+}
+
+body.fun-mode .microblog.hover-effect {
+  background-color: #30BAFF !important;
+  color: white !important;
+}
+
+/* Splash Arrow Text */
+.splash-arrow-text {
+  color: #ff9800;
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-right: 12px;
+  letter-spacing: 0.5px;
+  user-select: none;
+  display: flex;
+  align-items: center;
+}
+.splash-arrow-text .arrow {
+  font-size: 1.2em;
+  margin-left: 2px;
+}
+
+/* Fun Mode: Micro-Blog CTA Border Orange */
+body.fun-mode .microblog {
+  border-color: #ff9800 !important;
+  color: #000000 !important;
+}
+body.fun-mode .microblog.hover-effect {
+  background-color: #ff9800 !important;
+  color: white !important;
+}
+
+/* Fun Mode: Blog Sidebar Background and Selected Post */
+body.fun-mode .blog-sidebar {
+  background: #fff3e0 !important;
+}
+body.fun-mode .post-preview.active {
+  border-color: #ff9800 !important;
+  background: #ffe0b2 !important;
+}
+
+/* Blog Sidebar: Always White Background, Orange Border, Drop Shadow */
+.blog-sidebar {
+  background: #fff !important;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-radius: 8px;
+}
+
+/* Blog Post: Revert to previous border style */
+.blog-post {
+  border: 1px solid #eee;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Fun Mode: Blog Sidebar stays white, selected post is orange */
+body.fun-mode .blog-sidebar {
+  background: #fff !important;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+body.fun-mode .post-preview.active {
+  border-color: #ff9800 !important;
+  background: #ffe0b2 !important;
+}
+
+.splash-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: absolute;
+  top: 50%;
+  right: 40px;
+  transform: translateY(-50%);
+  margin: 0;
+}
+.splash-label, .splash-arrow {
+  vertical-align: middle;
+  display: inline-block;
+}
+.splash-label {
+  color: #ff9800;
+  font-weight: bold;
+  font-size: 1.2em;
+  letter-spacing: 0.2px;
+  user-select: none;
+  line-height: 1;
+}
+.splash-arrow {
+  color: #ff9800;
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-left: 2px;
+  user-select: none;
+  line-height: 1;
+}
+
+/* Remove old .splash-arrow-text styles if present */
+.splash-arrow-text { display: none !important; }
+
+.splash-toggle-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+  padding: 18px 40px 0 0;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .banner,
+  .blog-container,
+  .blog-sidebar,
+  .blog-content {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+  html, body {
+    overflow-x: hidden;
+  }
+}
+
+/* Blog Loading and Error States */
+.loading, .error, .no-posts {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}
+
+.error {
+  color: #dc3545;
+}
+
+.no-posts {
+  color: #666;
+  font-style: italic;
+}
+
+/* Blog Post Featured Image */
+.post-featured-image {
+  margin: -25px -25px 20px -25px;
+  border-radius: 8px 8px 0 0;
+  overflow: hidden;
+  max-height: 400px;
+}
+
+.post-featured-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Rich Text Content Styles */
+.post-content {
+  line-height: 1.6;
+  color: #444;
+}
+
+.post-content p {
+  margin-bottom: 1em;
+}
+
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
+  margin: 1.5em 0 0.5em;
+  line-height: 1.3;
+  color: #333;
+}
+
+.post-content h1 { font-size: 2em; }
+.post-content h2 { font-size: 1.75em; }
+.post-content h3 { font-size: 1.5em; }
+.post-content h4 { font-size: 1.25em; }
+.post-content h5 { font-size: 1.1em; }
+.post-content h6 { font-size: 1em; }
+
+.post-content ul,
+.post-content ol {
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.post-content li {
+  margin-bottom: 0.5em;
+}
+
+.post-content blockquote {
+  margin: 1.5em 0;
+  padding: 1em 1.5em;
+  border-left: 4px solid #30BAFF;
+  background: #f8f9fa;
+  font-style: italic;
+}
+
+.post-content hr {
+  margin: 2em 0;
+  border: none;
+  border-top: 2px solid #eee;
+}
+
+.post-content figure {
+  margin: 1.5em 0;
+  text-align: center;
+}
+
+.post-content figure img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.post-content figcaption {
+  margin-top: 0.5em;
+  font-size: 0.9em;
+  color: #666;
+  font-style: italic;
+}
+
+.post-content table {
+  width: 100%;
+  margin: 1.5em 0;
+  border-collapse: collapse;
+}
+
+.post-content th,
+.post-content td {
+  padding: 0.75em;
+  border: 1px solid #ddd;
+}
+
+.post-content th {
+  background: #f8f9fa;
+  font-weight: bold;
+}
+
+.post-content tr:nth-child(even) {
+  background: #f8f9fa;
+}
+
+.post-content code {
+  background: #f1f1f1;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.post-content a {
+  color: #30BAFF;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.post-content a:hover {
+  color: #0099ff;
+  text-decoration: underline;
+}
+
+.post-content strong { font-weight: bold; }
+.post-content em { font-style: italic; }
+.post-content u { text-decoration: underline; }
+.post-content s { text-decoration: line-through; }
+.post-content sup { vertical-align: super; font-size: smaller; }
+.post-content sub { vertical-align: sub; font-size: smaller; }
+
+/* Search Bar Styles */
+.search-container {
+  margin: 20px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9em;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #30BAFF;
+}
+
+.search-button {
+  padding: 8px 16px;
+  background: #30BAFF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-button:hover {
+  background: #0099ff;
+}
+
+/* Pagination Styles */
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 0;
+}
+
+.pagination-button {
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 0.9em;
+}
+
+.pagination-button:hover {
+  background: #f0f9ff;
+  border-color: #30BAFF;
+}
+
+.pagination-button.active {
+  background: #30BAFF;
+  color: white;
+  border-color: #30BAFF;
+}
+
+.pagination-button:disabled {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  border-color: #ddd;
+}
+
+.pagination-info {
+  display: flex;
+  align-items: center;
+  font-size: 0.9em;
+  color: #666;
+}
+
+/* Fun Mode Styles */
+body.fun-mode .search-button {
+  background: #ff9800;
+}
+
+body.fun-mode .search-button:hover {
+  background: #f57c00;
+}
+
+body.fun-mode .search-input:focus {
+  border-color: #ff9800;
+}
+
+body.fun-mode .pagination-button:hover {
+  background: #fff3e0;
+  border-color: #ff9800;
+}
+
+body.fun-mode .pagination-button.active {
+  background: #ff9800;
+  border-color: #ff9800;
+}
