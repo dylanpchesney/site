@@ -19,6 +19,13 @@ A modern personal website with an integrated blog powered by Contentful CMS.
 
 ### Contentful Setup
 
+#### Option 1: Automated Setup (Recommended)
+```bash
+npm run setup
+```
+This interactive script will guide you through setting up your local development configuration.
+
+#### Option 2: Manual Setup
 1. **Copy the development config template:**
    ```bash
    cp contentful-config.dev.js contentful-config.dev.local.js

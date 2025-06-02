@@ -1,5 +1,28 @@
 {
+  "name": "dylan-chesney-website",
+  "version": "1.0.0",
+  "description": "Dylan Chesney's personal website with Contentful-powered blog",
+  "main": "index.html",
+  "scripts": {
+    "setup": "node setup-local.js",
+    "dev": "echo 'Please use a local server like Live Server for VS Code'",
+    "build": "echo 'This is a static site - no build process needed'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dylanpchesney/site.git"
+  },
+  "author": "Dylan Chesney",
+  "license": "MIT",
   "dependencies": {
     "dotenv": "^16.5.0"
-  }
+  },
+  "devDependencies": {},
+  "keywords": [
+    "personal-website",
+    "blog",
+    "contentful",
+    "vanilla-js",
+    "github-pages"
+  ]
 }
