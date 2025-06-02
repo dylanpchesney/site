@@ -474,9 +474,47 @@ function createBlogPost(post) {
     expandButton.textContent = content.classList.contains('collapsed') ? 'Show More' : 'Show Less';
   });
   
+  // Create like/dislike section
+  const interactionSection = document.createElement('div');
+  interactionSection.className = 'post-interactions';
+  
+  // Get current stats
+  const stats = window.blogAnalytics ? window.blogAnalytics.getStats(post.id) : { likes: 0, dislikes: 0 };
+  const userVote = window.blogAnalytics ? window.blogAnalytics.getUserVote(post.id) : null;
+  
+  interactionSection.innerHTML = `
+    <div class="interaction-buttons">
+      <button class="like-button ${userVote === 'like' ? 'active' : ''}" data-post-id="${post.id}">
+        👍 <span class="like-count">${stats.likes}</span>
+      </button>
+      <button class="dislike-button ${userVote === 'dislike' ? 'active' : ''}" data-post-id="${post.id}">
+        👎 <span class="dislike-count">${stats.dislikes}</span>
+      </button>
+    </div>
+  `;
+  
+  // Add event listeners for like/dislike buttons
+  const likeButton = interactionSection.querySelector('.like-button');
+  const dislikeButton = interactionSection.querySelector('.dislike-button');
+  
+  likeButton.addEventListener('click', () => {
+    if (window.blogAnalytics) {
+      const newStats = window.blogAnalytics.addInteraction(post.id, 'like');
+      updateInteractionButtons(post.id, newStats);
+    }
+  });
+  
+  dislikeButton.addEventListener('click', () => {
+    if (window.blogAnalytics) {
+      const newStats = window.blogAnalytics.addInteraction(post.id, 'dislike');
+      updateInteractionButtons(post.id, newStats);
+    }
+  });
+  
   postElement.appendChild(title);
   postElement.appendChild(meta);
   postElement.appendChild(content);
+  postElement.appendChild(interactionSection);
   postElement.appendChild(expandButton);
   
   console.log('Created blog post element:', postElement);
@@ -497,4 +535,22 @@ function formatDate(dateString) {
     timeZone: 'UTC' // Force UTC to prevent timezone conversion
   };
   return adjustedDate.toLocaleDateString('en-US', options);
+}
+
+// Helper function to update interaction buttons
+function updateInteractionButtons(postId, stats) {
+  const postElement = document.querySelector(`[data-post-id="${postId}"]`).closest('.blog-post');
+  const likeButton = postElement.querySelector('.like-button');
+  const dislikeButton = postElement.querySelector('.dislike-button');
+  const likeCount = postElement.querySelector('.like-count');
+  const dislikeCount = postElement.querySelector('.dislike-count');
+  
+  // Update counts
+  likeCount.textContent = stats.likes;
+  dislikeCount.textContent = stats.dislikes;
+  
+  // Update active states
+  const userVote = window.blogAnalytics.getUserVote(postId);
+  likeButton.classList.toggle('active', userVote === 'like');
+  dislikeButton.classList.toggle('active', userVote === 'dislike');
 }

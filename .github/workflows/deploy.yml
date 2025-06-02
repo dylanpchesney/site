@@ -28,17 +28,17 @@ jobs:
         run: |
           echo "Checking if secrets are set..."
           if [ -n "${{ secrets.CONTENTFUL_SPACE_ID }}" ]; then
-            echo "CONTENTFUL_SPACE_ID is set"
+            echo "CONTENTFUL_SPACE_ID is set (length: ${#{{ secrets.CONTENTFUL_SPACE_ID }}})"
           else
             echo "CONTENTFUL_SPACE_ID is not set"
           fi
           if [ -n "${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}" ]; then
-            echo "CONTENTFUL_DELIVERY_TOKEN is set"
+            echo "CONTENTFUL_DELIVERY_TOKEN is set (length: ${#{{ secrets.CONTENTFUL_DELIVERY_TOKEN }}})"
           else
             echo "CONTENTFUL_DELIVERY_TOKEN is not set"
           fi
           if [ -n "${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}" ]; then
-            echo "CONTENTFUL_PREVIEW_TOKEN is set"
+            echo "CONTENTFUL_PREVIEW_TOKEN is set (length: ${#{{ secrets.CONTENTFUL_PREVIEW_TOKEN }}})"
           else
             echo "CONTENTFUL_PREVIEW_TOKEN is not set"
           fi

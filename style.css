@@ -1276,3 +1276,90 @@ body.fun-mode .pagination-button.active {
   background: #ff9800;
   border-color: #ff9800;
 }
+
+/* Blog Post Interaction Buttons */
+.post-interactions {
+  margin: 15px 0 10px 0;
+  padding: 10px 0;
+  border-top: 1px solid #eee;
+}
+
+.interaction-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.like-button,
+.dislike-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 2px solid #ddd;
+  border-radius: 20px;
+  background: white;
+  color: #666;
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.like-button:hover {
+  border-color: #4CAF50;
+  color: #4CAF50;
+  background: #f1f8e9;
+}
+
+.dislike-button:hover {
+  border-color: #f44336;
+  color: #f44336;
+  background: #fde7e7;
+}
+
+.like-button.active {
+  border-color: #4CAF50;
+  background: #4CAF50;
+  color: white;
+}
+
+.dislike-button.active {
+  border-color: #f44336;
+  background: #f44336;
+  color: white;
+}
+
+.like-count,
+.dislike-count {
+  font-weight: bold;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Fun Mode Styles for Interaction Buttons */
+body.fun-mode .like-button:hover {
+  border-color: #ff9800;
+  color: #ff9800;
+  background: #fff3e0;
+}
+
+body.fun-mode .like-button.active {
+  border-color: #ff9800;
+  background: #ff9800;
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .interaction-buttons {
+    justify-content: center;
+  }
+  
+  .like-button,
+  .dislike-button {
+    padding: 4px 8px;
+    font-size: 0.75em;
+    gap: 4px;
+  }
+}
