@@ -1,8 +1,8 @@
 // Contentful API Configuration
 const contentfulConfig = {
-    space: 'CONTENTFUL_SPACE_ID',
-    deliveryToken: 'CONTENTFUL_DELIVERY_TOKEN',
-    previewToken: 'CONTENTFUL_PREVIEW_TOKEN',
+    space: 'sapssgguac2u',
+    deliveryToken: 'VqrUc-rft1ShXcch0N5oa3uVKeFfJAGLeKCSEARPyHg',
+    previewToken: 'ARZCwfccwWDxDbUpVZvq2FU6A982LoeMqddYdKnpwr4',
     environment: 'master',
     postsPerPage: 3
 };
