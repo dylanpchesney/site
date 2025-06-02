@@ -51,70 +51,28 @@ jobs:
         run: |
           echo "Creating production configuration..."
           
-          # Read the complete template file and inject the production values
-          node -e "
-          const fs = require('fs');
+          # Copy template to production config
+          cp contentful-config.template.js contentful-config.js
           
-          // Get environment variables
-          const spaceId = process.env.SPACE_ID;
-          const deliveryToken = process.env.DELIVERY_TOKEN;
-          const previewToken = process.env.PREVIEW_TOKEN;
+          echo "Before replacement - checking placeholders:"
+          grep -n "CONTENTFUL_" contentful-config.js | head -5
           
-          console.log('Environment variables available:', {
-            spaceId: !!spaceId,
-            deliveryToken: !!deliveryToken,
-            previewToken: !!previewToken
-          });
+          # Use sed for reliable replacement
+          sed -i "s/'CONTENTFUL_SPACE_ID'/'$SPACE_ID'/g" contentful-config.js
+          sed -i "s/'CONTENTFUL_DELIVERY_TOKEN'/'$DELIVERY_TOKEN'/g" contentful-config.js
+          sed -i "s/'CONTENTFUL_PREVIEW_TOKEN'/'$PREVIEW_TOKEN'/g" contentful-config.js
           
-          if (!spaceId || !deliveryToken || !previewToken) {
-            console.error('Missing required environment variables');
-            process.exit(1);
-          }
+          echo "After replacement - checking for remaining placeholders:"
+          if grep -q "CONTENTFUL_" contentful-config.js; then
+            echo "ERROR: Placeholders still found:"
+            grep -n "CONTENTFUL_" contentful-config.js
+            exit 1
+          else
+            echo "SUCCESS: All placeholders replaced"
+          fi
           
-          // Read the template file
-          const templateContent = fs.readFileSync('contentful-config.template.js', 'utf8');
-          
-          // Replace placeholders with actual values using more specific patterns
-          let productionContent = templateContent;
-          
-          // Replace each placeholder individually with more specific patterns
-          productionContent = productionContent.replace(/space:\s*['\"]CONTENTFUL_SPACE_ID['\"]/g, \`space: '\${spaceId}'\`);
-          productionContent = productionContent.replace(/deliveryToken:\s*['\"]CONTENTFUL_DELIVERY_TOKEN['\"]/g, \`deliveryToken: '\${deliveryToken}'\`);
-          productionContent = productionContent.replace(/previewToken:\s*['\"]CONTENTFUL_PREVIEW_TOKEN['\"]/g, \`previewToken: '\${previewToken}'\`);
-          
-          // Also replace any remaining standalone placeholder strings
-          productionContent = productionContent.replace(/['\"]CONTENTFUL_SPACE_ID['\"]/g, \`'\${spaceId}'\`);
-          productionContent = productionContent.replace(/['\"]CONTENTFUL_DELIVERY_TOKEN['\"]/g, \`'\${deliveryToken}'\`);
-          productionContent = productionContent.replace(/['\"]CONTENTFUL_PREVIEW_TOKEN['\"]/g, \`'\${previewToken}'\`);
-          
-          // Write the production config
-          fs.writeFileSync('contentful-config.js', productionContent);
-          
-          console.log('Production config created successfully');
-          
-          // Verify the file doesn't contain placeholders
-          const finalContent = fs.readFileSync('contentful-config.js', 'utf8');
-          const placeholdersRemaining = [];
-          
-          if (finalContent.includes('CONTENTFUL_SPACE_ID')) {
-            placeholdersRemaining.push('CONTENTFUL_SPACE_ID');
-          }
-          if (finalContent.includes('CONTENTFUL_DELIVERY_TOKEN')) {
-            placeholdersRemaining.push('CONTENTFUL_DELIVERY_TOKEN');
-          }
-          if (finalContent.includes('CONTENTFUL_PREVIEW_TOKEN')) {
-            placeholdersRemaining.push('CONTENTFUL_PREVIEW_TOKEN');
-          }
-          
-          if (placeholdersRemaining.length > 0) {
-            console.error('ERROR: Placeholders still found in config file:', placeholdersRemaining);
-            console.log('First 20 lines of config file:');
-            console.log(finalContent.split('\n').slice(0, 20).join('\n'));
-            process.exit(1);
-          }
-          
-          console.log('Config file validation passed - no placeholders found');
-          "
+          echo "First 10 lines of config:"
+          head -10 contentful-config.js
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
