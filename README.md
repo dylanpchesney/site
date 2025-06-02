@@ -121,3 +121,4 @@ This site is configured to deploy automatically to GitHub Pages using GitHub Act
 - **Contentful CMS**: Headless content management
 - **GitHub Pages**: Free hosting with custom domain support
 - **GitHub Actions**: Automated deployment with secret management
+# Trigger workflow test
