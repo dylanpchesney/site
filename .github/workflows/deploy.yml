@@ -50,32 +50,46 @@ jobs:
         run: |
           echo "Starting environment variable replacement..."
           
-          # Create a backup of the original file
-          cp contentful-config.js contentful-config.js.bak
+          # Create a Node.js script to handle the replacement
+          cat > replace.js << 'EOF'
+          const fs = require('fs');
           
-          # Create a temporary file with the new content
-          cat > temp.js << 'EOF'
-          // Contentful API Configuration
-          const contentfulConfig = {
-              space: '${{ secrets.CONTENTFUL_SPACE_ID }}',
-              deliveryToken: '${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}',
-              previewToken: '${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}',
-              environment: 'master',
-              postsPerPage: 3
-          };
+          // Read the original file
+          const content = fs.readFileSync('contentful-config.js', 'utf8');
+          
+          // Replace the placeholders with actual values
+          const replaced = content
+            .replace(/'CONTENTFUL_SPACE_ID'/, `'${process.env.CONTENTFUL_SPACE_ID}'`)
+            .replace(/'CONTENTFUL_DELIVERY_TOKEN'/, `'${process.env.CONTENTFUL_DELIVERY_TOKEN}'`)
+            .replace(/'CONTENTFUL_PREVIEW_TOKEN'/, `'${process.env.CONTENTFUL_PREVIEW_TOKEN}'`);
+          
+          // Write the modified content back
+          fs.writeFileSync('contentful-config.js', replaced);
+          
+          // Verify the replacements
+          const finalContent = fs.readFileSync('contentful-config.js', 'utf8');
+          const hasPlaceholders = 
+            finalContent.includes('CONTENTFUL_SPACE_ID') ||
+            finalContent.includes('CONTENTFUL_DELIVERY_TOKEN') ||
+            finalContent.includes('CONTENTFUL_PREVIEW_TOKEN');
+          
+          if (hasPlaceholders) {
+            console.error('WARNING: Some placeholders were not replaced');
+            process.exit(1);
+          }
+          
+          console.log('Successfully replaced all placeholders');
           EOF
           
-          # Append the rest of the file, skipping the first 7 lines
-          tail -n +7 contentful-config.js.bak >> temp.js
-          
-          # Move the temporary file to the final location
-          mv temp.js contentful-config.js
+          # Run the Node.js script
+          node replace.js
           
           # Verify the replacements
           echo "Verifying replacements..."
           if grep -q "CONTENTFUL_SPACE_ID" contentful-config.js; then
             echo "WARNING: SPACE_ID placeholder still present"
             cat contentful-config.js | head -n 5
+            exit 1
           else
             echo "SPACE_ID replaced successfully"
           fi
@@ -83,6 +97,7 @@ jobs:
           if grep -q "CONTENTFUL_DELIVERY_TOKEN" contentful-config.js; then
             echo "WARNING: DELIVERY_TOKEN placeholder still present"
             cat contentful-config.js | head -n 5
+            exit 1
           else
             echo "DELIVERY_TOKEN replaced successfully"
           fi
@@ -90,6 +105,7 @@ jobs:
           if grep -q "CONTENTFUL_PREVIEW_TOKEN" contentful-config.js; then
             echo "WARNING: PREVIEW_TOKEN placeholder still present"
             cat contentful-config.js | head -n 5
+            exit 1
           else
             echo "PREVIEW_TOKEN replaced successfully"
           fi
