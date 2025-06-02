@@ -1,34 +1,11 @@
 // Contentful API Configuration
-let contentfulConfig;
-
-// Check if we're in development mode (LiveServer)
-if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
-    // In development, try to load the dev config
-    try {
-        const devConfig = await import('./contentful-config.dev.js');
-        contentfulConfig = devConfig.contentfulConfig;
-        console.log('Using development configuration');
-    } catch (error) {
-        console.error('Development configuration not found. Please create contentful-config.dev.js with your API keys.');
-        // Fallback to placeholder values
-        contentfulConfig = {
-            space: 'CONTENTFUL_SPACE_ID',
-            deliveryToken: 'CONTENTFUL_DELIVERY_TOKEN',
-            previewToken: 'CONTENTFUL_PREVIEW_TOKEN',
-            environment: 'master',
-            postsPerPage: 3
-        };
-    }
-} else {
-    // In production, use placeholder values that will be replaced by GitHub Actions
-    contentfulConfig = {
-        space: 'CONTENTFUL_SPACE_ID',
-        deliveryToken: 'CONTENTFUL_DELIVERY_TOKEN',
-        previewToken: 'CONTENTFUL_PREVIEW_TOKEN',
-        environment: 'master',
-        postsPerPage: 3
-    };
-}
+const contentfulConfig = {
+    space: 'CONTENTFUL_SPACE_ID',
+    deliveryToken: 'CONTENTFUL_DELIVERY_TOKEN',
+    previewToken: 'CONTENTFUL_PREVIEW_TOKEN',
+    environment: 'master',
+    postsPerPage: 3
+};
 
 console.log('Contentful config loaded');
 

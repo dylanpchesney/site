@@ -19,6 +19,9 @@ build/
 .DS_Store
 Thumbs.db
 
+# Development configuration
+contentful-config.dev.js
+
 # ... existing code ... 
 
 CONTENTFUL_SPACE_ID=your_space_id_here

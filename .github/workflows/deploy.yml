@@ -14,6 +14,29 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install -g replace-in-file
+
+      - name: Replace environment variables
+        run: |
+          replace-in-file \
+            --files "contentful-config.js" \
+            --from "CONTENTFUL_SPACE_ID" \
+            --to "${{ secrets.CONTENTFUL_SPACE_ID }}"
+          replace-in-file \
+            --files "contentful-config.js" \
+            --from "CONTENTFUL_DELIVERY_TOKEN" \
+            --to "${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}"
+          replace-in-file \
+            --files "contentful-config.js" \
+            --from "CONTENTFUL_PREVIEW_TOKEN" \
+            --to "${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}"
+
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
