@@ -77,14 +77,14 @@ jobs:
           }
           
           // Create the new configuration object
-          const configContent = `// Contentful API Configuration
-const contentfulConfig = {
-    space: '${spaceId}',
-    deliveryToken: '${deliveryToken}',
-    previewToken: '${previewToken}',
-    environment: 'master',
-    postsPerPage: 3
-};`;
+          const configContent = '// Contentful API Configuration\n' +
+            'const contentfulConfig = {\n' +
+            '    space: \'' + spaceId + '\',\n' +
+            '    deliveryToken: \'' + deliveryToken + '\',\n' +
+            '    previewToken: \'' + previewToken + '\',\n' +
+            '    environment: \'master\',\n' +
+            '    postsPerPage: 3\n' +
+            '};';
           
           // Get the rest of the file content
           const restOfFile = content.split('\n').slice(7).join('\n');
