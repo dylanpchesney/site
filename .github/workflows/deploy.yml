@@ -53,12 +53,8 @@ jobs:
           # Create a backup of the original file
           cp contentful-config.js contentful-config.js.bak
           
-          # Show the original file content
-          echo "Original file content:"
-          head -n 5 contentful-config.js
-          
-          # Create a new file with the correct values
-          cat > contentful-config.js << 'EOF'
+          # Create a temporary file with the new content
+          cat > temp.js << 'EOF'
           // Contentful API Configuration
           const contentfulConfig = {
               space: '${{ secrets.CONTENTFUL_SPACE_ID }}',
@@ -70,28 +66,30 @@ jobs:
           EOF
           
           # Append the rest of the file, skipping the first 7 lines
-          tail -n +7 contentful-config.js.bak >> contentful-config.js
+          tail -n +7 contentful-config.js.bak >> temp.js
           
-          # Show the modified file content
-          echo "Modified file content:"
-          head -n 5 contentful-config.js
+          # Move the temporary file to the final location
+          mv temp.js contentful-config.js
           
           # Verify the replacements
           echo "Verifying replacements..."
           if grep -q "CONTENTFUL_SPACE_ID" contentful-config.js; then
             echo "WARNING: SPACE_ID placeholder still present"
+            cat contentful-config.js | head -n 5
           else
             echo "SPACE_ID replaced successfully"
           fi
           
           if grep -q "CONTENTFUL_DELIVERY_TOKEN" contentful-config.js; then
             echo "WARNING: DELIVERY_TOKEN placeholder still present"
+            cat contentful-config.js | head -n 5
           else
             echo "DELIVERY_TOKEN replaced successfully"
           fi
           
           if grep -q "CONTENTFUL_PREVIEW_TOKEN" contentful-config.js; then
             echo "WARNING: PREVIEW_TOKEN placeholder still present"
+            cat contentful-config.js | head -n 5
           else
             echo "PREVIEW_TOKEN replaced successfully"
           fi
