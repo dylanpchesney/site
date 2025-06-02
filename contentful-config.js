@@ -16,6 +16,13 @@ function checkConfig() {
         previewToken: contentfulConfig.previewToken ? 'Set' : 'Not set'
     });
     
+    // Add detailed debugging
+    console.log('Raw values:', {
+        space: contentfulConfig.space,
+        deliveryToken: contentfulConfig.deliveryToken,
+        previewToken: contentfulConfig.previewToken
+    });
+    
     const missingVars = [];
     if (contentfulConfig.space === 'CONTENTFUL_SPACE_ID') missingVars.push('SPACE_ID');
     if (contentfulConfig.deliveryToken === 'CONTENTFUL_DELIVERY_TOKEN') missingVars.push('DELIVERY_TOKEN');
@@ -23,6 +30,7 @@ function checkConfig() {
     
     if (missingVars.length > 0) {
         console.error('Missing or invalid environment variables:', missingVars.join(', '));
+        console.error('This might indicate that the GitHub Actions workflow did not properly replace the placeholders.');
         return false;
     }
     return true;
