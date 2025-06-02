@@ -79,12 +79,12 @@
   
   <!-- Contentful Configuration -->
   <script type="module">
-    import { contentfulConfig, initializeConfig, fetchBlogPosts } from './contentful-config.js';
+    import contentfulModule from './contentful-config.js';
     
     // Initialize the configuration
-    initializeConfig().then(() => {
+    contentfulModule.initializeConfig().then(() => {
       // Make fetchBlogPosts available globally after initialization
-      window.fetchBlogPosts = fetchBlogPosts;
+      window.fetchBlogPosts = contentfulModule.fetchBlogPosts;
       // Load the main script
       const script = document.createElement('script');
       script.src = 'script.js';

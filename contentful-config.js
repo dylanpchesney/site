@@ -312,8 +312,12 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
     }
 }
 
-// Export the configuration and initialization function
-export { contentfulConfig, initializeConfig, fetchBlogPosts };
+// Export everything as a default export
+export default {
+    contentfulConfig,
+    initializeConfig,
+    fetchBlogPosts
+};
 
 // Also make fetchBlogPosts available globally for non-module scripts
 window.fetchBlogPosts = fetchBlogPosts; 
