@@ -24,14 +24,16 @@ jobs:
         with:
           node-version: '20'
           
-      - name: Install dependencies
-        run: npm install -g replace-in-file
-        
       - name: Replace environment variables
         run: |
-          sed -i "s/CONTENTFUL_SPACE_ID/${{ secrets.CONTENTFUL_SPACE_ID }}/g" contentful-config.js
-          sed -i "s/CONTENTFUL_DELIVERY_TOKEN/${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}/g" contentful-config.js
-          sed -i "s/CONTENTFUL_PREVIEW_TOKEN/${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}/g" contentful-config.js
+          # Create a temporary file
+          cat contentful-config.js > temp.js
+          # Replace the placeholders with actual values
+          sed -i "s|CONTENTFUL_SPACE_ID|${{ secrets.CONTENTFUL_SPACE_ID }}|g" temp.js
+          sed -i "s|CONTENTFUL_DELIVERY_TOKEN|${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}|g" temp.js
+          sed -i "s|CONTENTFUL_PREVIEW_TOKEN|${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}|g" temp.js
+          # Move the temporary file back
+          mv temp.js contentful-config.js
           
       - name: Setup Pages
         uses: actions/configure-pages@v4

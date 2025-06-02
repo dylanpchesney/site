@@ -176,8 +176,37 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         // First, let's check what content types are available
         const typesUrl = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/content_types?access_token=${contentfulConfig.deliveryToken}`;
         console.log('Checking content types at:', typesUrl);
+        
         const typesResponse = await fetch(typesUrl);
+        if (!typesResponse.ok) {
+            console.error('Failed to fetch content types:', typesResponse.status, typesResponse.statusText);
+            return {
+                posts: window.blogPosts || [],
+                pagination: {
+                    currentPage: 1,
+                    totalPages: 1,
+                    totalPosts: window.blogPosts ? window.blogPosts.length : 0,
+                    hasNextPage: false,
+                    hasPreviousPage: false
+                }
+            };
+        }
+        
         const typesData = await typesResponse.json();
+        if (!typesData || !typesData.items) {
+            console.error('Invalid response from Contentful:', typesData);
+            return {
+                posts: window.blogPosts || [],
+                pagination: {
+                    currentPage: 1,
+                    totalPages: 1,
+                    totalPosts: window.blogPosts ? window.blogPosts.length : 0,
+                    hasNextPage: false,
+                    hasPreviousPage: false
+                }
+            };
+        }
+        
         console.log('Available content types:', typesData.items.map(type => type.sys.id));
         
         // Use the first content type that contains 'post' or 'blog' in its name
