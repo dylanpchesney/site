@@ -77,30 +77,19 @@
     };
   </script>
   
-  <!-- Load scripts with error handling -->
-  <script>
-    function loadScript(src) {
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = src;
-        script.onload = resolve;
-        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
-        document.body.appendChild(script);
-      });
-    }
-
-    // Load scripts in sequence
-    loadScript('contentful-config.js')
-      .then(() => {
-        console.log('Contentful config loaded');
-        return loadScript('script.js');
-      })
-      .then(() => {
-        console.log('Main script loaded');
-      })
-      .catch(error => {
-        console.error('Script loading error:', error);
-      });
+  <!-- Contentful Configuration -->
+  <script type="module">
+    import { contentfulConfig, initializeConfig, fetchBlogPosts } from './contentful-config.js';
+    
+    // Initialize the configuration
+    initializeConfig().then(() => {
+      // Make fetchBlogPosts available globally after initialization
+      window.fetchBlogPosts = fetchBlogPosts;
+      // Load the main script
+      const script = document.createElement('script');
+      script.src = 'script.js';
+      document.body.appendChild(script);
+    });
   </script>
 </body>
 </html> 
