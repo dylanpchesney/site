@@ -54,45 +54,53 @@ jobs:
         run: |
           echo "Starting environment variable replacement..."
           
-          # Create the config file header
-          echo '// Contentful API Configuration' > contentful-config.js
-          echo 'const contentfulConfig = {' >> contentful-config.js
-          echo '    space: "'$SPACE_ID'",' >> contentful-config.js
-          echo '    deliveryToken: "'$DELIVERY_TOKEN'",' >> contentful-config.js
-          echo '    previewToken: "'$PREVIEW_TOKEN'",' >> contentful-config.js
-          echo '    environment: "master",' >> contentful-config.js
-          echo '    postsPerPage: 3' >> contentful-config.js
-          echo '};' >> contentful-config.js
-          echo '' >> contentful-config.js
+          # Create a Node.js script to handle the replacement
+          cat > replace.js << 'EOF'
+          const fs = require('fs');
           
-          # Add the rest of the file
-          cat contentful-config.template.js | tail -n +15 >> contentful-config.js
+          // Get environment variables
+          const spaceId = process.env.SPACE_ID;
+          const deliveryToken = process.env.DELIVERY_TOKEN;
+          const previewToken = process.env.PREVIEW_TOKEN;
           
-          # Verify the replacements
-          echo "Verifying replacements..."
-          if grep -q "CONTENTFUL_SPACE_ID" contentful-config.js; then
-            echo "WARNING: SPACE_ID placeholder still present"
-            cat contentful-config.js | head -n 5
-            exit 1
-          else
-            echo "SPACE_ID replaced successfully"
-          fi
+          // Log the lengths of the values (not the actual values)
+          console.log('Space ID length:', spaceId ? spaceId.length : 0);
+          console.log('Delivery Token length:', deliveryToken ? deliveryToken.length : 0);
+          console.log('Preview Token length:', previewToken ? previewToken.length : 0);
           
-          if grep -q "CONTENTFUL_DELIVERY_TOKEN" contentful-config.js; then
-            echo "WARNING: DELIVERY_TOKEN placeholder still present"
-            cat contentful-config.js | head -n 5
-            exit 1
-          else
-            echo "DELIVERY_TOKEN replaced successfully"
-          fi
+          if (!spaceId || !deliveryToken || !previewToken) {
+            console.error('Missing environment variables');
+            process.exit(1);
+          }
           
-          if grep -q "CONTENTFUL_PREVIEW_TOKEN" contentful-config.js; then
-            echo "WARNING: PREVIEW_TOKEN placeholder still present"
-            cat contentful-config.js | head -n 5
-            exit 1
-          else
-            echo "PREVIEW_TOKEN replaced successfully"
-          fi
+          // Read the template file
+          const template = fs.readFileSync('contentful-config.template.js', 'utf8');
+          
+          // Replace the placeholders
+          const content = template
+            .replace('CONTENTFUL_SPACE_ID', spaceId)
+            .replace('CONTENTFUL_DELIVERY_TOKEN', deliveryToken)
+            .replace('CONTENTFUL_PREVIEW_TOKEN', previewToken);
+          
+          // Write the modified content
+          fs.writeFileSync('contentful-config.js', content);
+          
+          // Verify the replacements
+          const finalContent = fs.readFileSync('contentful-config.js', 'utf8');
+          if (finalContent.includes('CONTENTFUL_SPACE_ID') ||
+              finalContent.includes('CONTENTFUL_DELIVERY_TOKEN') ||
+              finalContent.includes('CONTENTFUL_PREVIEW_TOKEN')) {
+            console.error('WARNING: Some placeholders were not replaced');
+            console.error('First few lines of the file:');
+            console.error(finalContent.split('\n').slice(0, 5).join('\n'));
+            process.exit(1);
+          }
+          
+          console.log('Successfully replaced all placeholders');
+          EOF
+          
+          # Run the Node.js script
+          node replace.js
           
           # Add a timestamp to prevent caching
           echo "// Last updated: $(date)" >> contentful-config.js
