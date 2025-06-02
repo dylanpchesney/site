@@ -54,66 +54,64 @@ jobs:
         run: |
           echo "Starting environment variable replacement..."
           
-          # Create a Node.js script to handle the replacement
-          cat > replace.js << 'EOF'
-          const fs = require('fs');
+          # Create the production config file
+          cat > contentful-config.js << 'EOF'
+          // Contentful API Configuration
+          const contentfulConfig = {
+              space: '${{ secrets.CONTENTFUL_SPACE_ID }}',
+              deliveryToken: '${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}',
+              previewToken: '${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}',
+              environment: 'master',
+              postsPerPage: 3
+          };
           
-          // Read the original file
-          const content = fs.readFileSync('contentful-config.js', 'utf8');
-          
-          // Get environment variables
-          const spaceId = process.env.SPACE_ID;
-          const deliveryToken = process.env.DELIVERY_TOKEN;
-          const previewToken = process.env.PREVIEW_TOKEN;
-          
-          // Log the lengths of the values (not the actual values)
-          console.log('Space ID length:', spaceId ? spaceId.length : 0);
-          console.log('Delivery Token length:', deliveryToken ? deliveryToken.length : 0);
-          console.log('Preview Token length:', previewToken ? previewToken.length : 0);
-          
-          if (!spaceId || !deliveryToken || !previewToken) {
-            console.error('Missing environment variables');
-            process.exit(1);
+          // Function to check if environment variables are properly set
+          function checkConfig() {
+              console.log('Checking configuration...');
+              console.log('Current hostname:', window.location.hostname);
+              
+              const isProduction = window.location.hostname !== '127.0.0.1' && window.location.hostname !== 'localhost';
+              console.log('Environment:', isProduction ? 'Production' : 'Development');
+              
+              const missingVars = [];
+              if (contentfulConfig.space === 'CONTENTFUL_SPACE_ID') missingVars.push('SPACE_ID');
+              if (contentfulConfig.deliveryToken === 'CONTENTFUL_DELIVERY_TOKEN') missingVars.push('DELIVERY_TOKEN');
+              if (contentfulConfig.previewToken === 'CONTENTFUL_PREVIEW_TOKEN') missingVars.push('PREVIEW_TOKEN');
+              
+              if (missingVars.length > 0) {
+                  console.error('Missing or invalid environment variables:', missingVars.join(', '));
+                  return false;
+              }
+              return true;
           }
           
-          // Create the new configuration object
-          const configContent = '// Contentful API Configuration\n' +
-            'const contentfulConfig = {\n' +
-            '    space: \'' + spaceId + '\',\n' +
-            '    deliveryToken: \'' + deliveryToken + '\',\n' +
-            '    previewToken: \'' + previewToken + '\',\n' +
-            '    environment: \'master\',\n' +
-            '    postsPerPage: 3\n' +
-            '};';
-          
-          // Get the rest of the file content
-          const restOfFile = content.split('\n').slice(7).join('\n');
-          
-          // Combine the new config with the rest of the file
-          const newContent = configContent + '\n' + restOfFile;
-          
-          // Write the modified content back
-          fs.writeFileSync('contentful-config.js', newContent);
-          
-          // Verify the replacements
-          const finalContent = fs.readFileSync('contentful-config.js', 'utf8');
-          const hasPlaceholders = 
-            finalContent.includes('CONTENTFUL_SPACE_ID') ||
-            finalContent.includes('CONTENTFUL_DELIVERY_TOKEN') ||
-            finalContent.includes('CONTENTFUL_PREVIEW_TOKEN');
-          
-          if (hasPlaceholders) {
-            console.error('WARNING: Some placeholders were not replaced');
-            console.error('First few lines of the file:');
-            console.error(finalContent.split('\n').slice(0, 5).join('\n'));
-            process.exit(1);
+          // Function to initialize the configuration
+          async function initializeConfig() {
+              console.log('Initializing configuration...');
+              
+              // Check if we're in development mode
+              if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+                  try {
+                      const devConfig = await import('./contentful-config.dev.js');
+                      Object.assign(contentfulConfig, devConfig.contentfulConfig);
+                      console.log('Using development configuration');
+                  } catch (error) {
+                      console.error('Development configuration not found. Using placeholder values.');
+                  }
+              }
+              
+              if (!checkConfig()) {
+                  console.error('Configuration is invalid. Using fallback posts.');
+                  return contentfulConfig;
+              }
+              
+              console.log('Contentful config loaded successfully');
+              return contentfulConfig;
           }
           
-          console.log('Successfully replaced all placeholders');
+          // Export the configuration and functions
+          export { contentfulConfig, checkConfig, initializeConfig };
           EOF
-          
-          # Run the Node.js script
-          node replace.js
           
           # Verify the replacements
           echo "Verifying replacements..."

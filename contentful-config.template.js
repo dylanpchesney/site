@@ -7,7 +7,52 @@ const contentfulConfig = {
     postsPerPage: 3
 };
 
-console.log('Contentful config loaded');
+// Function to check if environment variables are properly set
+function checkConfig() {
+    console.log('Checking configuration...');
+    console.log('Current hostname:', window.location.hostname);
+    
+    const isProduction = window.location.hostname !== '127.0.0.1' && window.location.hostname !== 'localhost';
+    console.log('Environment:', isProduction ? 'Production' : 'Development');
+    
+    const missingVars = [];
+    if (contentfulConfig.space === 'CONTENTFUL_SPACE_ID') missingVars.push('SPACE_ID');
+    if (contentfulConfig.deliveryToken === 'CONTENTFUL_DELIVERY_TOKEN') missingVars.push('DELIVERY_TOKEN');
+    if (contentfulConfig.previewToken === 'CONTENTFUL_PREVIEW_TOKEN') missingVars.push('PREVIEW_TOKEN');
+    
+    if (missingVars.length > 0) {
+        console.error('Missing or invalid environment variables:', missingVars.join(', '));
+        return false;
+    }
+    return true;
+}
+
+// Function to initialize the configuration
+async function initializeConfig() {
+    console.log('Initializing configuration...');
+    
+    // Check if we're in development mode
+    if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+        try {
+            const devConfig = await import('./contentful-config.dev.js');
+            Object.assign(contentfulConfig, devConfig.contentfulConfig);
+            console.log('Using development configuration');
+        } catch (error) {
+            console.error('Development configuration not found. Using placeholder values.');
+        }
+    }
+    
+    if (!checkConfig()) {
+        console.error('Configuration is invalid. Using fallback posts.');
+        return contentfulConfig;
+    }
+    
+    console.log('Contentful config loaded successfully');
+    return contentfulConfig;
+}
+
+// Export the configuration and functions
+export { contentfulConfig, checkConfig, initializeConfig };
 
 // Function to resolve rich text references
 async function resolveRichTextReferences(richText) {
