@@ -78,9 +78,13 @@
       const contentfulModule = await import('./contentful-config.js');
       console.log('Contentful module loaded');
       
-      // Initialize the configuration
-      await contentfulModule.initializeConfig();
-      console.log('Contentful config initialized');
+      // Initialize the configuration (only if function exists)
+      if (contentfulModule.default.initializeConfig) {
+        await contentfulModule.default.initializeConfig();
+        console.log('Contentful config initialized');
+      } else {
+        console.log('Contentful config already initialized (production mode)');
+      }
       
       // Make fetchBlogPosts available globally
       window.fetchBlogPosts = contentfulModule.default.fetchBlogPosts;
