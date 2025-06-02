@@ -49,33 +49,39 @@ jobs:
       - name: Replace environment variables
         run: |
           echo "Starting environment variable replacement..."
-          # Create a temporary file
-          cat contentful-config.js > temp.js
-          echo "Created temporary file"
           
-          # Debug the original file
-          echo "Original file contains:"
-          grep -n "CONTENTFUL_" temp.js
+          # Create a temporary Node.js script to handle the replacement
+          cat > replace.js << 'EOF'
+          const fs = require('fs');
           
-          # Replace the placeholders with actual values
-          echo "Replacing placeholders..."
-          sed -i "s|CONTENTFUL_SPACE_ID|${{ secrets.CONTENTFUL_SPACE_ID }}|g" temp.js
-          sed -i "s|CONTENTFUL_DELIVERY_TOKEN|${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}|g" temp.js
-          sed -i "s|CONTENTFUL_PREVIEW_TOKEN|${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}|g" temp.js
+          // Read the original file
+          const content = fs.readFileSync('contentful-config.js', 'utf8');
           
-          # Move the temporary file back
-          mv temp.js contentful-config.js
-          echo "Moved file back"
+          // Replace the placeholders
+          const replaced = content
+            .replace(/CONTENTFUL_SPACE_ID/g, process.env.CONTENTFUL_SPACE_ID)
+            .replace(/CONTENTFUL_DELIVERY_TOKEN/g, process.env.CONTENTFUL_DELIVERY_TOKEN)
+            .replace(/CONTENTFUL_PREVIEW_TOKEN/g, process.env.CONTENTFUL_PREVIEW_TOKEN);
           
-          # Debug the replaced file (without exposing secrets)
-          echo "Checking if replacements were made..."
-          grep -q "CONTENTFUL_SPACE_ID" contentful-config.js && echo "WARNING: Space ID not replaced" || echo "Space ID replaced"
-          grep -q "CONTENTFUL_DELIVERY_TOKEN" contentful-config.js && echo "WARNING: Delivery token not replaced" || echo "Delivery token replaced"
-          grep -q "CONTENTFUL_PREVIEW_TOKEN" contentful-config.js && echo "WARNING: Preview token not replaced" || echo "Preview token replaced"
+          // Write the replaced content back
+          fs.writeFileSync('contentful-config.js', replaced);
           
-          # Show the first few lines of the file (without secrets)
-          echo "First few lines of the file:"
-          head -n 5 contentful-config.js
+          // Verify the replacements
+          const finalContent = fs.readFileSync('contentful-config.js', 'utf8');
+          console.log('Verifying replacements...');
+          console.log('Space ID replaced:', !finalContent.includes('CONTENTFUL_SPACE_ID'));
+          console.log('Delivery token replaced:', !finalContent.includes('CONTENTFUL_DELIVERY_TOKEN'));
+          console.log('Preview token replaced:', !finalContent.includes('CONTENTFUL_PREVIEW_TOKEN'));
+          EOF
+          
+          # Run the replacement script with the secrets
+          CONTENTFUL_SPACE_ID="${{ secrets.CONTENTFUL_SPACE_ID }}" \
+          CONTENTFUL_DELIVERY_TOKEN="${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}" \
+          CONTENTFUL_PREVIEW_TOKEN="${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}" \
+          node replace.js
+          
+          # Clean up
+          rm replace.js
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
