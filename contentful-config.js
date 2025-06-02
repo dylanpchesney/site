@@ -158,11 +158,40 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
             postsPerPage: contentfulConfig.postsPerPage
         });
         
+        // First, let's check what content types are available
+        const typesUrl = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/content_types?access_token=${contentfulConfig.accessToken}`;
+        console.log('Checking content types at:', typesUrl);
+        const typesResponse = await fetch(typesUrl);
+        const typesData = await typesResponse.json();
+        console.log('Available content types:', typesData.items.map(type => type.sys.id));
+        
+        // Use the first content type that contains 'post' or 'blog' in its name
+        const postContentType = typesData.items.find(type => 
+            type.sys.id.toLowerCase().includes('post') || 
+            type.sys.id.toLowerCase().includes('blog')
+        );
+        
+        if (!postContentType) {
+            console.log('No suitable content type found, using fallback posts');
+            return {
+                posts: window.blogPosts || [],
+                pagination: {
+                    currentPage: 1,
+                    totalPages: 1,
+                    totalPosts: window.blogPosts ? window.blogPosts.length : 0,
+                    hasNextPage: false,
+                    hasPreviousPage: false
+                }
+            };
+        }
+        
+        console.log('Using content type:', postContentType.sys.id);
+        
         // Calculate skip value for pagination
         const skip = (page - 1) * contentfulConfig.postsPerPage;
         
-        // Build the query URL
-        let url = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/entries?access_token=${contentfulConfig.accessToken}&content_type=microBlogPost&include=2&limit=${contentfulConfig.postsPerPage}&skip=${skip}&order=-sys.createdAt`;
+        // Build the query URL with the correct content type
+        let url = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/entries?access_token=${contentfulConfig.accessToken}&content_type=${postContentType.sys.id}&include=2&limit=${contentfulConfig.postsPerPage}&skip=${skip}&order=-sys.createdAt`;
         
         console.log('Making API request to:', url);
         
@@ -189,19 +218,13 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         });
         
         if (!data.items || data.items.length === 0) {
-            console.log('No posts found. Checking content types...');
-            // Let's check what content types are available
-            const typesUrl = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/content_types?access_token=${contentfulConfig.accessToken}`;
-            console.log('Checking content types at:', typesUrl);
-            const typesResponse = await fetch(typesUrl);
-            const typesData = await typesResponse.json();
-            console.log('Available content types:', typesData.items.map(type => type.sys.id));
+            console.log('No posts found, using fallback posts');
             return {
-                posts: [],
+                posts: window.blogPosts || [],
                 pagination: {
                     currentPage: 1,
                     totalPages: 1,
-                    totalPosts: 0,
+                    totalPosts: window.blogPosts ? window.blogPosts.length : 0,
                     hasNextPage: false,
                     hasPreviousPage: false
                 }

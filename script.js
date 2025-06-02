@@ -248,7 +248,7 @@ async function loadBlogPosts(page = 1, searchQuery = '', append = false) {
     
     console.log('Containers found:', { 
       postList: postList ? 'found' : 'not found', 
-      timeline: timeline ? 'found' : 'not found' 
+      timeline: timeline ? 'found' : 'not found'
     });
     
     if (!postList || !timeline) {
@@ -256,127 +256,148 @@ async function loadBlogPosts(page = 1, searchQuery = '', append = false) {
       return;
     }
     
-    // Clear existing posts if not appending
+    // Clear containers if not appending
     if (!append) {
-      console.log('Clearing existing posts');
+      console.log('Clearing containers');
       postList.innerHTML = '';
       timeline.innerHTML = '';
     }
     
-    // Add posts to both sidebar and main content
-    posts.forEach(post => {
-      console.log('Creating elements for post:', post.id);
+    // Process each post
+    for (const post of posts) {
+      console.log('Processing post:', post);
+      
+      // Create and append post preview
       const preview = createPostPreview(post);
-      const postElement = createBlogPost(post);
+      console.log('Created preview:', preview);
       postList.appendChild(preview);
-      timeline.appendChild(postElement);
-      console.log('Post elements added to DOM');
-    });
-    
-    // Set first post as active if it's the first page
-    if (page === 1 && posts.length > 0) {
-      const firstPreview = postList.querySelector('.post-preview');
-      const firstPost = timeline.querySelector('.blog-post');
-      if (firstPreview && firstPost) {
-        firstPreview.classList.add('active');
-        firstPost.classList.add('active');
-        console.log('First post set as active');
-      }
+      
+      // Create and append blog post
+      const blogPost = createBlogPost(post);
+      console.log('Created blog post:', blogPost);
+      timeline.appendChild(blogPost);
     }
     
+    console.log('Finished processing posts');
   } catch (error) {
     console.error('Error in loadBlogPosts:', error);
-    console.error('Error stack:', error.stack);
   } finally {
     isLoading = false;
-    console.log('Finished loadBlogPosts');
   }
 }
 
 function createPostPreview(post) {
+  console.log('Creating post preview for:', post);
   const preview = document.createElement('div');
   preview.className = 'post-preview';
   preview.dataset.postId = post.id;
-
-  preview.innerHTML = `
-    <h4>${post.shortTitle}</h4>
-    <div class="post-date">${formatDate(post.date)}</div>
-    <div class="post-tags">
-      ${post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')}
-    </div>
-  `;
-
+  
+  const title = document.createElement('h4');
+  title.textContent = post.shortTitle || post.title;
+  
+  const date = document.createElement('div');
+  date.className = 'post-date';
+  date.textContent = formatDate(post.date);
+  
+  const tags = document.createElement('div');
+  tags.className = 'post-tags';
+  if (post.tags && post.tags.length > 0) {
+    post.tags.forEach(tag => {
+      const tagSpan = document.createElement('span');
+      tagSpan.className = 'post-tag';
+      tagSpan.textContent = tag;
+      tags.appendChild(tagSpan);
+    });
+  }
+  
+  preview.appendChild(title);
+  preview.appendChild(date);
+  preview.appendChild(tags);
+  
   preview.addEventListener('click', () => {
-    // Remove active class from all previews
+    console.log('Preview clicked:', post.id);
     document.querySelectorAll('.post-preview').forEach(p => p.classList.remove('active'));
-    // Add active class to clicked preview
     preview.classList.add('active');
-    // Scroll to corresponding post
+    
     const postElement = document.querySelector(`.blog-post[data-post-id="${post.id}"]`);
     if (postElement) {
+      document.querySelectorAll('.blog-post').forEach(p => p.classList.remove('active'));
+      postElement.classList.add('active');
       postElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   });
-
+  
+  console.log('Created preview element:', preview);
   return preview;
 }
 
 function createBlogPost(post) {
+  console.log('Creating blog post for:', post);
   const postElement = document.createElement('article');
   postElement.className = 'blog-post';
   postElement.dataset.postId = post.id;
-
-  // Create post header with image if available
-  let headerHtml = `
-    <h2>${post.title}</h2>
-    <div class="post-meta">
-      <span class="post-date">${formatDate(post.date)}</span>
-      <div class="post-tags">
-        ${post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')}
-      </div>
-    </div>
-  `;
-
-  // Add featured image if available
-  if (post.featuredImage) {
-    headerHtml = `
-      <div class="post-featured-image">
-        <img src="${post.featuredImage}" alt="${post.title}" loading="lazy">
-      </div>
-      ${headerHtml}
-    `;
+  
+  const title = document.createElement('h2');
+  title.textContent = post.title;
+  
+  const meta = document.createElement('div');
+  meta.className = 'post-meta';
+  
+  const date = document.createElement('div');
+  date.className = 'post-date';
+  date.textContent = formatDate(post.date);
+  
+  const tags = document.createElement('div');
+  tags.className = 'post-tags';
+  if (post.tags && post.tags.length > 0) {
+    post.tags.forEach(tag => {
+      const tagSpan = document.createElement('span');
+      tagSpan.className = 'post-tag';
+      tagSpan.textContent = tag;
+      tags.appendChild(tagSpan);
+    });
   }
-
-  postElement.innerHTML = `
-    ${headerHtml}
-    <div class="post-content collapsed">
-      ${post.content}
-    </div>
-    <button class="expand-button">Show More...</button>
-  `;
-
-  const expandButton = postElement.querySelector('.expand-button');
-  const contentDiv = postElement.querySelector('.post-content');
-
-  function toggleExpand(e) {
-    // Prevent if clicking a link
-    if (e && e.target.closest('a')) return;
-
-    if (contentDiv.classList.contains('collapsed')) {
-      contentDiv.classList.remove('collapsed');
-      expandButton.textContent = 'Show Less';
-    } else {
-      contentDiv.classList.add('collapsed');
-      expandButton.textContent = 'Show More Again';
+  
+  meta.appendChild(date);
+  meta.appendChild(tags);
+  
+  const content = document.createElement('div');
+  content.className = 'post-content collapsed';
+  content.innerHTML = post.content;
+  
+  const expandButton = document.createElement('button');
+  expandButton.className = 'expand-button';
+  expandButton.textContent = 'Show More';
+  
+  expandButton.addEventListener('click', (e) => {
+    console.log('Expand button clicked for post:', post.id);
+    e.preventDefault();
+    const isCollapsed = content.classList.contains('collapsed');
+    
+    if (isCollapsed) {
+      // Collapse all other posts first
+      document.querySelectorAll('.blog-post').forEach(p => {
+        if (p !== postElement) {
+          const pContent = p.querySelector('.post-content');
+          const pButton = p.querySelector('.expand-button');
+          if (pContent && pButton) {
+            pContent.classList.add('collapsed');
+            pButton.textContent = 'Show More';
+          }
+        }
+      });
     }
-  }
-
-  expandButton.addEventListener('click', function(e) {
-    e.stopPropagation();
-    toggleExpand();
+    
+    content.classList.toggle('collapsed');
+    expandButton.textContent = content.classList.contains('collapsed') ? 'Show More' : 'Show Less';
   });
-  postElement.addEventListener('click', toggleExpand);
-
+  
+  postElement.appendChild(title);
+  postElement.appendChild(meta);
+  postElement.appendChild(content);
+  postElement.appendChild(expandButton);
+  
+  console.log('Created blog post element:', postElement);
   return postElement;
 }
 
