@@ -13,15 +13,23 @@ function checkConfig() {
     console.log('Current config:', {
         space: contentfulConfig.space,
         deliveryToken: contentfulConfig.deliveryToken ? 'Set' : 'Not set',
-        previewToken: contentfulConfig.previewToken ? 'Set' : 'Not set'
+        previewToken: contentfulConfig.previewToken ? 'Set' : 'Not set',
+        environment: contentfulConfig.environment,
+        postsPerPage: contentfulConfig.postsPerPage
     });
     
     // Add detailed debugging
     console.log('Raw values:', {
         space: contentfulConfig.space,
         deliveryToken: contentfulConfig.deliveryToken,
-        previewToken: contentfulConfig.previewToken
+        previewToken: contentfulConfig.previewToken,
+        environment: contentfulConfig.environment,
+        postsPerPage: contentfulConfig.postsPerPage
     });
+    
+    // Log the actual file content for debugging
+    console.log('Current file content (first 10 lines):');
+    console.log(document.currentScript.textContent.split('\n').slice(0, 10).join('\n'));
     
     const missingVars = [];
     if (contentfulConfig.space === 'CONTENTFUL_SPACE_ID') missingVars.push('SPACE_ID');

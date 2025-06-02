@@ -57,10 +57,23 @@ jobs:
           echo "Original file content:"
           head -n 5 contentful-config.js
           
-          # Replace the placeholders using sed
-          sed -i "s/space: 'CONTENTFUL_SPACE_ID'/space: '${{ secrets.CONTENTFUL_SPACE_ID }}'/" contentful-config.js
-          sed -i "s/deliveryToken: 'CONTENTFUL_DELIVERY_TOKEN'/deliveryToken: '${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}'/" contentful-config.js
-          sed -i "s/previewToken: 'CONTENTFUL_PREVIEW_TOKEN'/previewToken: '${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}'/" contentful-config.js
+          # Create a temporary file with the replacements
+          cat > contentful-config.js.tmp << EOF
+          // Contentful API Configuration
+          const contentfulConfig = {
+              space: '${{ secrets.CONTENTFUL_SPACE_ID }}',
+              deliveryToken: '${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}',
+              previewToken: '${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}',
+              environment: 'master',
+              postsPerPage: 3
+          };
+          EOF
+          
+          # Append the rest of the file
+          tail -n +7 contentful-config.js >> contentful-config.js.tmp
+          
+          # Replace the original file
+          mv contentful-config.js.tmp contentful-config.js
           
           # Show the modified file content
           echo "Modified file content:"
