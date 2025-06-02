@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contentful API Test</title>
+</head>
+<body>
+    <h1>Contentful API Test</h1>
+    <button onclick="testContentful()">Test API</button>
+    <div id="results"></div>
+
+    <script>
+        async function testContentful() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p>Testing...</p>';
+            
+            const spaceId = 'sapssgguac2u';
+            const deliveryToken = 'VqrUc-rft1ShXcch0N5oa3uVKeFfJAGLeKCSEARPyHg';
+            
+            try {
+                // Test 1: Get content types
+                console.log('Testing content types...');
+                const typesResponse = await fetch(`https://cdn.contentful.com/spaces/${spaceId}/environments/master/content_types?access_token=${deliveryToken}`);
+                const typesData = await typesResponse.json();
+                
+                console.log('Content types response:', typesData);
+                
+                // Test 2: Get entries
+                console.log('Testing entries...');
+                const entriesResponse = await fetch(`https://cdn.contentful.com/spaces/${spaceId}/environments/master/entries?access_token=${deliveryToken}&content_type=microBlogPost&limit=5`);
+                const entriesData = await entriesResponse.json();
+                
+                console.log('Entries response:', entriesData);
+                
+                // Display results
+                results.innerHTML = `
+                    <h3>Results:</h3>
+                    <h4>Content Types Found:</h4>
+                    <ul>
+                        ${typesData.items.map(type => `<li>${type.sys.id} (${type.name})</li>`).join('')}
+                    </ul>
+                    <h4>Entries Found:</h4>
+                    <p>Total: ${entriesData.total}</p>
+                    <ul>
+                        ${entriesData.items.map(item => `<li>${item.fields.title || 'No title'} (${item.sys.id})</li>`).join('')}
+                    </ul>
+                    <p>Check console for full details</p>
+                `;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                results.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html> 
