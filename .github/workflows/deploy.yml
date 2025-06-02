@@ -74,11 +74,18 @@ jobs:
           // Read the template file
           const templateContent = fs.readFileSync('contentful-config.template.js', 'utf8');
           
-          // Replace placeholders with actual values
-          const productionContent = templateContent
-            .replace(/space: 'CONTENTFUL_SPACE_ID'/g, \`space: '\${spaceId}'\`)
-            .replace(/deliveryToken: 'CONTENTFUL_DELIVERY_TOKEN'/g, \`deliveryToken: '\${deliveryToken}'\`)
-            .replace(/previewToken: 'CONTENTFUL_PREVIEW_TOKEN'/g, \`previewToken: '\${previewToken}'\`);
+          // Replace placeholders with actual values using more specific patterns
+          let productionContent = templateContent;
+          
+          // Replace each placeholder individually with more specific patterns
+          productionContent = productionContent.replace(/space:\s*['\"]CONTENTFUL_SPACE_ID['\"]/g, \`space: '\${spaceId}'\`);
+          productionContent = productionContent.replace(/deliveryToken:\s*['\"]CONTENTFUL_DELIVERY_TOKEN['\"]/g, \`deliveryToken: '\${deliveryToken}'\`);
+          productionContent = productionContent.replace(/previewToken:\s*['\"]CONTENTFUL_PREVIEW_TOKEN['\"]/g, \`previewToken: '\${previewToken}'\`);
+          
+          // Also replace any remaining standalone placeholder strings
+          productionContent = productionContent.replace(/['\"]CONTENTFUL_SPACE_ID['\"]/g, \`'\${spaceId}'\`);
+          productionContent = productionContent.replace(/['\"]CONTENTFUL_DELIVERY_TOKEN['\"]/g, \`'\${deliveryToken}'\`);
+          productionContent = productionContent.replace(/['\"]CONTENTFUL_PREVIEW_TOKEN['\"]/g, \`'\${previewToken}'\`);
           
           // Write the production config
           fs.writeFileSync('contentful-config.js', productionContent);
@@ -87,14 +94,26 @@ jobs:
           
           // Verify the file doesn't contain placeholders
           const finalContent = fs.readFileSync('contentful-config.js', 'utf8');
-          if (finalContent.includes('CONTENTFUL_SPACE_ID') ||
-              finalContent.includes('CONTENTFUL_DELIVERY_TOKEN') ||
-              finalContent.includes('CONTENTFUL_PREVIEW_TOKEN')) {
-            console.error('ERROR: Placeholders still found in config file');
+          const placeholdersRemaining = [];
+          
+          if (finalContent.includes('CONTENTFUL_SPACE_ID')) {
+            placeholdersRemaining.push('CONTENTFUL_SPACE_ID');
+          }
+          if (finalContent.includes('CONTENTFUL_DELIVERY_TOKEN')) {
+            placeholdersRemaining.push('CONTENTFUL_DELIVERY_TOKEN');
+          }
+          if (finalContent.includes('CONTENTFUL_PREVIEW_TOKEN')) {
+            placeholdersRemaining.push('CONTENTFUL_PREVIEW_TOKEN');
+          }
+          
+          if (placeholdersRemaining.length > 0) {
+            console.error('ERROR: Placeholders still found in config file:', placeholdersRemaining);
+            console.log('First 20 lines of config file:');
+            console.log(finalContent.split('\n').slice(0, 20).join('\n'));
             process.exit(1);
           }
           
-          console.log('Config file validation passed');
+          console.log('Config file validation passed - no placeholders found');
           "
           
       - name: Setup Pages

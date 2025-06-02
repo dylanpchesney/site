@@ -68,9 +68,6 @@
     <p>Written in code by me, but compiled with espresso.</p>
     <p>© 2024 - Dylan Chesney</p>
   </footer>
-
-  <!-- Load fallback blog posts first -->
-  <script src="blog-posts.js"></script>
   
   <!-- Load and initialize Contentful configuration -->
   <script type="module">
@@ -91,7 +88,7 @@
       
     } catch (error) {
       console.error('Error loading Contentful configuration:', error);
-      console.log('Using fallback blog posts only');
+      console.log('Blog will show no posts message when Contentful is unavailable');
     }
     
     // Load the main script

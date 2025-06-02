@@ -205,13 +205,13 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         console.log('Starting fetchBlogPosts...');
         
         if (!checkConfig()) {
-            console.error('Invalid configuration, using fallback posts');
+            console.error('Invalid configuration, no posts available');
             return {
-                posts: window.blogPosts || [],
+                posts: [],
                 pagination: {
                     currentPage: 1,
-                    totalPages: 1,
-                    totalPosts: window.blogPosts ? window.blogPosts.length : 0,
+                    totalPages: 0,
+                    totalPosts: 0,
                     hasNextPage: false,
                     hasPreviousPage: false
                 }
@@ -232,11 +232,11 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         if (!typesResponse.ok) {
             console.error('Failed to fetch content types:', typesResponse.status, typesResponse.statusText);
             return {
-                posts: window.blogPosts || [],
+                posts: [],
                 pagination: {
                     currentPage: 1,
-                    totalPages: 1,
-                    totalPosts: window.blogPosts ? window.blogPosts.length : 0,
+                    totalPages: 0,
+                    totalPosts: 0,
                     hasNextPage: false,
                     hasPreviousPage: false
                 }
@@ -247,11 +247,11 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         if (!typesData || !typesData.items) {
             console.error('Invalid response from Contentful:', typesData);
             return {
-                posts: window.blogPosts || [],
+                posts: [],
                 pagination: {
                     currentPage: 1,
-                    totalPages: 1,
-                    totalPosts: window.blogPosts ? window.blogPosts.length : 0,
+                    totalPages: 0,
+                    totalPosts: 0,
                     hasNextPage: false,
                     hasPreviousPage: false
                 }
@@ -267,13 +267,13 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         );
         
         if (!postContentType) {
-            console.log('No suitable content type found, using fallback posts');
+            console.log('No suitable content type found');
             return {
-                posts: window.blogPosts || [],
+                posts: [],
                 pagination: {
                     currentPage: 1,
-                    totalPages: 1,
-                    totalPosts: window.blogPosts ? window.blogPosts.length : 0,
+                    totalPages: 0,
+                    totalPosts: 0,
                     hasNextPage: false,
                     hasPreviousPage: false
                 }
@@ -313,13 +313,13 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         });
         
         if (!data.items || data.items.length === 0) {
-            console.log('No posts found, using fallback posts');
+            console.log('No posts found in Contentful');
             return {
-                posts: window.blogPosts || [],
+                posts: [],
                 pagination: {
                     currentPage: 1,
-                    totalPages: 1,
-                    totalPosts: window.blogPosts ? window.blogPosts.length : 0,
+                    totalPages: 0,
+                    totalPosts: 0,
                     hasNextPage: false,
                     hasPreviousPage: false
                 }
@@ -380,11 +380,11 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         console.error('Error in fetchBlogPosts:', error);
         console.error('Error stack:', error.stack);
         return {
-            posts: window.blogPosts || [],
+            posts: [],
             pagination: {
                 currentPage: 1,
-                totalPages: 1,
-                totalPosts: window.blogPosts ? window.blogPosts.length : 0,
+                totalPages: 0,
+                totalPosts: 0,
                 hasNextPage: false,
                 hasPreviousPage: false
             }

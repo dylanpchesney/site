@@ -9,39 +9,38 @@ let currentSearchQuery = '';
 let isLoading = false;
 let hasMorePosts = true;
 
-// Fallback function for when Contentful is not available
-window.fallbackFetchBlogPosts = function(page = 1, searchQuery = '') {
-  console.log('Using fallback blog posts - page:', page, 'search:', searchQuery);
+// Function to show "no posts" message
+function showNoPostsMessage() {
+  const postList = document.querySelector('.post-list');
+  const timeline = document.querySelector('.timeline');
   
-  const posts = window.blogPosts || [];
-  let filteredPosts = posts;
-  
-  // Apply search filter if provided
-  if (searchQuery && searchQuery.trim()) {
-    const query = searchQuery.toLowerCase();
-    filteredPosts = posts.filter(post => 
-      post.title.toLowerCase().includes(query) ||
-      post.content.toLowerCase().includes(query) ||
-      post.tags.some(tag => tag.toLowerCase().includes(query))
-    );
+  if (postList) {
+    postList.innerHTML = '<div class="no-posts-message">No posts available</div>';
   }
   
-  // Apply pagination
-  const postsPerPage = 3;
-  const startIndex = (page - 1) * postsPerPage;
-  const endIndex = startIndex + postsPerPage;
-  const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
-  
-  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  if (timeline) {
+    timeline.innerHTML = `
+      <div class="no-posts-container">
+        <h2>📝 No Posts Available</h2>
+        <p>There are no posts at this time! Check back later for more!</p>
+        <p>I'm probably busy writing something amazing for you to read. ✨</p>
+      </div>
+    `;
+  }
+}
+
+// Fallback function when Contentful is not available
+window.fallbackFetchBlogPosts = function(page = 1, searchQuery = '') {
+  console.log('Contentful unavailable, showing no posts message');
   
   return Promise.resolve({
-    posts: paginatedPosts,
+    posts: [],
     pagination: {
-      currentPage: page,
-      totalPages: totalPages,
-      totalPosts: filteredPosts.length,
-      hasNextPage: page < totalPages,
-      hasPreviousPage: page > 1
+      currentPage: 1,
+      totalPages: 0,
+      totalPosts: 0,
+      hasNextPage: false,
+      hasPreviousPage: false
     }
   });
 };
@@ -306,6 +305,15 @@ async function loadBlogPosts(page = 1, searchQuery = '', append = false) {
       timeline.innerHTML = '';
     }
     
+    // Check if we have any posts to display
+    if (!posts || posts.length === 0) {
+      if (!append) { // Only show the message if this is not an append operation
+        console.log('No posts available, showing no posts message');
+        showNoPostsMessage();
+      }
+      return;
+    }
+    
     // Process each post
     for (const post of posts) {
       console.log('Processing post:', post);
@@ -324,6 +332,10 @@ async function loadBlogPosts(page = 1, searchQuery = '', append = false) {
     console.log('Finished processing posts');
   } catch (error) {
     console.error('Error in loadBlogPosts:', error);
+    // Show no posts message on error
+    if (!append) {
+      showNoPostsMessage();
+    }
   } finally {
     isLoading = false;
   }

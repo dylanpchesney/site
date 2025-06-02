@@ -993,8 +993,54 @@ body.fun-mode .post-preview.active {
 }
 
 .no-posts {
+  text-align: center;
   color: #666;
+  padding: 40px 20px;
+}
+
+.no-posts-container {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.no-posts-container h2 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+}
+
+.no-posts-container p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+  font-size: 1.1em;
+}
+
+.no-posts-container p:last-child {
+  margin-bottom: 0;
   font-style: italic;
+  color: #888;
+}
+
+.no-posts-message {
+  text-align: center;
+  color: #999;
+  font-style: italic;
+  padding: 20px;
+  border-radius: 8px;
+  background: #f8f9fa;
+}
+
+/* Fun Mode styles for no-posts */
+body.fun-mode .no-posts-container h2 {
+  color: #ff6b35;
+}
+
+body.fun-mode .no-posts-message {
+  background: #fff3e0;
+  color: #e65100;
 }
 
 /* Blog Post Featured Image */

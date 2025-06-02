@@ -84,7 +84,6 @@ This site is configured to deploy automatically to GitHub Pages using GitHub Act
 ├── script.js              # Main JavaScript functionality
 ├── contentful-config.js   # Contentful configuration (production)
 ├── contentful-config.dev.local.js  # Development config (not in git)
-├── blog-posts.js          # Fallback blog posts
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml     # GitHub Actions deployment

@@ -34,16 +34,24 @@ async function initializeConfig() {
     // Check if we're in development mode
     if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
         try {
-            const devConfig = await import('./contentful-config.dev.js');
+            // Try to load the local development config first
+            let devConfig;
+            try {
+                devConfig = await import('./contentful-config.dev.local.js');
+                console.log('Using local development configuration');
+            } catch (error) {
+                // Fallback to the template dev config
+                devConfig = await import('./contentful-config.dev.js');
+                console.log('Using template development configuration');
+            }
             Object.assign(contentfulConfig, devConfig.contentfulConfig);
-            console.log('Using development configuration');
         } catch (error) {
             console.error('Development configuration not found. Using placeholder values.');
         }
     }
     
     if (!checkConfig()) {
-        console.error('Configuration is invalid. Using fallback posts.');
+        console.error('Configuration is invalid. No posts available.');
         return contentfulConfig;
     }
     
@@ -51,8 +59,208 @@ async function initializeConfig() {
     return contentfulConfig;
 }
 
-// Export the configuration and functions
-export { contentfulConfig, checkConfig, initializeConfig };
+// Function to fetch blog posts from Contentful with pagination
+async function fetchBlogPosts(page = 1, searchQuery = '') {
+    try {
+        console.log('Starting fetchBlogPosts...');
+        
+        if (!checkConfig()) {
+            console.error('Invalid configuration, no posts available');
+            return {
+                posts: [],
+                pagination: {
+                    currentPage: 1,
+                    totalPages: 0,
+                    totalPosts: 0,
+                    hasNextPage: false,
+                    hasPreviousPage: false
+                }
+            };
+        }
+        
+        console.log('Config:', {
+            space: contentfulConfig.space,
+            environment: contentfulConfig.environment,
+            postsPerPage: contentfulConfig.postsPerPage
+        });
+        
+        // First, let's check what content types are available
+        const typesUrl = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/content_types?access_token=${contentfulConfig.deliveryToken}`;
+        console.log('Checking content types at:', typesUrl);
+        
+        const typesResponse = await fetch(typesUrl);
+        if (!typesResponse.ok) {
+            console.error('Failed to fetch content types:', typesResponse.status, typesResponse.statusText);
+            return {
+                posts: [],
+                pagination: {
+                    currentPage: 1,
+                    totalPages: 0,
+                    totalPosts: 0,
+                    hasNextPage: false,
+                    hasPreviousPage: false
+                }
+            };
+        }
+        
+        const typesData = await typesResponse.json();
+        if (!typesData || !typesData.items) {
+            console.error('Invalid response from Contentful:', typesData);
+            return {
+                posts: [],
+                pagination: {
+                    currentPage: 1,
+                    totalPages: 0,
+                    totalPosts: 0,
+                    hasNextPage: false,
+                    hasPreviousPage: false
+                }
+            };
+        }
+        
+        console.log('Available content types:', typesData.items.map(type => type.sys.id));
+        
+        // Use the first content type that contains 'post' or 'blog' in its name
+        const postContentType = typesData.items.find(type => 
+            type.sys.id.toLowerCase().includes('post') || 
+            type.sys.id.toLowerCase().includes('blog')
+        );
+        
+        if (!postContentType) {
+            console.log('No suitable content type found');
+            return {
+                posts: [],
+                pagination: {
+                    currentPage: 1,
+                    totalPages: 0,
+                    totalPosts: 0,
+                    hasNextPage: false,
+                    hasPreviousPage: false
+                }
+            };
+        }
+        
+        console.log('Using content type:', postContentType.sys.id);
+        
+        // Calculate skip value for pagination
+        const skip = (page - 1) * contentfulConfig.postsPerPage;
+        
+        // Build the query URL with the correct content type
+        let url = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/entries?access_token=${contentfulConfig.deliveryToken}&content_type=${postContentType.sys.id}&include=2&limit=${contentfulConfig.postsPerPage}&skip=${skip}&order=-sys.createdAt`;
+        
+        console.log('Making API request to:', url);
+        
+        // Add search query if provided
+        if (searchQuery) {
+            url += `&query=${encodeURIComponent(searchQuery)}`;
+        }
+        
+        const response = await fetch(url);
+        console.log('API Response status:', response.status);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('API Error response:', errorText);
+            throw new Error(`Failed to fetch blog posts: ${response.status} ${response.statusText}\n${errorText}`);
+        }
+
+        const data = await response.json();
+        console.log('API Response data:', {
+            total: data.total,
+            skip: data.skip,
+            limit: data.limit,
+            items: data.items ? data.items.length : 0
+        });
+        
+        if (!data.items || data.items.length === 0) {
+            console.log('No posts found in Contentful');
+            return {
+                posts: [],
+                pagination: {
+                    currentPage: 1,
+                    totalPages: 0,
+                    totalPosts: 0,
+                    hasNextPage: false,
+                    hasPreviousPage: false
+                }
+            };
+        }
+        
+        // Get total number of posts for pagination
+        const totalPosts = data.total;
+        const totalPages = Math.ceil(totalPosts / contentfulConfig.postsPerPage);
+        
+        console.log('Processing posts...');
+        // Transform Contentful data to match your existing blog post structure
+        const posts = await Promise.all(data.items.map(async item => {
+            const fields = item.fields;
+            console.log('Processing post:', {
+                id: item.sys.id,
+                title: fields.title,
+                contentType: item.sys.contentType.sys.id
+            });
+            
+            // Handle rich text content
+            let content = '';
+            if (fields.content) {
+                content = await resolveRichTextReferences(fields.content);
+            }
+
+            // Handle featured image
+            let featuredImage = null;
+            if (fields.featuredImage) {
+                featuredImage = getImageUrl(fields.featuredImage);
+            }
+
+            const post = {
+                id: item.sys.id,
+                title: fields.title,
+                shortTitle: fields.shortTitle,
+                date: fields.date,
+                tags: fields.tags || [],
+                content: content,
+                featuredImage: featuredImage
+            };
+            
+            return post;
+        }));
+
+        console.log('Successfully processed posts:', posts.length);
+        return {
+            posts,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                totalPosts,
+                hasNextPage: page < totalPages,
+                hasPreviousPage: page > 1
+            }
+        };
+    } catch (error) {
+        console.error('Error in fetchBlogPosts:', error);
+        console.error('Error stack:', error.stack);
+        return {
+            posts: [],
+            pagination: {
+                currentPage: 1,
+                totalPages: 0,
+                totalPosts: 0,
+                hasNextPage: false,
+                hasPreviousPage: false
+            }
+        };
+    }
+}
+
+// Export everything as a default export
+export default {
+    contentfulConfig,
+    initializeConfig,
+    fetchBlogPosts
+};
+
+// Also make fetchBlogPosts available globally for non-module scripts
+window.fetchBlogPosts = fetchBlogPosts;
 
 // Function to resolve rich text references
 async function resolveRichTextReferences(richText) {
@@ -192,156 +400,4 @@ function processTable(node) {
 function getImageUrl(image) {
     if (!image || !image.fields || !image.fields.file) return null;
     return `https:${image.fields.file.url}`;
-}
-
-// Function to fetch blog posts from Contentful with pagination
-async function fetchBlogPosts(page = 1, searchQuery = '') {
-    try {
-        console.log('Starting fetchBlogPosts...');
-        console.log('Config:', {
-            space: contentfulConfig.space,
-            environment: contentfulConfig.environment,
-            postsPerPage: contentfulConfig.postsPerPage
-        });
-        
-        // First, let's check what content types are available
-        const typesUrl = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/content_types?access_token=${contentfulConfig.deliveryToken}`;
-        console.log('Checking content types at:', typesUrl);
-        const typesResponse = await fetch(typesUrl);
-        const typesData = await typesResponse.json();
-        console.log('Available content types:', typesData.items.map(type => type.sys.id));
-        
-        // Use the first content type that contains 'post' or 'blog' in its name
-        const postContentType = typesData.items.find(type => 
-            type.sys.id.toLowerCase().includes('post') || 
-            type.sys.id.toLowerCase().includes('blog')
-        );
-        
-        if (!postContentType) {
-            console.log('No suitable content type found, using fallback posts');
-            return {
-                posts: window.blogPosts || [],
-                pagination: {
-                    currentPage: 1,
-                    totalPages: 1,
-                    totalPosts: window.blogPosts ? window.blogPosts.length : 0,
-                    hasNextPage: false,
-                    hasPreviousPage: false
-                }
-            };
-        }
-        
-        console.log('Using content type:', postContentType.sys.id);
-        
-        // Calculate skip value for pagination
-        const skip = (page - 1) * contentfulConfig.postsPerPage;
-        
-        // Build the query URL with the correct content type
-        let url = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/entries?access_token=${contentfulConfig.deliveryToken}&content_type=${postContentType.sys.id}&include=2&limit=${contentfulConfig.postsPerPage}&skip=${skip}&order=-sys.createdAt`;
-        
-        console.log('Making API request to:', url);
-        
-        // Add search query if provided
-        if (searchQuery) {
-            url += `&query=${encodeURIComponent(searchQuery)}`;
-        }
-        
-        const response = await fetch(url);
-        console.log('API Response status:', response.status);
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('API Error response:', errorText);
-            throw new Error(`Failed to fetch blog posts: ${response.status} ${response.statusText}\n${errorText}`);
-        }
-
-        const data = await response.json();
-        console.log('API Response data:', {
-            total: data.total,
-            skip: data.skip,
-            limit: data.limit,
-            items: data.items ? data.items.length : 0
-        });
-        
-        if (!data.items || data.items.length === 0) {
-            console.log('No posts found, using fallback posts');
-            return {
-                posts: window.blogPosts || [],
-                pagination: {
-                    currentPage: 1,
-                    totalPages: 1,
-                    totalPosts: window.blogPosts ? window.blogPosts.length : 0,
-                    hasNextPage: false,
-                    hasPreviousPage: false
-                }
-            };
-        }
-        
-        // Get total number of posts for pagination
-        const totalPosts = data.total;
-        const totalPages = Math.ceil(totalPosts / contentfulConfig.postsPerPage);
-        
-        console.log('Processing posts...');
-        // Transform Contentful data to match your existing blog post structure
-        const posts = await Promise.all(data.items.map(async item => {
-            const fields = item.fields;
-            console.log('Processing post:', {
-                id: item.sys.id,
-                title: fields.title,
-                contentType: item.sys.contentType.sys.id
-            });
-            
-            // Handle rich text content
-            let content = '';
-            if (fields.content) {
-                content = await resolveRichTextReferences(fields.content);
-            }
-
-            // Handle featured image
-            let featuredImage = null;
-            if (fields.featuredImage) {
-                featuredImage = getImageUrl(fields.featuredImage);
-            }
-
-            const post = {
-                id: item.sys.id,
-                title: fields.title,
-                shortTitle: fields.shortTitle,
-                date: fields.date,
-                tags: fields.tags || [],
-                content: content,
-                featuredImage: featuredImage
-            };
-            
-            return post;
-        }));
-
-        console.log('Successfully processed posts:', posts.length);
-        return {
-            posts,
-            pagination: {
-                currentPage: page,
-                totalPages,
-                totalPosts,
-                hasNextPage: page < totalPages,
-                hasPreviousPage: page > 1
-            }
-        };
-    } catch (error) {
-        console.error('Error in fetchBlogPosts:', error);
-        console.error('Error stack:', error.stack);
-        return {
-            posts: window.blogPosts || [],
-            pagination: {
-                currentPage: 1,
-                totalPages: 1,
-                totalPosts: window.blogPosts ? window.blogPosts.length : 0,
-                hasNextPage: false,
-                hasPreviousPage: false
-            }
-        };
-    }
-}
-
-// Make the functions available globally
-window.fetchBlogPosts = fetchBlogPosts; 
+} 
