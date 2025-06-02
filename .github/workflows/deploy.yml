@@ -24,6 +24,25 @@ jobs:
         with:
           node-version: '20'
           
+      - name: Debug environment variables
+        run: |
+          echo "Checking if secrets are set..."
+          if [ -n "${{ secrets.CONTENTFUL_SPACE_ID }}" ]; then
+            echo "CONTENTFUL_SPACE_ID is set"
+          else
+            echo "CONTENTFUL_SPACE_ID is not set"
+          fi
+          if [ -n "${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}" ]; then
+            echo "CONTENTFUL_DELIVERY_TOKEN is set"
+          else
+            echo "CONTENTFUL_DELIVERY_TOKEN is not set"
+          fi
+          if [ -n "${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}" ]; then
+            echo "CONTENTFUL_PREVIEW_TOKEN is set"
+          else
+            echo "CONTENTFUL_PREVIEW_TOKEN is not set"
+          fi
+          
       - name: Replace environment variables
         run: |
           # Create a temporary file
@@ -34,6 +53,11 @@ jobs:
           sed -i "s|CONTENTFUL_PREVIEW_TOKEN|${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}|g" temp.js
           # Move the temporary file back
           mv temp.js contentful-config.js
+          # Debug the replaced file (without exposing secrets)
+          echo "Checking if replacements were made..."
+          grep -q "CONTENTFUL_SPACE_ID" contentful-config.js && echo "WARNING: Space ID not replaced" || echo "Space ID replaced"
+          grep -q "CONTENTFUL_DELIVERY_TOKEN" contentful-config.js && echo "WARNING: Delivery token not replaced" || echo "Delivery token replaced"
+          grep -q "CONTENTFUL_PREVIEW_TOKEN" contentful-config.js && echo "WARNING: Preview token not replaced" || echo "Preview token replaced"
           
       - name: Setup Pages
         uses: actions/configure-pages@v4

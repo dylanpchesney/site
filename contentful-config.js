@@ -7,6 +7,20 @@ const contentfulConfig = {
     postsPerPage: 3
 };
 
+// Function to check if environment variables are properly set
+function checkConfig() {
+    const missingVars = [];
+    if (contentfulConfig.space === 'CONTENTFUL_SPACE_ID') missingVars.push('SPACE_ID');
+    if (contentfulConfig.deliveryToken === 'CONTENTFUL_DELIVERY_TOKEN') missingVars.push('DELIVERY_TOKEN');
+    if (contentfulConfig.previewToken === 'CONTENTFUL_PREVIEW_TOKEN') missingVars.push('PREVIEW_TOKEN');
+    
+    if (missingVars.length > 0) {
+        console.error('Missing or invalid environment variables:', missingVars.join(', '));
+        return false;
+    }
+    return true;
+}
+
 // Function to initialize the configuration
 async function initializeConfig() {
     // Check if we're in development mode (LiveServer)
@@ -19,6 +33,12 @@ async function initializeConfig() {
             console.error('Development configuration not found. Using placeholder values.');
         }
     }
+    
+    if (!checkConfig()) {
+        console.error('Configuration is invalid. Using fallback posts.');
+        return contentfulConfig;
+    }
+    
     console.log('Contentful config loaded');
     return contentfulConfig;
 }
@@ -167,6 +187,21 @@ function getImageUrl(image) {
 async function fetchBlogPosts(page = 1, searchQuery = '') {
     try {
         console.log('Starting fetchBlogPosts...');
+        
+        if (!checkConfig()) {
+            console.error('Invalid configuration, using fallback posts');
+            return {
+                posts: window.blogPosts || [],
+                pagination: {
+                    currentPage: 1,
+                    totalPages: 1,
+                    totalPosts: window.blogPosts ? window.blogPosts.length : 0,
+                    hasNextPage: false,
+                    hasPreviousPage: false
+                }
+            };
+        }
+        
         console.log('Config:', {
             space: contentfulConfig.space,
             environment: contentfulConfig.environment,
