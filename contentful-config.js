@@ -1,5 +1,5 @@
 // Contentful API Configuration
-let contentfulConfig = {
+const contentfulConfig = {
     space: 'CONTENTFUL_SPACE_ID',
     deliveryToken: 'CONTENTFUL_DELIVERY_TOKEN',
     previewToken: 'CONTENTFUL_PREVIEW_TOKEN',
@@ -13,7 +13,7 @@ async function initializeConfig() {
     if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
         try {
             const devConfig = await import('./contentful-config.dev.js');
-            contentfulConfig = devConfig.contentfulConfig;
+            Object.assign(contentfulConfig, devConfig.contentfulConfig);
             console.log('Using development configuration');
         } catch (error) {
             console.error('Development configuration not found. Using placeholder values.');
@@ -313,4 +313,7 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
 }
 
 // Export the configuration and initialization function
-export { contentfulConfig, initializeConfig, fetchBlogPosts }; 
+export { contentfulConfig, initializeConfig, fetchBlogPosts };
+
+// Also make fetchBlogPosts available globally for non-module scripts
+window.fetchBlogPosts = fetchBlogPosts; 

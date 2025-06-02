@@ -5,42 +5,44 @@ on:
     branches: [ main ]
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
-  build-and-deploy:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-
+        uses: actions/checkout@v4
+      
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '16'
-
+          node-version: '20'
+          
       - name: Install dependencies
         run: npm install -g replace-in-file
-
+        
       - name: Replace environment variables
         run: |
-          replace-in-file \
-            --files "contentful-config.js" \
-            --from "CONTENTFUL_SPACE_ID" \
-            --to "${{ secrets.CONTENTFUL_SPACE_ID }}"
-          replace-in-file \
-            --files "contentful-config.js" \
-            --from "CONTENTFUL_DELIVERY_TOKEN" \
-            --to "${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}"
-          replace-in-file \
-            --files "contentful-config.js" \
-            --from "CONTENTFUL_PREVIEW_TOKEN" \
-            --to "${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}"
-
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+          replace-in-file --configFile ./.github/replace-config.js
+        env:
+          CONTENTFUL_SPACE_ID: ${{ secrets.CONTENTFUL_SPACE_ID }}
+          CONTENTFUL_DELIVERY_TOKEN: ${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}
+          CONTENTFUL_PREVIEW_TOKEN: ${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}
+          
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          branch: gh-pages
-          folder: .
-          clean: true
-          token: ${{ secrets.GITHUB_TOKEN }} 
+          path: '.'
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 
