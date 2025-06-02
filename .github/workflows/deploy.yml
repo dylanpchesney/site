@@ -57,8 +57,8 @@ jobs:
           echo "Original file content:"
           head -n 5 contentful-config.js
           
-          # Create a temporary file with the replacements
-          cat > contentful-config.js.tmp << EOF
+          # Create a new file with the correct values
+          cat > contentful-config.js << 'EOF'
           // Contentful API Configuration
           const contentfulConfig = {
               space: '${{ secrets.CONTENTFUL_SPACE_ID }}',
@@ -69,11 +69,8 @@ jobs:
           };
           EOF
           
-          # Append the rest of the file
-          tail -n +7 contentful-config.js >> contentful-config.js.tmp
-          
-          # Replace the original file
-          mv contentful-config.js.tmp contentful-config.js
+          # Append the rest of the file, skipping the first 7 lines
+          tail -n +7 contentful-config.js.bak >> contentful-config.js
           
           # Show the modified file content
           echo "Modified file content:"

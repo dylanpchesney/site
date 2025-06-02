@@ -27,9 +27,17 @@ function checkConfig() {
         postsPerPage: contentfulConfig.postsPerPage
     });
     
-    // Log the actual file content for debugging
-    console.log('Current file content (first 10 lines):');
-    console.log(document.currentScript.textContent.split('\n').slice(0, 10).join('\n'));
+    // Check if we're in production and if the values are still placeholders
+    const isProduction = window.location.hostname !== '127.0.0.1' && window.location.hostname !== 'localhost';
+    if (isProduction) {
+        console.log('Running in production mode');
+        if (contentfulConfig.space === 'CONTENTFUL_SPACE_ID' ||
+            contentfulConfig.deliveryToken === 'CONTENTFUL_DELIVERY_TOKEN' ||
+            contentfulConfig.previewToken === 'CONTENTFUL_PREVIEW_TOKEN') {
+            console.error('Production environment detected but placeholders are still present');
+            console.error('This indicates that the GitHub Actions workflow did not properly replace the placeholders');
+        }
+    }
     
     const missingVars = [];
     if (contentfulConfig.space === 'CONTENTFUL_SPACE_ID') missingVars.push('SPACE_ID');
@@ -38,7 +46,6 @@ function checkConfig() {
     
     if (missingVars.length > 0) {
         console.error('Missing or invalid environment variables:', missingVars.join(', '));
-        console.error('This might indicate that the GitHub Actions workflow did not properly replace the placeholders.');
         return false;
     }
     return true;
