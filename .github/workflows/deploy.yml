@@ -76,14 +76,24 @@ jobs:
             process.exit(1);
           }
           
-          // Replace the placeholders with actual values
-          const replaced = content
-            .replace(/'CONTENTFUL_SPACE_ID'/, `'${spaceId}'`)
-            .replace(/'CONTENTFUL_DELIVERY_TOKEN'/, `'${deliveryToken}'`)
-            .replace(/'CONTENTFUL_PREVIEW_TOKEN'/, `'${previewToken}'`);
+          // Create the new configuration object
+          const configContent = `// Contentful API Configuration
+const contentfulConfig = {
+    space: '${spaceId}',
+    deliveryToken: '${deliveryToken}',
+    previewToken: '${previewToken}',
+    environment: 'master',
+    postsPerPage: 3
+};`;
+          
+          // Get the rest of the file content
+          const restOfFile = content.split('\n').slice(7).join('\n');
+          
+          // Combine the new config with the rest of the file
+          const newContent = configContent + '\n' + restOfFile;
           
           // Write the modified content back
-          fs.writeFileSync('contentful-config.js', replaced);
+          fs.writeFileSync('contentful-config.js', newContent);
           
           // Verify the replacements
           const finalContent = fs.readFileSync('contentful-config.js', 'utf8');
