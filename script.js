@@ -539,11 +539,21 @@ function formatDate(dateString) {
 
 // Helper function to update interaction buttons
 function updateInteractionButtons(postId, stats) {
-  const postElement = document.querySelector(`[data-post-id="${postId}"]`).closest('.blog-post');
+  const postElement = document.querySelector(`.blog-post[data-post-id="${postId}"]`);
+  if (!postElement) {
+    console.error('Could not find blog post element for ID:', postId);
+    return;
+  }
+  
   const likeButton = postElement.querySelector('.like-button');
   const dislikeButton = postElement.querySelector('.dislike-button');
   const likeCount = postElement.querySelector('.like-count');
   const dislikeCount = postElement.querySelector('.dislike-count');
+  
+  if (!likeButton || !dislikeButton || !likeCount || !dislikeCount) {
+    console.error('Could not find interaction elements for post:', postId);
+    return;
+  }
   
   // Update counts
   likeCount.textContent = stats.likes;
