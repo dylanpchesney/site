@@ -329,6 +329,34 @@ async function loadBlogPosts(page = 1, searchQuery = '', append = false) {
       timeline.appendChild(blogPost);
     }
     
+    // Auto-expand the most recent post (first post) if not appending
+    if (!append && posts.length > 0) {
+      console.log('Auto-expanding most recent post');
+      
+      // Use setTimeout to ensure DOM is fully updated
+      setTimeout(() => {
+        const firstPreview = postList.querySelector('.post-preview');
+        const firstBlogPost = timeline.querySelector('.blog-post');
+        
+        if (firstPreview && firstBlogPost) {
+          // Add active classes
+          firstPreview.classList.add('active');
+          firstBlogPost.classList.add('active');
+          
+          // Expand the content
+          const content = firstBlogPost.querySelector('.post-content');
+          const expandButton = firstBlogPost.querySelector('.expand-button');
+          
+          if (content && expandButton) {
+            content.classList.remove('collapsed');
+            expandButton.textContent = 'Show Less';
+          }
+          
+          console.log('Most recent post auto-expanded');
+        }
+      }, 100);
+    }
+    
     console.log('Finished processing posts');
   } catch (error) {
     console.error('Error in loadBlogPosts:', error);
