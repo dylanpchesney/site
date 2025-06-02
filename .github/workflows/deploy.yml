@@ -50,59 +50,44 @@ jobs:
         run: |
           echo "Starting environment variable replacement..."
           
-          # Create a temporary Node.js script to handle the replacement
-          cat > replace.js << 'EOF'
-          const fs = require('fs');
+          # Create a backup of the original file
+          cp contentful-config.js contentful-config.js.bak
           
-          // Read the original file
-          const content = fs.readFileSync('contentful-config.js', 'utf8');
+          # Show the original file content
+          echo "Original file content:"
+          head -n 5 contentful-config.js
           
-          // Get environment variables
-          const spaceId = process.env.CONTENTFUL_SPACE_ID;
-          const deliveryToken = process.env.CONTENTFUL_DELIVERY_TOKEN;
-          const previewToken = process.env.CONTENTFUL_PREVIEW_TOKEN;
+          # Replace the placeholders using sed
+          sed -i "s/space: 'CONTENTFUL_SPACE_ID'/space: '${{ secrets.CONTENTFUL_SPACE_ID }}'/" contentful-config.js
+          sed -i "s/deliveryToken: 'CONTENTFUL_DELIVERY_TOKEN'/deliveryToken: '${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}'/" contentful-config.js
+          sed -i "s/previewToken: 'CONTENTFUL_PREVIEW_TOKEN'/previewToken: '${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}'/" contentful-config.js
           
-          console.log('Environment variables received:');
-          console.log('Space ID length:', spaceId ? spaceId.length : 0);
-          console.log('Delivery token length:', deliveryToken ? deliveryToken.length : 0);
-          console.log('Preview token length:', previewToken ? previewToken.length : 0);
+          # Show the modified file content
+          echo "Modified file content:"
+          head -n 5 contentful-config.js
           
-          // Replace the placeholders with proper string formatting
-          const replaced = content
-            .replace(/space:\s*['"]CONTENTFUL_SPACE_ID['"]/, `space: '${spaceId}'`)
-            .replace(/deliveryToken:\s*['"]CONTENTFUL_DELIVERY_TOKEN['"]/, `deliveryToken: '${deliveryToken}'`)
-            .replace(/previewToken:\s*['"]CONTENTFUL_PREVIEW_TOKEN['"]/, `previewToken: '${previewToken}'`);
+          # Verify the replacements
+          echo "Verifying replacements..."
+          if grep -q "CONTENTFUL_SPACE_ID" contentful-config.js; then
+            echo "WARNING: SPACE_ID placeholder still present"
+          else
+            echo "SPACE_ID replaced successfully"
+          fi
           
-          // Write the replaced content back
-          fs.writeFileSync('contentful-config.js', replaced);
+          if grep -q "CONTENTFUL_DELIVERY_TOKEN" contentful-config.js; then
+            echo "WARNING: DELIVERY_TOKEN placeholder still present"
+          else
+            echo "DELIVERY_TOKEN replaced successfully"
+          fi
           
-          // Verify the replacements
-          const finalContent = fs.readFileSync('contentful-config.js', 'utf8');
-          console.log('\nVerifying replacements...');
+          if grep -q "CONTENTFUL_PREVIEW_TOKEN" contentful-config.js; then
+            echo "WARNING: PREVIEW_TOKEN placeholder still present"
+          else
+            echo "PREVIEW_TOKEN replaced successfully"
+          fi
           
-          // Check each replacement
-          const spaceMatch = finalContent.match(/space:\s*['"]([^'"]+)['"]/);
-          const deliveryMatch = finalContent.match(/deliveryToken:\s*['"]([^'"]+)['"]/);
-          const previewMatch = finalContent.match(/previewToken:\s*['"]([^'"]+)['"]/);
-          
-          console.log('Space ID replaced:', spaceMatch && spaceMatch[1] !== 'CONTENTFUL_SPACE_ID');
-          console.log('Delivery token replaced:', deliveryMatch && deliveryMatch[1] !== 'CONTENTFUL_DELIVERY_TOKEN');
-          console.log('Preview token replaced:', previewMatch && previewMatch[1] !== 'CONTENTFUL_PREVIEW_TOKEN');
-          
-          // Show the first few lines of the file (without secrets)
-          const firstLines = finalContent.split('\n').slice(0, 5).join('\n');
-          console.log('\nFirst few lines of the file:');
-          console.log(firstLines);
-          EOF
-          
-          # Run the replacement script with the secrets
-          CONTENTFUL_SPACE_ID="${{ secrets.CONTENTFUL_SPACE_ID }}" \
-          CONTENTFUL_DELIVERY_TOKEN="${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}" \
-          CONTENTFUL_PREVIEW_TOKEN="${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}" \
-          node replace.js
-          
-          # Clean up
-          rm replace.js
+          # Add a timestamp to prevent caching
+          echo "// Last updated: $(date)" >> contentful-config.js
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
