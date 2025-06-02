@@ -15,6 +15,12 @@ function checkConfig() {
     const isProduction = window.location.hostname !== '127.0.0.1' && window.location.hostname !== 'localhost';
     console.log('Environment:', isProduction ? 'Production' : 'Development');
     
+    console.log('Current config values:', {
+        space: contentfulConfig.space,
+        deliveryToken: contentfulConfig.deliveryToken ? contentfulConfig.deliveryToken.substring(0, 10) + '...' : 'missing',
+        previewToken: contentfulConfig.previewToken ? contentfulConfig.previewToken.substring(0, 10) + '...' : 'missing'
+    });
+    
     const missingVars = [];
     if (contentfulConfig.space === 'CONTENTFUL_SPACE_ID') missingVars.push('SPACE_ID');
     if (contentfulConfig.deliveryToken === 'CONTENTFUL_DELIVERY_TOKEN') missingVars.push('DELIVERY_TOKEN');
@@ -266,8 +272,12 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
             type.sys.id.toLowerCase().includes('blog')
         );
         
+        console.log('Looking for content types containing "post" or "blog"');
+        console.log('Found content type:', postContentType ? postContentType.sys.id : 'None');
+        
         if (!postContentType) {
             console.log('No suitable content type found');
+            console.log('Available types:', typesData.items.map(type => type.sys.id).join(', '));
             return {
                 posts: [],
                 pagination: {
