@@ -55,13 +55,13 @@ jobs:
           echo "Starting environment variable replacement..."
           
           # Create the production config file
-          cat > contentful-config.js << 'EOF'
+          cat > contentful-config.js << EOF
           // Contentful API Configuration
           const contentfulConfig = {
-              space: '${{ secrets.CONTENTFUL_SPACE_ID }}',
-              deliveryToken: '${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}',
-              previewToken: '${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}',
-              environment: 'master',
+              space: "${SPACE_ID}",
+              deliveryToken: "${DELIVERY_TOKEN}",
+              previewToken: "${PREVIEW_TOKEN}",
+              environment: "master",
               postsPerPage: 3
           };
           
