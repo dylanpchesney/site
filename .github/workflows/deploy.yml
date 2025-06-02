@@ -29,35 +29,53 @@ jobs:
           echo "Checking if secrets are set..."
           if [ -n "${{ secrets.CONTENTFUL_SPACE_ID }}" ]; then
             echo "CONTENTFUL_SPACE_ID is set"
+            echo "Length of SPACE_ID: ${#CONTENTFUL_SPACE_ID}"
           else
             echo "CONTENTFUL_SPACE_ID is not set"
           fi
           if [ -n "${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}" ]; then
             echo "CONTENTFUL_DELIVERY_TOKEN is set"
+            echo "Length of DELIVERY_TOKEN: ${#CONTENTFUL_DELIVERY_TOKEN}"
           else
             echo "CONTENTFUL_DELIVERY_TOKEN is not set"
           fi
           if [ -n "${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}" ]; then
             echo "CONTENTFUL_PREVIEW_TOKEN is set"
+            echo "Length of PREVIEW_TOKEN: ${#CONTENTFUL_PREVIEW_TOKEN}"
           else
             echo "CONTENTFUL_PREVIEW_TOKEN is not set"
           fi
           
       - name: Replace environment variables
         run: |
+          echo "Starting environment variable replacement..."
           # Create a temporary file
           cat contentful-config.js > temp.js
+          echo "Created temporary file"
+          
+          # Debug the original file
+          echo "Original file contains:"
+          grep -n "CONTENTFUL_" temp.js
+          
           # Replace the placeholders with actual values
+          echo "Replacing placeholders..."
           sed -i "s|CONTENTFUL_SPACE_ID|${{ secrets.CONTENTFUL_SPACE_ID }}|g" temp.js
           sed -i "s|CONTENTFUL_DELIVERY_TOKEN|${{ secrets.CONTENTFUL_DELIVERY_TOKEN }}|g" temp.js
           sed -i "s|CONTENTFUL_PREVIEW_TOKEN|${{ secrets.CONTENTFUL_PREVIEW_TOKEN }}|g" temp.js
+          
           # Move the temporary file back
           mv temp.js contentful-config.js
+          echo "Moved file back"
+          
           # Debug the replaced file (without exposing secrets)
           echo "Checking if replacements were made..."
           grep -q "CONTENTFUL_SPACE_ID" contentful-config.js && echo "WARNING: Space ID not replaced" || echo "Space ID replaced"
           grep -q "CONTENTFUL_DELIVERY_TOKEN" contentful-config.js && echo "WARNING: Delivery token not replaced" || echo "Delivery token replaced"
           grep -q "CONTENTFUL_PREVIEW_TOKEN" contentful-config.js && echo "WARNING: Preview token not replaced" || echo "Preview token replaced"
+          
+          # Show the first few lines of the file (without secrets)
+          echo "First few lines of the file:"
+          head -n 5 contentful-config.js
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
