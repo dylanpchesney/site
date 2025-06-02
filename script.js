@@ -287,48 +287,36 @@ async function loadBlogPosts(page = 1, searchQuery = '', append = false) {
 }
 
 function createPostPreview(post) {
-  console.log('Creating post preview for:', post);
-  const preview = document.createElement('div');
-  preview.className = 'post-preview';
-  preview.dataset.postId = post.id;
-  
-  const title = document.createElement('h4');
-  title.textContent = post.shortTitle || post.title;
-  
-  const date = document.createElement('div');
-  date.className = 'post-date';
-  date.textContent = formatDate(post.date);
-  
-  const tags = document.createElement('div');
-  tags.className = 'post-tags';
-  if (post.tags && post.tags.length > 0) {
-    post.tags.forEach(tag => {
-      const tagSpan = document.createElement('span');
-      tagSpan.className = 'post-tag';
-      tagSpan.textContent = tag;
-      tags.appendChild(tagSpan);
-    });
-  }
-  
-  preview.appendChild(title);
-  preview.appendChild(date);
-  preview.appendChild(tags);
-  
-  preview.addEventListener('click', () => {
-    console.log('Preview clicked:', post.id);
-    document.querySelectorAll('.post-preview').forEach(p => p.classList.remove('active'));
-    preview.classList.add('active');
+    console.log('Creating post preview:', post);
+    const preview = document.createElement('div');
+    preview.className = 'post-preview';
+    preview.innerHTML = `
+        <h4>${post.title}</h4>
+        <div class="post-date">${formatDate(post.date)}</div>
+        <div class="post-tags">
+            ${post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')}
+        </div>
+    `;
     
-    const postElement = document.querySelector(`.blog-post[data-post-id="${post.id}"]`);
-    if (postElement) {
-      document.querySelectorAll('.blog-post').forEach(p => p.classList.remove('active'));
-      postElement.classList.add('active');
-      postElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  });
-  
-  console.log('Created preview element:', preview);
-  return preview;
+    // Add click handler to the entire preview
+    preview.addEventListener('click', () => {
+        console.log('Post preview clicked:', post.title);
+        const blogPost = document.querySelector(`.blog-post[data-id="${post.id}"]`);
+        if (blogPost) {
+            // Remove active class from all previews and posts
+            document.querySelectorAll('.post-preview').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.blog-post').forEach(p => p.classList.remove('active'));
+            
+            // Add active class to clicked preview and corresponding post
+            preview.classList.add('active');
+            blogPost.classList.add('active');
+            
+            // Scroll to the post
+            blogPost.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+    
+    return preview;
 }
 
 function createBlogPost(post) {

@@ -1,8 +1,8 @@
 // Contentful API Configuration
 const contentfulConfig = {
     space: 'sapssgguac2u', // Your Space ID
-    deliveryToken: process.env.CONTENTFUL_DELIVERY_TOKEN || '', // Content Delivery API token
-    previewToken: process.env.CONTENTFUL_PREVIEW_TOKEN || '', // Content Preview API token
+    deliveryToken: 'VqrUc-rft1ShXcch0N5oa3uVKeFfJAGLeKCSEARPyHg', // Content Delivery API token
+    previewToken: 'ARZCwfccwWDxDbUpVZvq2FU6A982LoeMqddYdKnpwr4', // Content Preview API token
     environment: 'master',
     postsPerPage: 3 // Changed to 3 posts per page
 };
@@ -286,11 +286,11 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         console.error('Error in fetchBlogPosts:', error);
         console.error('Error stack:', error.stack);
         return {
-            posts: [],
+            posts: window.blogPosts || [],
             pagination: {
                 currentPage: 1,
                 totalPages: 1,
-                totalPosts: 0,
+                totalPosts: window.blogPosts ? window.blogPosts.length : 0,
                 hasNextPage: false,
                 hasPreviousPage: false
             }
