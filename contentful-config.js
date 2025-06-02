@@ -1,8 +1,8 @@
 // Contentful API Configuration
 const contentfulConfig = {
-    space: 'sapssgguac2u', // Your Space ID
-    deliveryToken: 'VqrUc-rft1ShXcch0N5oa3uVKeFfJAGLeKCSEARPyHg', // Content Delivery API token
-    previewToken: 'ARZCwfccwWDxDbUpVZvq2FU6A982LoeMqddYdKnpwr4', // Content Preview API token
+    space: process.env.CONTENTFUL_SPACE_ID || 'sapssgguac2u',
+    deliveryToken: process.env.CONTENTFUL_DELIVERY_TOKEN || 'VqrUc-rft1ShXcch0N5oa3uVKeFfJAGLeKCSEARPyHg',
+    previewToken: process.env.CONTENTFUL_PREVIEW_TOKEN || 'ARZCwfccwWDxDbUpVZvq2FU6A982LoeMqddYdKnpwr4',
     environment: 'master',
     postsPerPage: 3 // Changed to 3 posts per page
 };

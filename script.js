@@ -290,6 +290,8 @@ function createPostPreview(post) {
     console.log('Creating post preview:', post);
     const preview = document.createElement('div');
     preview.className = 'post-preview';
+    preview.dataset.postId = post.id;
+    
     preview.innerHTML = `
         <h4>${post.title}</h4>
         <div class="post-date">${formatDate(post.date)}</div>
@@ -301,7 +303,8 @@ function createPostPreview(post) {
     // Add click handler to the entire preview
     preview.addEventListener('click', () => {
         console.log('Post preview clicked:', post.title);
-        const blogPost = document.querySelector(`.blog-post[data-id="${post.id}"]`);
+        // Find the corresponding blog post using the data attribute
+        const blogPost = document.querySelector(`.blog-post[data-post-id="${post.id}"]`);
         if (blogPost) {
             // Remove active class from all previews and posts
             document.querySelectorAll('.post-preview').forEach(p => p.classList.remove('active'));
@@ -310,6 +313,14 @@ function createPostPreview(post) {
             // Add active class to clicked preview and corresponding post
             preview.classList.add('active');
             blogPost.classList.add('active');
+            
+            // Expand the post content
+            const content = blogPost.querySelector('.post-content');
+            const expandButton = blogPost.querySelector('.expand-button');
+            if (content && expandButton) {
+                content.classList.remove('collapsed');
+                expandButton.textContent = 'Show Less';
+            }
             
             // Scroll to the post
             blogPost.scrollIntoView({ behavior: 'smooth', block: 'start' });
