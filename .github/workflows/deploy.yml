@@ -72,6 +72,17 @@ jobs:
           console.log('Space ID replaced:', !finalContent.includes('CONTENTFUL_SPACE_ID'));
           console.log('Delivery token replaced:', !finalContent.includes('CONTENTFUL_DELIVERY_TOKEN'));
           console.log('Preview token replaced:', !finalContent.includes('CONTENTFUL_PREVIEW_TOKEN'));
+          
+          // Show the first few lines of the file (without secrets)
+          const firstLines = finalContent.split('\n').slice(0, 5).join('\n');
+          console.log('\nFirst few lines of the file:');
+          console.log(firstLines);
+          
+          // Check if the values are actually replaced
+          const configMatch = finalContent.match(/space:\s*['"]([^'"]+)['"]/);
+          if (configMatch) {
+            console.log('\nSpace value:', configMatch[1].length > 0 ? 'Replaced' : 'Empty');
+          }
           EOF
           
           # Run the replacement script with the secrets

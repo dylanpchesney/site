@@ -9,6 +9,13 @@ const contentfulConfig = {
 
 // Function to check if environment variables are properly set
 function checkConfig() {
+    console.log('Checking configuration...');
+    console.log('Current config:', {
+        space: contentfulConfig.space,
+        deliveryToken: contentfulConfig.deliveryToken ? 'Set' : 'Not set',
+        previewToken: contentfulConfig.previewToken ? 'Set' : 'Not set'
+    });
+    
     const missingVars = [];
     if (contentfulConfig.space === 'CONTENTFUL_SPACE_ID') missingVars.push('SPACE_ID');
     if (contentfulConfig.deliveryToken === 'CONTENTFUL_DELIVERY_TOKEN') missingVars.push('DELIVERY_TOKEN');
@@ -23,6 +30,9 @@ function checkConfig() {
 
 // Function to initialize the configuration
 async function initializeConfig() {
+    console.log('Initializing configuration...');
+    console.log('Current hostname:', window.location.hostname);
+    
     // Check if we're in development mode (LiveServer)
     if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
         try {
@@ -32,6 +42,8 @@ async function initializeConfig() {
         } catch (error) {
             console.error('Development configuration not found. Using placeholder values.');
         }
+    } else {
+        console.log('Running in production mode');
     }
     
     if (!checkConfig()) {
@@ -39,7 +51,7 @@ async function initializeConfig() {
         return contentfulConfig;
     }
     
-    console.log('Contentful config loaded');
+    console.log('Contentful config loaded successfully');
     return contentfulConfig;
 }
 
