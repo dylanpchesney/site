@@ -81,22 +81,19 @@ function initializeBlog() {
     // Search on button click
     searchButton.addEventListener('click', () => {
       console.log('Search button clicked');
-      const searchQuery = searchInput.value.trim();
-      currentPage = 1;
-      hasMorePosts = true;
-      loadBlogPosts(1, searchQuery);
+      performSearch();
     });
     
     // Search on Enter key
     searchInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         console.log('Search input enter pressed');
-        const searchQuery = searchInput.value.trim();
-        currentPage = 1;
-        hasMorePosts = true;
-        loadBlogPosts(1, searchQuery);
+        performSearch();
       }
     });
+    
+    // Add placeholder text with tag hint
+    searchInput.placeholder = 'Search posts... (try #tag for tags)';
   }
   
   // Infinite scroll
@@ -379,12 +376,17 @@ function createPostPreview(post) {
         <h4>${post.title}</h4>
         <div class="post-date">${formatDate(post.date)}</div>
         <div class="post-tags">
-            ${post.tags.map(tag => `<span class="post-tag">${tag}</span>`).join('')}
+            ${post.tags.map(tag => `<span class="post-tag clickable-tag" data-tag="${tag}">${tag}</span>`).join('')}
         </div>
     `;
     
     // Add click handler to the entire preview
-    preview.addEventListener('click', () => {
+    preview.addEventListener('click', (e) => {
+        // Don't trigger post selection if clicking on a tag
+        if (e.target.classList.contains('clickable-tag')) {
+            return;
+        }
+        
         console.log('Post preview clicked:', post.title);
         // Find the corresponding blog post using the data attribute
         const blogPost = document.querySelector(`.blog-post[data-post-id="${post.id}"]`);
@@ -408,6 +410,16 @@ function createPostPreview(post) {
             // Scroll to the post
             blogPost.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+    });
+    
+    // Add click handlers for tags
+    const tagElements = preview.querySelectorAll('.clickable-tag');
+    tagElements.forEach(tagElement => {
+        tagElement.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent post selection
+            const tag = e.target.dataset.tag;
+            filterByTag(tag);
+        });
     });
     
     return preview;
@@ -434,8 +446,13 @@ function createBlogPost(post) {
   if (post.tags && post.tags.length > 0) {
     post.tags.forEach(tag => {
       const tagSpan = document.createElement('span');
-      tagSpan.className = 'post-tag';
+      tagSpan.className = 'post-tag clickable-tag';
+      tagSpan.dataset.tag = tag;
       tagSpan.textContent = tag;
+      tagSpan.addEventListener('click', (e) => {
+        e.stopPropagation();
+        filterByTag(tag);
+      });
       tags.appendChild(tagSpan);
     });
   }
@@ -563,4 +580,97 @@ function updateInteractionButtons(postId, stats) {
   const userVote = window.blogAnalytics.getUserVote(postId);
   likeButton.classList.toggle('active', userVote === 'like');
   dislikeButton.classList.toggle('active', userVote === 'dislike');
+}
+
+// Filter posts by tag
+function filterByTag(tag) {
+  console.log('Filtering by tag:', tag);
+  
+  // Update search input to show the tag
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.value = `#${tag}`;
+  }
+  
+  // Show active tag indicator
+  showActiveFilter(`Tag: ${tag}`);
+  
+  // Reset pagination and load posts with tag filter
+  currentPage = 1;
+  hasMorePosts = true;
+  loadBlogPosts(1, tag);
+}
+
+// Show active filter indicator
+function showActiveFilter(filterText) {
+  // Remove any existing filter indicator
+  const existingIndicator = document.querySelector('.active-filter');
+  if (existingIndicator) {
+    existingIndicator.remove();
+  }
+  
+  // Create new filter indicator
+  const indicator = document.createElement('div');
+  indicator.className = 'active-filter';
+  indicator.innerHTML = `
+    <span class="filter-text">${filterText}</span>
+    <button class="clear-filter" onclick="clearFilter()">✕</button>
+  `;
+  
+  // Insert after search container
+  const searchContainer = document.querySelector('.search-container');
+  if (searchContainer) {
+    searchContainer.insertAdjacentElement('afterend', indicator);
+  }
+}
+
+// Clear active filter
+function clearFilter() {
+  // Remove filter indicator
+  const indicator = document.querySelector('.active-filter');
+  if (indicator) {
+    indicator.remove();
+  }
+  
+  // Clear search input
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    searchInput.value = '';
+  }
+  
+  // Reset and reload all posts
+  currentPage = 1;
+  hasMorePosts = true;
+  currentSearchQuery = '';
+  loadBlogPosts(1, '');
+}
+
+// Enhanced search function
+function performSearch() {
+  const searchInput = document.getElementById('search-input');
+  if (!searchInput) return;
+  
+  const query = searchInput.value.trim();
+  
+  // Check if it's a tag search (starts with #)
+  if (query.startsWith('#')) {
+    const tag = query.substring(1);
+    if (tag) {
+      filterByTag(tag);
+      return;
+    }
+  }
+  
+  // Regular search
+  if (query !== currentSearchQuery) {
+    if (query) {
+      showActiveFilter(`Search: "${query}"`);
+    } else {
+      clearFilter();
+    }
+    
+    currentPage = 1;
+    hasMorePosts = true;
+    loadBlogPosts(1, query);
+  }
 }
