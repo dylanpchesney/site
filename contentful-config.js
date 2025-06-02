@@ -1,7 +1,8 @@
 // Contentful API Configuration
 const contentfulConfig = {
     space: 'sapssgguac2u', // Your Space ID
-    accessToken: 'poLEYV3o7FAQyan1Si-fBPEglPEg4gTYns6xvyoLSX8', // Your Content Delivery API access token
+    deliveryToken: 'VqrUc-rft1ShXcch0N5oa3uVKeFfJAGLeKCSEARPyHg', // Content Delivery API token
+    previewToken: 'ARZCwfccwWDxDbUpVZvq2FU6A982LoeMqddYdKnpwr4', // Content Preview API token
     environment: 'master',
     postsPerPage: 3 // Changed to 3 posts per page
 };
@@ -159,7 +160,7 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         });
         
         // First, let's check what content types are available
-        const typesUrl = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/content_types?access_token=${contentfulConfig.accessToken}`;
+        const typesUrl = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/content_types?access_token=${contentfulConfig.deliveryToken}`;
         console.log('Checking content types at:', typesUrl);
         const typesResponse = await fetch(typesUrl);
         const typesData = await typesResponse.json();
@@ -191,7 +192,7 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         const skip = (page - 1) * contentfulConfig.postsPerPage;
         
         // Build the query URL with the correct content type
-        let url = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/entries?access_token=${contentfulConfig.accessToken}&content_type=${postContentType.sys.id}&include=2&limit=${contentfulConfig.postsPerPage}&skip=${skip}&order=-sys.createdAt`;
+        let url = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/entries?access_token=${contentfulConfig.deliveryToken}&content_type=${postContentType.sys.id}&include=2&limit=${contentfulConfig.postsPerPage}&skip=${skip}&order=-sys.createdAt`;
         
         console.log('Making API request to:', url);
         
