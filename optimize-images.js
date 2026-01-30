@@ -5,7 +5,7 @@ console.log(`
 🖼️ IMAGE OPTIMIZATION GUIDE
 ==============================
 
-Your headshot.jpg is currently 2.4MB - way too large for web!
+Your headshot.jpg is now optimized at 23KB - perfect for web! ✅
 
 QUICK FIXES:
 1. Use an online compressor:

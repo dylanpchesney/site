@@ -7,15 +7,29 @@ const contentfulConfig = {
     postsPerPage: 3
 };
 
+// Debug mode - set to false for production
+const DEBUG = typeof window !== 'undefined' && (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost');
+
+// Debug logging helper
+function debugLog(...args) {
+    if (DEBUG) {
+        console.log(...args);
+    }
+}
+
+function debugError(...args) {
+    console.error(...args); // Always log errors
+}
+
 // Function to check if environment variables are properly set
 function checkConfig() {
-    console.log('Checking configuration...');
-    console.log('Current hostname:', window.location.hostname);
+    debugLog('Checking configuration...');
+    debugLog('Current hostname:', typeof window !== 'undefined' ? window.location.hostname : 'server');
     
-    const isProduction = window.location.hostname !== '127.0.0.1' && window.location.hostname !== 'localhost';
-    console.log('Environment:', isProduction ? 'Production' : 'Development');
+    const isProduction = typeof window !== 'undefined' && window.location.hostname !== '127.0.0.1' && window.location.hostname !== 'localhost';
+    debugLog('Environment:', isProduction ? 'Production' : 'Development');
     
-    console.log('Current config values:', {
+    debugLog('Current config values:', {
         space: contentfulConfig.space,
         deliveryToken: contentfulConfig.deliveryToken ? contentfulConfig.deliveryToken.substring(0, 10) + '...' : 'missing',
         previewToken: contentfulConfig.previewToken ? contentfulConfig.previewToken.substring(0, 10) + '...' : 'missing'
@@ -27,7 +41,7 @@ function checkConfig() {
     if (contentfulConfig.previewToken === 'CONTENTFUL_PREVIEW_TOKEN') missingVars.push('PREVIEW_TOKEN');
     
     if (missingVars.length > 0) {
-        console.error('Missing or invalid environment variables:', missingVars.join(', '));
+        debugError('Missing or invalid environment variables:', missingVars.join(', '));
         return false;
     }
     return true;
@@ -35,33 +49,33 @@ function checkConfig() {
 
 // Function to initialize the configuration
 async function initializeConfig() {
-    console.log('Initializing configuration...');
+    debugLog('Initializing configuration...');
     
     // Check if we're in development mode
-    if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+    if (typeof window !== 'undefined' && (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost')) {
         try {
             // Try to load the local development config first
             let devConfig;
             try {
                 devConfig = await import('./contentful-config.dev.local.js');
-                console.log('Using local development configuration');
+                debugLog('Using local development configuration');
             } catch (error) {
                 // Fallback to the template dev config
                 devConfig = await import('./contentful-config.dev.js');
-                console.log('Using template development configuration');
+                debugLog('Using template development configuration');
             }
             Object.assign(contentfulConfig, devConfig.contentfulConfig);
         } catch (error) {
-            console.error('Development configuration not found. Using placeholder values.');
+            debugError('Development configuration not found. Using placeholder values.');
         }
     }
     
     if (!checkConfig()) {
-        console.error('Configuration is invalid. Using fallback posts.');
+        debugError('Configuration is invalid. Using fallback posts.');
         return contentfulConfig;
     }
     
-    console.log('Contentful config loaded successfully');
+    debugLog('Contentful config loaded successfully');
     return contentfulConfig;
 }
 
@@ -208,10 +222,10 @@ function getImageUrl(image) {
 // Function to fetch blog posts from Contentful with pagination
 async function fetchBlogPosts(page = 1, searchQuery = '') {
     try {
-        console.log('Starting fetchBlogPosts...');
+        debugLog('Starting fetchBlogPosts...');
         
         if (!checkConfig()) {
-            console.error('Invalid configuration, no posts available');
+            debugError('Invalid configuration, no posts available');
             return {
                 posts: [],
                 pagination: {
@@ -224,7 +238,7 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
             };
         }
         
-        console.log('Config:', {
+        debugLog('Config:', {
             space: contentfulConfig.space,
             environment: contentfulConfig.environment,
             postsPerPage: contentfulConfig.postsPerPage
@@ -232,11 +246,11 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         
         // First, let's check what content types are available
         const typesUrl = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/content_types?access_token=${contentfulConfig.deliveryToken}`;
-        console.log('Checking content types at:', typesUrl);
+        debugLog('Checking content types at:', typesUrl);
         
         const typesResponse = await fetch(typesUrl);
         if (!typesResponse.ok) {
-            console.error('Failed to fetch content types:', typesResponse.status, typesResponse.statusText);
+            debugError('Failed to fetch content types:', typesResponse.status, typesResponse.statusText);
             return {
                 posts: [],
                 pagination: {
@@ -251,7 +265,7 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         
         const typesData = await typesResponse.json();
         if (!typesData || !typesData.items) {
-            console.error('Invalid response from Contentful:', typesData);
+            debugError('Invalid response from Contentful:', typesData);
             return {
                 posts: [],
                 pagination: {
@@ -264,7 +278,7 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
             };
         }
         
-        console.log('Available content types:', typesData.items.map(type => type.sys.id));
+        debugLog('Available content types:', typesData.items.map(type => type.sys.id));
         
         // Use the first content type that contains 'post' or 'blog' in its name
         const postContentType = typesData.items.find(type => 
@@ -272,12 +286,12 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
             type.sys.id.toLowerCase().includes('blog')
         );
         
-        console.log('Looking for content types containing "post" or "blog"');
-        console.log('Found content type:', postContentType ? postContentType.sys.id : 'None');
+        debugLog('Looking for content types containing "post" or "blog"');
+        debugLog('Found content type:', postContentType ? postContentType.sys.id : 'None');
         
         if (!postContentType) {
-            console.log('No suitable content type found');
-            console.log('Available types:', typesData.items.map(type => type.sys.id).join(', '));
+            debugLog('No suitable content type found');
+            debugLog('Available types:', typesData.items.map(type => type.sys.id).join(', '));
             return {
                 posts: [],
                 pagination: {
@@ -290,7 +304,7 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
             };
         }
         
-        console.log('Using content type:', postContentType.sys.id);
+        debugLog('Using content type:', postContentType.sys.id);
         
         // Calculate skip value for pagination
         const skip = (page - 1) * contentfulConfig.postsPerPage;
@@ -298,7 +312,7 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         // Build the query URL with the correct content type
         let url = `https://cdn.contentful.com/spaces/${contentfulConfig.space}/environments/${contentfulConfig.environment}/entries?access_token=${contentfulConfig.deliveryToken}&content_type=${postContentType.sys.id}&include=2&limit=${contentfulConfig.postsPerPage}&skip=${skip}&order=-sys.createdAt`;
         
-        console.log('Making API request to:', url);
+        debugLog('Making API request to:', url);
         
         // Add search query if provided
         if (searchQuery) {
@@ -306,16 +320,16 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         }
         
         const response = await fetch(url);
-        console.log('API Response status:', response.status);
+        debugLog('API Response status:', response.status);
         
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('API Error response:', errorText);
+            debugError('API Error response:', errorText);
             throw new Error(`Failed to fetch blog posts: ${response.status} ${response.statusText}\n${errorText}`);
         }
 
         const data = await response.json();
-        console.log('API Response data:', {
+        debugLog('API Response data:', {
             total: data.total,
             skip: data.skip,
             limit: data.limit,
@@ -323,7 +337,7 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         });
         
         if (!data.items || data.items.length === 0) {
-            console.log('No posts found in Contentful');
+            debugLog('No posts found in Contentful');
             return {
                 posts: [],
                 pagination: {
@@ -340,11 +354,11 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
         const totalPosts = data.total;
         const totalPages = Math.ceil(totalPosts / contentfulConfig.postsPerPage);
         
-        console.log('Processing posts...');
+        debugLog('Processing posts...');
         // Transform Contentful data to match your existing blog post structure
         const posts = await Promise.all(data.items.map(async item => {
             const fields = item.fields;
-            console.log('Processing post:', {
+            debugLog('Processing post:', {
                 id: item.sys.id,
                 title: fields.title,
                 contentType: item.sys.contentType.sys.id
@@ -375,7 +389,7 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
             return post;
         }));
 
-        console.log('Successfully processed posts:', posts.length);
+        debugLog('Successfully processed posts:', posts.length);
         return {
             posts,
             pagination: {
@@ -387,8 +401,8 @@ async function fetchBlogPosts(page = 1, searchQuery = '') {
             }
         };
     } catch (error) {
-        console.error('Error in fetchBlogPosts:', error);
-        console.error('Error stack:', error.stack);
+        debugError('Error in fetchBlogPosts:', error);
+        debugError('Error stack:', error.stack);
         return {
             posts: [],
             pagination: {
