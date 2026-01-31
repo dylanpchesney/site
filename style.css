@@ -27,16 +27,18 @@
 body {
   font-family: 'Avenir LT Std', sans-serif;
   font-weight: normal;
-  line-height: 1.6;
+  font-size: 1.25rem; /* 20px base - increased from 18px */
+  line-height: 1.7;
   margin: 0;
   padding: 0;
-  background-color: #ffffff;
+  background-color: #D7E4EB;
   color: #333;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
+  background-color: #D7E4EB;
   transition: background-color 1.5s ease-in-out;
+  position: relative;
 }
 
 /* Push Content Down to Prevent Footer Overlap */
@@ -51,10 +53,10 @@ body.fun-mode footer {
   left: 0;
   width: 100%;
   margin-top: auto; /* Pushes footer to bottom */
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #30BAFF 60%);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #4A6A7C 60%);
 }
 body.fun-mode.active {
-  background-color: #30BAFF !important; /* Ensures the background stays */
+  background-color: #4A6A7C !important; /* Ensures the background stays */
   color: white; /* Adjust text color for better contrast */
 }
 /* Make the whole page stretch to push footer down */
@@ -79,13 +81,25 @@ header {
 
 @keyframes glow-animation {
     0% {
-      filter: drop-shadow(0px 0px 5px rgba(48, 186, 255, 0.5));
+      filter: drop-shadow(0px 0px 5px rgba(74, 106, 124, 0.5));
     }
     50% {
-      filter: drop-shadow(0px 0px 25px rgba(48, 186, 255, 1));
+      filter: drop-shadow(0px 0px 25px rgba(74, 106, 124, 1));
     }
     100% {
-      filter: drop-shadow(0px 0px 5px rgba(48, 186, 255, 0.5));
+      filter: drop-shadow(0px 0px 5px rgba(74, 106, 124, 0.5));
+    }
+  }
+
+@keyframes glow-animation-fun {
+    0% {
+      filter: drop-shadow(0px 0px 5px rgba(255, 152, 0, 0.5));
+    }
+    50% {
+      filter: drop-shadow(0px 0px 25px rgba(255, 152, 0, 1));
+    }
+    100% {
+      filter: drop-shadow(0px 0px 5px rgba(255, 152, 0, 0.5));
     }
   }
   /* design of the header-avatar */
@@ -94,6 +108,10 @@ header {
     width: 35px;
     height: auto;
     animation: glow-animation 7s infinite ease-in-out;
+  }
+
+  body.fun-mode .header-avatar {
+    animation: glow-animation-fun 7s infinite ease-in-out;
   }
 /* iOS-Style Toggle Container */
 .toggle-container {
@@ -128,7 +146,7 @@ header {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #30BAFF;
+  background-color: #4A6A7C;
   transition: 0.4s;
   border-radius: 34px;
 }
@@ -186,7 +204,7 @@ body.fun-mode .hidden-section {
   width: 100%;
   height: 50%;
   z-index: 9999; /* Ensure it covers everything */
-  background-color: #30BAFF;
+  background-color: #4A6A7C;
   animation: waveIn 1.5s ease-in-out forwards; /* Slower transition */
 }
 
@@ -249,25 +267,75 @@ nav ul li a {
 
 /* Main Content */
 main {
+  padding: 0;
+  max-width: 100%;
+  margin: 0;
+  display: flex;
+  position: relative;
+  flex: 1;
+  padding-bottom: 150px; /* Add padding to prevent footer overlap */
+}
+
+@media (max-width: 768px) {
+  main {
+    flex-direction: column;
+  }
+}
+
+.main-content {
+  flex: 1;
   padding: 0 20px;
   max-width: 1222px;
   margin: 0 auto;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    order: 1;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+.cta-sidebar {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 200px;
+  padding: 20px;
+  z-index: 100;
+}
+
+@media (max-width: 768px) {
+  .cta-sidebar {
+    position: static;
+    width: 100%;
+    padding: 0 20px;
+    transform: none;
+    top: auto;
+    order: 3; /* Place after about-me section */
+  }
 }
 
 /* Footer */
 footer {
   text-align: center;
   line-height: .75;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #30BAFF 60%);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #4A6A7C 60%);
   width: 100%;
   padding-top: 2em;
   padding-bottom: .1em;
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  font-size: 0.9em;
-  color: #000000;
+  font-size: 0.85em;
+  color: rgba(0, 0, 0, 0.9);
+  z-index: 10;
 }
 
 /* Change Footer Text Color in Fun Mode */
@@ -288,28 +356,115 @@ body.fun-mode footer {
 
 /* Ensures the letters act as a clipping mask */
 .name-image {
-  width: 100%;
-  max-width: 1222px;
+  width: 75%;
+  max-width: 917px;
   display: block;
+}
+
+/* Split Text Animation for H3 */
+.split-text-container {
+  display: flex;
+  font-size: 1.4em; /* Increased from 1.3em */
+  font-weight: 500;
+  color: #333;
+  overflow: visible;
+  gap: 0.5rem;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  width: 100%;
+}
+
+body.fun-mode .split-text-container {
+  color: white;
+}
+
+.text-part {
+  display: inline-block;
+  position: relative;
+  transform: translateX(0);
+  animation-duration: 2.5s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+
+.text-part.left {
+  transform: translateX(-100vw);
+  animation-name: slide-in-left;
+}
+
+.text-part.right {
+  transform: translateX(100vw);
+  animation-name: slide-in-right;
+}
+
+@keyframes slide-in-left {
+  0% {
+    transform: translateX(-100vw);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-right {
+  0% {
+    transform: translateX(100vw);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Line collapse animation - collapses from outwards to inwards */
+.thin-fade-line {
+  transition: width 1.5s ease-in-out, left 1.5s ease-in-out, opacity 1.5s ease-in-out;
+}
+
+.thin-fade-line.collapse {
+  width: 0;
+  left: 50%;
+  opacity: 0;
+}
+
+/* Banner fade-up animation */
+.banner {
+  transition: opacity 2.5s ease-in-out, transform 2.5s ease-in-out, margin-bottom 2.5s ease-in-out;
+}
+
+.banner.fade-up {
+  opacity: 0;
+  transform: translateY(-40px);
+  margin-bottom: -60px;
+  pointer-events: none;
 }
 
 /* Opener paragraph design*/
 .opener {
   max-width: 1000px; /* Ensures text doesn't exceed 1000px */
   margin: 0 auto; /* Centers it on the page */
-  padding: 0; /* Remove padding from opener */
+  padding: 0 20px; /* Add padding to match About Me section */
   text-align: justify; /* Keeps text aligned to the left */
-  font-size: 1em; /* Match the default body font size */
+  font-size: 1.125rem; /* Larger base font size */
+  overflow: visible; /* Allow text to animate from off-screen */
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .opener h3 {
-  font-size: 1.2em; /* Match the about-text h3 size */
+  font-size: 1.5em; /* Increased heading */
+  font-weight: 500;
   margin-bottom: 0.5em;
 }
 
+.opener h3.split-text-container {
+  text-align: left; /* Restore original left alignment */
+}
+
 .opener p {
-  font-size: 1em; /* Match the about-text paragraph size */
-  line-height: 1.6; /* Match the body line height */
+  font-size: 1.25rem; /* Increased paragraph text */
+  line-height: 1.7; /* Increased line height for readability */
 }
 
 .thin-fade-line {
@@ -324,17 +479,21 @@ body.fun-mode footer {
 
 /* About Me Section */
 .about-me {
-  padding: 0;  /* Remove the padding from the section */
+  padding: 0 0 120px 0;  /* Add bottom padding to create space before footer */
+  margin-bottom: 0;
 }
 
 /* Keep image and text side by side */
 .about-container {
   display: flex;
   flex-wrap: nowrap; /* Prevent stacking */
-  align-items: flex-start; /* Align top left */
+  align-items: center; /* Center image vertically */
   gap: 20px; /* Space between image and text */
   max-width: 1000px; /* Keeps content aligned with other sections */
   margin: 0 auto; /* Centers section */
+  flex-direction: row; /* Image on left, text on right */
+  padding: 0 20px; /* Match opener padding */
+  box-sizing: border-box;
 }
 
 /* Image styling */
@@ -375,13 +534,32 @@ body.fun-mode .about-image {
   flex-grow: 1; /* Takes up remaining space */
   max-width: 1000px; /* Prevents text from stretching too wide */
   text-align: justify; /* Keeps text aligned */
+  font-size: 1.25rem; /* Increased body text */
+  line-height: 1.7; /* Increased line height */
+}
+
+.about-text h3 {
+  font-size: 1.5em; /* Increased heading */
+  font-weight: 500;
+  margin-bottom: 0.3em; /* Reduce gap between heading and paragraph */
+}
+
+.about-text p {
+  font-size: 1.25rem; /* Increased paragraph text */
+  line-height: 1.7;
 }
 /* CTA Button Styles */
 .cta-buttons {
   display: flex;
-  gap: 100px;
-  justify-content: center;
-  margin-top: 10px;
+  flex-direction: column;
+  gap: 15px;
+  align-items: flex-start;
+  margin: 0;
+  width: 100%;
+}
+
+.cta-buttons-mobile {
+  display: none; /* Hide on desktop */
 }
 
 /* Base Button Style */
@@ -389,8 +567,8 @@ body.fun-mode .about-image {
   display: inline-block;
   padding: 6px 12px;
   font-size: 1em;
-  font-weight: bold;
-  text-align: center;
+  font-weight: normal;
+  text-align: left;
   text-decoration: none;
   border-radius: 0;
   box-shadow: 4px -2px 0 #000000;
@@ -398,45 +576,46 @@ body.fun-mode .about-image {
   border: none;
 }
 
-/* Contact Me Button (Green Theme) */
+/* Contact Me Button */
 .contact {
   color: #000000;
-  border-color: #004953;
-  background-color: white;
+  border-color: #D7E4EB;
+  background-color: #D7E4EB;
   transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out, box-shadow 0.8s ease-in-out;
 }
 
 .contact:hover,
 .contact.hover-effect {
-  background-color: #004953 !important;
+  background-color: #4A6A7C !important;
   color: white !important;
   box-shadow: 4px -2px 0 #000000;
 }
 
-/* LinkedIn Button (Blue Theme) */
+/* LinkedIn Button */
 .linkedin {
   color: #000000;
-  border-color: #0077b5;
-  background-color: white;
+  border-color: #D7E4EB;
+  background-color: #D7E4EB;
   transition: background-color 0.8s ease-in-out, color 0.8s ease-in-out, box-shadow 0.8s ease-in-out;
 }
 
 .linkedin:hover,
 .linkedin.hover-effect {
-  background-color: #0077b5 !important;
+  background-color: #4A6A7C !important;
   color: white !important;
   box-shadow: 4px -2px 0 #000000;
 }
 
 /* Ensure LinkedIn Button Text Stays Black in Fun Mode */
 body.fun-mode .linkedin {
-  color: #000000 !important; /* Force black text */
+  color: #000000 !important;
+  background-color: #D7E4EB !important;
 }
 
 /* Override .hover-effect only for LinkedIn in Fun Mode */
 body.fun-mode .linkedin.hover-effect {
-  background-color: #0077b5 !important;
-  color: white !important; /* White only on hover */
+  background-color: #4A6A7C !important;
+  color: white !important;
 }
 
 /* Remove Visited Link Styling */
@@ -451,7 +630,7 @@ a:visited {
 }
 
 .hover-effect {
-  background-color: #004953 !important;
+  background-color: #4A6A7C !important;
   color: white !important;
   box-shadow: 4px -2px 0 #000000;
 }
@@ -475,12 +654,53 @@ a:visited {
   }
 
   .about-container {
-    flex-wrap: nowrap; /* Prevents stacking */
-    flex-direction: column-reverse; /* Keeps layout horizontal */
+    flex-wrap: wrap; /* Allow wrapping on mobile */
+    flex-direction: column; /* Stack vertically on mobile */
     align-items: center; /* Keeps alignment */
-    gap: 10px; /* Reduce spacing for smaller screens */
+    gap: 15px; /* Reduce spacing for smaller screens */
     max-width: 100%; /* Ensures content stays within screen */
     margin: 0 auto; /* Centers the container */
+    padding: 0 25px; /* Increased padding to prevent cutoff */
+    box-sizing: border-box;
+    justify-content: center; /* Center content */
+  }
+
+  .cta-sidebar {
+    display: none; /* Hide desktop sidebar on mobile */
+  }
+
+  .cta-buttons-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .cta-buttons-mobile .operating-manual {
+    width: 100% !important;
+    max-width: 100% !important;
+    text-align: center;
+    font-size: 0.95em;
+    padding: 6px 4px;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+
+  .cta-row-two {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 100%;
+  }
+
+  .cta-row-two .cta-button {
+    width: 100%;
+    text-align: center;
+    font-size: 0.95em;
+    padding: 6px 4px;
+    white-space: nowrap;
   }
 
   .about-image {
@@ -502,8 +722,26 @@ a:visited {
     box-sizing: border-box;
     width: 100% !important;
     max-width: 100% !important;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+
+  .opener {
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow: visible !important;
+  }
+
+  .opener p {
+    overflow: visible !important;
+    word-wrap: break-word;
+  }
+
+  .about-text {
+    padding-left: 25px !important;
+    padding-right: 25px !important;
   }
 
   .banner {
@@ -512,8 +750,19 @@ a:visited {
   }
 
   .banner img {
-    width: 100%;
-    max-width: none; /* Allows it to shrink naturally */
+    width: 86.25%; /* 75% * 1.15 = 86.25% (15% increase) */
+    max-width: 1055px; /* 917px * 1.15 = 1054.55px, rounded to 1055px */
+  }
+
+  .split-text-container {
+    font-size: 1.2rem;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    justify-content: flex-start; /* Left-align on mobile */
+  }
+
+  .opener h3.split-text-container {
+    text-align: left; /* Ensure left alignment on mobile */
   }
   /* Ensure Footer Stays at the Bottom in Fun Mode (Only on Mobile) */
   body.fun-mode footer {
@@ -522,7 +771,7 @@ a:visited {
     left: 0;
     width: 100%;
     margin-top: auto;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #30BAFF 60%);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #4A6A7C 60%);
   }
 
   /* Prevent Footer from Floating in Normal Mode (Only on Mobile) */
@@ -551,12 +800,26 @@ a:visited {
     padding-right: 8px;
   }
   /* Mini CTA buttons in a row */
+  .cta-sidebar {
+    position: static;
+    width: 100%;
+    padding: 0;
+    transform: none;
+    top: auto;
+  }
+
   .cta-buttons {
-    flex-direction: row !important;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 20px 0 0 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .cta-button {
+    width: 100%;
+    text-align: center;
   }
   .cta-button {
     min-width: 90px;
@@ -595,7 +858,7 @@ a:visited {
 .blog-sidebar {
   width: 300px;
   flex-shrink: 0;
-  background: #fff !important;
+  background: #D7E4EB !important;
   border: none;
   box-shadow: 4px -2px 0 #000000;
   border-radius: 0;
@@ -620,11 +883,11 @@ a:visited {
 .post-preview {
   padding: 15px;
   border-radius: 0;
-  background: white;
+  background: #D7E4EB;
   cursor: pointer;
   transition: all 0.3s ease;
   border: none;
-  box-shadow: 4px -2px 0 #30BAFF;
+  box-shadow: 4px -2px 0 #4A6A7C;
 }
 
 .post-preview:hover {
@@ -634,7 +897,7 @@ a:visited {
 
 .post-preview.active {
   background: #f0f9ff;
-  box-shadow: 4px -2px 0 #30BAFF;
+  box-shadow: 4px -2px 0 #4A6A7C;
 }
 
 .post-preview h4 {
@@ -657,7 +920,7 @@ a:visited {
 .post-tag {
   font-size: 0.75em;
   padding: 1.5px 7px 1.5px 7px;
-  background: #30BAFF !important;
+  background: #4A6A7C !important;
   border-radius: 6px !important;
   color: #fff !important;
   font-weight: normal;
@@ -686,7 +949,7 @@ a:visited {
 
 .blog-post {
   border: none;
-  background: white;
+  background: #D7E4EB;
   border-radius: 0;
   padding: 25px;
   box-shadow: 4px -2px 0 #000000;
@@ -761,7 +1024,7 @@ a:visited {
   margin-top: 18px;
   padding: 0;
   background: none;
-  color: #30BAFF;
+  color: #4A6A7C;
   border: none;
   border-radius: 0;
   cursor: pointer;
@@ -773,7 +1036,7 @@ a:visited {
   vertical-align: baseline;
 }
 .expand-button:hover {
-  color: #0099ff;
+  color: #4A6A7C;
   text-decoration: underline;
   background: none;
   transform: none;
@@ -782,7 +1045,7 @@ a:visited {
 
 /* Fun Mode Styles for Blog */
 body.fun-mode .blog-post {
-  background: #ffffff !important;
+  background: #D7E4EB !important;
   border: none;
   box-shadow: 4px -2px 0 #ff9800;
 }
@@ -809,7 +1072,7 @@ body:has(.blog-container) footer {
 body.fun-mode:has(.blog-container) footer {
   position: relative;
   margin-top: auto;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #30BAFF 60%);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #4A6A7C 60%);
 }
 
 /* Ensure Footer Stays at Bottom for Operating Manual Page */
@@ -834,7 +1097,7 @@ body:has(.operating-manual-container) footer {
 body.fun-mode:has(.operating-manual-container) footer {
   position: relative;
   margin-top: auto;
-  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #30BAFF 60%);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 5%, #4A6A7C 60%);
 }
 
 /* Responsive Design for Blog */
@@ -869,14 +1132,14 @@ body.fun-mode:has(.operating-manual-container) footer {
 /* Micro-Blog CTA Button (Blue Theme) */
 .microblog {
   color: #000000;
-  border-color: #30BAFF;
-  background-color: white;
+  border-color: #D7E4EB;
+  background-color: #D7E4EB;
   transition: background-color 0.8s, color 0.8s, box-shadow 0.8s;
 }
 
 .microblog:hover,
 .microblog.hover-effect {
-  background-color: #30BAFF !important;
+  background-color: #4A6A7C !important;
   color: white !important;
   box-shadow: 4px -2px 0 #000000;
 }
@@ -884,14 +1147,14 @@ body.fun-mode:has(.operating-manual-container) footer {
 /* Operating Manual CTA Button (Purple Theme) */
 .operating-manual {
   color: #000000;
-  border-color: #7B2CBF;
-  background-color: white;
+  border-color: #D7E4EB;
+  background-color: #D7E4EB;
   transition: background-color 0.8s, color 0.8s, box-shadow 0.8s;
 }
 
 .operating-manual:hover,
 .operating-manual.hover-effect {
-  background-color: #7B2CBF !important;
+  background-color: #4A6A7C !important;
   color: white !important;
   box-shadow: 4px -2px 0 #000000;
 }
@@ -933,7 +1196,7 @@ body.fun-mode .microblog.hover-effect {
 
 /* Fun Mode: Blog Sidebar stays white, selected post is orange */
 body.fun-mode .blog-sidebar {
-  background: #fff !important;
+  background: #D7E4EB !important;
   border: none;
   box-shadow: 4px -2px 0 #ff9800;
 }
@@ -1130,7 +1393,7 @@ body.fun-mode .no-posts-message {
 .post-content blockquote {
   margin: 1.5em 0;
   padding: 1em 1.5em;
-  border-left: 4px solid #30BAFF;
+  border-left: 4px solid #4A6A7C;
   background: #f8f9fa;
   font-style: italic;
 }
@@ -1189,13 +1452,13 @@ body.fun-mode .no-posts-message {
 }
 
 .post-content a {
-  color: #30BAFF;
+  color: #4A6A7C;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .post-content a:hover {
-  color: #0099ff;
+  color: #4A6A7C;
   text-decoration: underline;
 }
 
@@ -1224,13 +1487,13 @@ body.fun-mode .no-posts-message {
 
 .search-input:focus {
   outline: none;
-  border-color: #30BAFF;
+  border-color: #4A6A7C;
   box-shadow: 0 0 0 2px rgba(48, 186, 255, 0.1);
 }
 
 .search-button {
   padding: 10px 16px;
-  background: #30BAFF;
+  background: #4A6A7C;
   color: white;
   border: none;
   border-radius: 6px;
@@ -1240,7 +1503,7 @@ body.fun-mode .no-posts-message {
 }
 
 .search-button:hover {
-  background: #0099ff;
+  background: #4A6A7C;
 }
 
 /* Active Filter Indicator */
@@ -1250,7 +1513,7 @@ body.fun-mode .no-posts-message {
   justify-content: space-between;
   padding: 8px 12px;
   background: #e3f2fd;
-  border: 1px solid #30BAFF;
+  border: 1px solid #4A6A7C;
   border-radius: 6px;
   margin: 10px 0 20px 0;
   font-size: 0.9em;
@@ -1332,7 +1595,7 @@ body.fun-mode .clickable-tag:hover {
 
 .pagination-button {
   padding: 8px 12px;
-  background: white;
+  background: #D7E4EB;
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
@@ -1342,13 +1605,13 @@ body.fun-mode .clickable-tag:hover {
 
 .pagination-button:hover {
   background: #f0f9ff;
-  border-color: #30BAFF;
+  border-color: #4A6A7C;
 }
 
 .pagination-button.active {
-  background: #30BAFF;
+  background: #4A6A7C;
   color: white;
-  border-color: #30BAFF;
+  border-color: #4A6A7C;
 }
 
 .pagination-button:disabled {
@@ -1409,7 +1672,7 @@ body.fun-mode .pagination-button.active {
   padding: 6px 12px;
   border: 2px solid #ddd;
   border-radius: 20px;
-  background: white;
+  background: #D7E4EB;
   color: #666;
   font-size: 0.8em;
   cursor: pointer;
@@ -1489,7 +1752,7 @@ body.fun-mode .like-button.active {
 .manual-sidebar {
   width: 250px;
   flex-shrink: 0;
-  background: #fff;
+  background: #D7E4EB;
   border: none;
   box-shadow: 4px -2px 0 #000000;
   border-radius: 0;
@@ -1508,7 +1771,7 @@ body.fun-mode .like-button.active {
 .manual-sidebar .sidebar-header h3 {
   margin: 0 0 20px 0;
   font-size: 1.2em;
-  font-weight: bold;
+  font-weight: normal;
   color: #333;
   border-bottom: none;
   padding-bottom: 0;
@@ -1523,10 +1786,10 @@ body.fun-mode .like-button.active {
 .download-btn {
   display: block;
   padding: 6px 12px;
-  background: white;
+  background: #D7E4EB;
   border: none;
   border-radius: 0;
-  box-shadow: 4px -2px 0 #30BAFF;
+  box-shadow: 4px -2px 0 #4A6A7C;
   color: #000;
   font-size: 1em;
   font-weight: normal;
@@ -1546,7 +1809,7 @@ body.fun-mode .like-button.active {
 
 .download-btn:hover,
 .download-btn.hover-effect {
-  background-color: #30BAFF !important;
+  background-color: #4A6A7C !important;
   color: white !important;
   box-shadow: 4px -2px 0 #000000;
 }
@@ -1558,7 +1821,7 @@ body.fun-mode .like-button.active {
 
 .manual-document {
   flex-grow: 1;
-  background: #ffffff;
+  background: #D7E4EB;
   padding: 60px 80px;
   border-radius: 0;
   box-shadow: 4px -2px 0 #000000;
@@ -1592,7 +1855,7 @@ body.fun-mode .like-button.active {
 .manual-divider {
   text-align: center;
   font-size: 1.5em;
-  color: #30BAFF;
+  color: #4A6A7C;
   margin: 40px 0;
   font-weight: 300;
   letter-spacing: 2px;
@@ -1633,7 +1896,7 @@ body.fun-mode .like-button.active {
   padding: 20px;
   margin: 20px 0;
   background: #f8f9fa;
-  border-left: 4px solid #30BAFF;
+  border-left: 4px solid #4A6A7C;
   color: #555;
   font-size: 1.05em;
 }
@@ -1719,7 +1982,7 @@ body.fun-mode .manual-quote {
   right: 30px;
   width: 50px;
   height: 50px;
-  background: #30BAFF;
+  background: #4A6A7C;
   color: white;
   border: none;
   border-radius: 0;
@@ -1742,7 +2005,7 @@ body.fun-mode .manual-quote {
 }
 
 .back-to-top:hover {
-  background: #0099ff;
+  background: #4A6A7C;
   box-shadow: 4px -2px 0 #000000;
   transform: translateY(-2px);
 }

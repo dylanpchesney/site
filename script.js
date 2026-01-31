@@ -189,6 +189,46 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
   initializeBlog();
 }
 
+/** Banner Fade-Up Animation (Home, Blog, and Manual pages) **/
+function initializeHomePageAnimations() {
+  // Run on home page, blog, and operating manual pages
+  const isHomePage = window.location.pathname === '/index.html' || window.location.pathname === '/' || window.location.pathname.endsWith('/index.html');
+  const isBlogPage = window.location.pathname.includes('blog.html');
+  const isManualPage = window.location.pathname.includes('operating-manual.html');
+  
+  if (isHomePage || isBlogPage || isManualPage) {
+    const banner = document.querySelector('.banner');
+    const fadeLine = document.querySelector('.thin-fade-line');
+    
+    if (banner && fadeLine) {
+      // Wait 5 seconds, then start animations
+      setTimeout(() => {
+        try {
+          // Step 1: Collapse the line from outwards to inwards
+          requestAnimationFrame(() => {
+            fadeLine.classList.add('collapse');
+          });
+          
+          // Step 2: After line collapse completes, fade up the banner
+          setTimeout(() => {
+            requestAnimationFrame(() => {
+              banner.classList.add('fade-up');
+            });
+            
+            // After banner fade completes, remove elements to allow content to move up
+            setTimeout(() => {
+              banner.style.display = 'none';
+              fadeLine.style.display = 'none';
+            }, 2500); // Match the banner fade duration (2.5 seconds)
+          }, 1500); // Match the line collapse duration (1.5 seconds)
+        } catch (error) {
+          debugError('Error in banner fade animation:', error);
+        }
+      }, 5000); // 5 seconds delay
+    }
+  }
+}
+
 /** Headshot Expand Effect on Mobile **/
 const image = document.querySelector(".about-image");
 if (image) {
