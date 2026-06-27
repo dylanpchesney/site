@@ -1,0 +1,25 @@
+.click-spark {
+  position: relative;
+  width: 100%;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.click-spark__canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  user-select: none;
+  pointer-events: none;
+}
+
+.click-spark-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}

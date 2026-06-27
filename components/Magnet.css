@@ -1,0 +1,8 @@
+.magnet {
+  position: relative;
+  display: inline-block;
+}
+
+.magnet__inner {
+  will-change: transform;
+}
