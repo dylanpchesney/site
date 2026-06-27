@@ -2080,6 +2080,7 @@ body.home-page .home-main {
 
 .home-title {
   width: fit-content;
+  height: fit-content;
   max-width: 500px;
   margin: 1.5rem auto 2rem;
   padding: 5px;
