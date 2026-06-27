@@ -4,7 +4,6 @@ import Magnet from './components/Magnet.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (reducedMotion) return;
 
   const main = document.querySelector('.home-main');
   const footer = document.querySelector('.home-footer');
@@ -15,17 +14,19 @@ document.addEventListener('DOMContentLoaded', () => {
     pageShell.appendChild(main);
     if (footer) pageShell.appendChild(footer);
 
-    new ClickSpark(pageShell, {
-      sparkColor: '#fff',
-      sparkSize: 10,
-      sparkRadius: 15,
-      sparkCount: 8,
-      duration: 400,
-    });
+    if (!reducedMotion) {
+      new ClickSpark(pageShell, {
+        sparkColor: '#fff',
+        sparkSize: 10,
+        sparkRadius: 15,
+        sparkCount: 8,
+        duration: 400,
+      });
+    }
   }
 
   const title = document.querySelector('.home-title');
-  if (title) {
+  if (title && !reducedMotion) {
     new TextType(title, {
       text: title.textContent.trim(),
       loop: false,
@@ -35,12 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
       showCursor: true,
       cursorCharacter: '|',
       cursorBlinkDuration: 1.3,
-      startOnVisible: true,
+      startOnVisible: false,
     });
   }
 
   const intro = document.querySelector('.home-intro-text');
-  if (intro) {
+  if (intro && !reducedMotion) {
     new TextType(intro, {
       text: intro.textContent.trim(),
       loop: false,
@@ -50,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
       showCursor: true,
       cursorCharacter: '|',
       cursorBlinkDuration: 1.3,
-      startOnVisible: true,
+      startOnVisible: false,
     });
   }
 

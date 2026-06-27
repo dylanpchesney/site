@@ -1,5 +1,8 @@
 .text-type {
   display: inline-block;
+}
+
+.text-type:not(.home-title) {
   white-space: pre-wrap;
 }
 

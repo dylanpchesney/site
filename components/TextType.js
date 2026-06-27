@@ -7,11 +7,11 @@ export default class TextType {
     this.container =
       typeof container === 'string' ? document.querySelector(container) : container;
 
-    if (!this.container || typeof window.gsap === 'undefined') {
+    if (!this.container) {
       return;
     }
 
-    this.gsap = window.gsap;
+    this.gsap = typeof window.gsap !== 'undefined' ? window.gsap : null;
     this.options = {
       typingSpeed: 80,
       initialDelay: 0,
@@ -93,25 +93,40 @@ export default class TextType {
     return textColors[this.currentTextIndex % textColors.length];
   }
 
+  isElementInViewport() {
+    const rect = this.container.getBoundingClientRect();
+    return rect.bottom > 0 && rect.top < window.innerHeight;
+  }
+
   observeVisibility() {
+    const start = () => {
+      if (this.isVisible) return;
+      this.isVisible = true;
+      this.startTypingLoop();
+    };
+
+    if (this.isElementInViewport()) {
+      start();
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            this.isVisible = true;
             observer.disconnect();
-            this.startTypingLoop();
+            start();
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0, rootMargin: '100px 0px' }
     );
 
     observer.observe(this.container);
   }
 
   startCursorBlink() {
-    if (!this.cursorEl) return;
+    if (!this.cursorEl || !this.gsap) return;
 
     this.gsap.set(this.cursorEl, { opacity: 1 });
     this.cursorTween = this.gsap.to(this.cursorEl, {

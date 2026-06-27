@@ -4,6 +4,7 @@
   flex: 1 0 auto;
   display: flex;
   flex-direction: column;
+  min-height: 100%;
 }
 
 .click-spark__canvas {
@@ -22,4 +23,5 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  min-height: 100%;
 }
