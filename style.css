@@ -2103,18 +2103,16 @@ body.home-page .home-main {
   display: block;
 }
 
-.home-intro-text.text-type {
-  display: block;
-  white-space: pre-wrap;
+.home-intro-text.blur-text {
+  display: flex;
 }
 
 .home-photo {
   display: block;
   width: 100%;
+  height: auto;
   margin: 0 auto 2rem;
   border-radius: 0;
-  object-fit: cover;
-  aspect-ratio: 3 / 2;
   box-shadow: inset 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
 }
 

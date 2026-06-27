@@ -1,4 +1,5 @@
 import TextType from './components/TextType.js';
+import BlurText from './components/BlurText.js';
 import ClickSpark from './components/ClickSpark.js';
 import Magnet from './components/Magnet.js';
 
@@ -42,16 +43,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const intro = document.querySelector('.home-intro-text');
   if (intro && !reducedMotion) {
-    new TextType(intro, {
+    new BlurText(intro, {
       text: intro.textContent.trim(),
-      loop: false,
-      typingSpeed: 22,
-      pauseDuration: 3600,
-      deletingSpeed: 20,
-      showCursor: true,
-      cursorCharacter: '|',
-      cursorBlinkDuration: 1.3,
-      startOnVisible: false,
+      delay: 150,
+      animateBy: 'words',
+      direction: 'top',
+      threshold: 0.1,
+      rootMargin: '0px',
+      stepDuration: 0.35,
     });
   }
 
