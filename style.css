@@ -2079,8 +2079,7 @@ body.home-page .home-main {
 }
 
 .home-title {
-  width: fit-content;
-  height: fit-content;
+  width: 100%;
   max-width: 500px;
   margin: 1.5rem auto 2rem;
   padding: 5px;
@@ -2100,10 +2099,12 @@ body.home-page .home-main {
 .home-title.text-type {
   display: block;
   text-align: center;
+  white-space: nowrap;
 }
 
 .home-intro-text.text-type {
   display: block;
+  white-space: pre-wrap;
 }
 
 .home-photo {
@@ -2180,6 +2181,7 @@ body.home-page .home-footer {
 
   .home-title {
     margin: 0.75rem auto 1.25rem;
+    font-size: clamp(1.35rem, 7vw, 40px);
   }
 
   .home-photo {
