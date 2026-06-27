@@ -15,7 +15,8 @@
   "author": "Dylan Chesney",
   "license": "MIT",
   "dependencies": {
-    "dotenv": "^16.5.0"
+    "dotenv": "^16.5.0",
+    "gsap": "^3.12.7"
   },
   "devDependencies": {},
   "keywords": [

@@ -2079,7 +2079,7 @@ body.home-page .home-main {
 }
 
 .home-title {
-  width: 100%;
+  width: 213px;
   max-width: 500px;
   margin: 1.5rem auto 2rem;
   padding: 5px;
@@ -2093,6 +2093,12 @@ body.home-page .home-main {
   -webkit-background-clip: unset;
   border-color: rgba(0, 0, 0, 0);
   box-shadow: inset 4px 4px 12px 5px rgba(0, 0, 0, 0.15);
+  vertical-align: middle;
+}
+
+.home-title.text-type {
+  display: block;
+  text-align: center;
 }
 
 .home-photo {
