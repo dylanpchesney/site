@@ -1,28 +1,3 @@
 {
-  "images": [
-    {
-      "src": "images/dylan-hero-1200.jpg",
-      "alt": "Dylan Chesney"
-    },
-    {
-      "src": "images/Compressed Headshot October.jpg",
-      "alt": "Headshot"
-    },
-    {
-      "src": "images/avatar.png",
-      "alt": "Avatar"
-    },
-    {
-      "src": "images/DylanChesneyBanner.png",
-      "alt": "Banner"
-    },
-    {
-      "src": "images/micropen.png",
-      "alt": "Micro-blog pen"
-    },
-    {
-      "src": "images/DYLANtest.png",
-      "alt": "DYLAN banner"
-    }
-  ]
+  "images": []
 }

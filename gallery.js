@@ -2,16 +2,18 @@ import DomeGallery from './components/DomeGallery.js';
 import { initPageEffects } from './components/initPageEffects.js';
 
 const domeRoot = document.getElementById('gallery-dome');
-const statusEl = document.getElementById('gallery-status');
+const emptyEl = document.getElementById('gallery-empty');
 
-function showStatus(message) {
-  if (!statusEl) return;
-  statusEl.hidden = false;
-  statusEl.textContent = message;
+function showUnderConstruction() {
+  emptyEl.hidden = false;
+  domeRoot.hidden = true;
+  domeRoot.classList.remove('gallery-dome--active');
 }
 
-function hideStatus() {
-  if (statusEl) statusEl.hidden = true;
+function showGallery() {
+  emptyEl.hidden = true;
+  domeRoot.hidden = false;
+  domeRoot.classList.add('gallery-dome--active');
 }
 
 async function loadGallery() {
@@ -33,11 +35,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const images = await loadGallery();
 
     if (images.length === 0) {
-      showStatus('No gallery images yet. Add photos to images/gallery/ and gallery.json.');
+      showUnderConstruction();
       return;
     }
 
-    hideStatus();
+    showGallery();
 
     new DomeGallery(domeRoot, {
       images,
@@ -55,6 +57,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   } catch (error) {
     console.error(error);
-    showStatus('Unable to load the gallery right now.');
+    if (emptyEl) {
+      emptyEl.querySelector('.gallery-empty__text').textContent =
+        'Gallery is temporarily unavailable. Please try again later.';
+    }
+    showUnderConstruction();
   }
 });
