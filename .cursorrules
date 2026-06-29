@@ -26,3 +26,9 @@ Mobile-First Responsiveness Rules:
 Static Site Rules:
 - GitHub Pages is static only. Use JSON files for content and local CMS tooling for edits.
 - Do not deploy `local-cms.html`; it is local-only.
+
+Gallery Content Rules:
+- Gallery photos live in `images/gallery/`. Register each photo in `gallery.json` with `src` and optional `alt`.
+- Example entry: `{ "src": "images/gallery/my-photo.jpg", "alt": "Caption here" }`
+- The gallery page loads `gallery.json` and passes images to `components/DomeGallery.js` (vanilla port of React Bits DomeGallery).
+- New homepage-style pages with a dome should include `DomeGallery.css` and match overlay color `#5c7380`.

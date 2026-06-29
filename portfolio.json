@@ -1,13 +1,13 @@
 {
   "articles": [
     {
-      "id": "homepage-intro-text-reveal",
-      "title": "Homepage Intro Text Reveal",
+      "id": "homepage-build",
+      "title": "Homepage Build",
       "publishedDate": "2025-06-27",
-      "problem": "The homepage intro needed a polished entrance animation without adding React or a heavy animation framework to a static GitHub Pages site.",
-      "aiSolution": "Used Cursor to port React Bits BlurText into vanilla JavaScript with GSAP, matching the existing component pattern used for TextType, ClickSpark, and Magnet.",
-      "results": "Shipped a word-by-word blur reveal that triggers on scroll, keeps the page lightweight, and stays consistent with the rest of the site's motion design.",
-      "imageUrl": "images/portfolio/HeyImDylanText.png"
+      "problem": "To build a high-performance portfolio, I chose GitHub Pages for its stability and ease of hosting. However, static sites often lack the playful, interactive touch that React's vast component ecosystem provides. My goal was to create a cohesive motion design system that felt modern and fun, using several specific React Bits components I admired: the TextType (the terminal typing effect on my main header), ClickSpark (the sparkle that trails the mouse cursor on click), and Magnet (the magnetic pull effect on my Call to Action buttons). The main challenge was integrating these dynamic behaviors into a lightweight, vanilla JavaScript architecture, ensuring they remained modular and maintainable without carrying the runtime overhead of a full frontend framework.",
+      "aiSolution": "I used Cursor's agentic capabilities to guide the manual translation of these React JSX/TSX patterns into modular, performance-oriented vanilla JavaScript. The process involved dissecting how each component initialized (e.g., how the Magnet effect calculated mouse coordinates and applied CSS transforms) and converting it into optimized event listeners (pointermove and pointerleave). Cursor assisted me in breaking down monolithic JavaScript into small, imported classes (retaining the modular \"component\" pattern) and then leveraging the GSAP (GreenSock Animation Platform) library for all actual physics and easing calculations. I structured the vanilla code using consistent lifecycles (init(), mount(), destroy()) that mirrored React's component logic, making it easier to manage the interactions.",
+      "results": "The resulting system delivers a sophisticated, interactive portfolio experience that remains under 2MB total page load, achieving near-perfect scores on Lighthouse metrics. By intentionally porting the React Bits components to vanilla GSAP classes, I maintained full control over the DOM. My core interaction components (TextType, Magnet, and ClickSpark) operate independently, keeping the code clean and the performance high. This workflow proved that leveraging AI for complex code translation allows operational engineers to extract the best design patterns from modern frameworks while staying light on the wire, demonstrating a keen eye for user experience and performance.",
+      "imageUrl": "images/portfolio/homepageimage.jpeg"
     },
     {
       "id": "automating-client-onboarding-with-ai-ingestion",
@@ -17,6 +17,15 @@
       "aiSolution": "To transform this high-friction data entry process into an intelligent software pipeline, I built an AI-assisted bulk-processing and ingestion tool powered by Large Language Models (LLMs). The tool programmatically processed massive document batches simultaneously, using the LLM to dynamically parse file contents, extract key metadata, and automatically rename files according to strict internal conventions. Additionally, it validated secure data formatting and dynamically mapped the processed files directly to their precise destinations within the platform\u2019s architecture.",
       "results": "By engineering this automated workflow, customer onboarding timelines were slashed by 50%, completely reducing the platform activation cycle from four weeks down to just two weeks. This drastically mitigated implementation friction, allowing clients to experience immediate platform value while securing deep institutional trust from day one. Furthermore, eliminating hours of repetitive operational overhead allowed internal account teams to shift away from manual troubleshooting and focus entirely on driving strategic account growth and expansion opportunities.",
       "imageUrl": "images/portfolio/AIBulkDocumentUploads.jpeg"
+    },
+    {
+      "id": "ai-gatekeeper-for-inbound-leads",
+      "title": "AI Gatekeeper for Inbound Leads",
+      "publishedDate": "2026-04-08",
+      "problem": "Operating without dedicated Revenue Operations (RevOps), data support, or lead enrichment tools created a massive hurdle for managing inbound sales leads. In the private fund space, parsing high-value prospects from background noise is notoriously difficult; new General Partners (GPs) frequently submit inquiries using personal Gmail addresses before their official domains are even registered. This left our team manually vetting every submission\u2014separating legitimate funds, checking for asset classes like venture capital or hedge funds, and filtering out the overwhelming 90% of entries that were pure spam. This administrative burden severely drained time and delayed response cycles for genuine high-value opportunities.",
+      "aiSolution": "To solve this, I built an end-to-end automated AI gatekeeper using Zapier and LLM agents to act as our virtual RevOps layer. When an inbound lead is submitted, the AI agent dynamically analyzes the submission data and actively scrapes the web to verify the entity's digital footprint. It maps the lead into distinct strategic buckets: identifying legitimate private funds by asset class, flagging critical ecosystem partners (like law firms or fund administrators), and making nuanced judgment calls on domain-less \"stealth\" founders based purely on their textual descriptions. If a lead clears these verification guardrails, the agent returns a \"legitimate\" keyword tag to route it forward; if it catches spam, an automated email agent instantly archives the lead.",
+      "results": "The deployment of this intelligent pipeline completely transformed our inbound workflow, entirely eliminating the hours spent on manual lead vetting. By automatically archiving the 90% of incoming data that consisted of spam, the system acted as a flawless filter, ensuring I never had to see or manually process junk inquiries. This drastically compressed our response times for valid institutional leads and high-value partnerships. Ultimately, turning a manual validation process into an automated software pipeline gave us true operational leverage, freeing up internal resources to focus entirely on closing revenue and scaling accounts.",
+      "imageUrl": "images/portfolio/AILead.png"
     }
   ]
 }

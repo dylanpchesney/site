@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dylan Chesney - Gallery</title>
+  <meta name="description" content="Photo gallery by Dylan Chesney — drag the dome, tap to enlarge.">
+  <meta name="author" content="Dylan Chesney">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.dylanchesney.com/gallery.html">
+  <meta property="og:title" content="Dylan Chesney - Gallery">
+  <meta property="og:description" content="Interactive photo gallery — drag the dome, tap to enlarge.">
+  <meta property="og:image" content="https://www.dylanchesney.com/images/dylan-hero.jpg">
+
+  <link rel="canonical" href="https://www.dylanchesney.com/gallery.html">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="components/ClickSpark.css">
+  <link rel="stylesheet" href="components/Magnet.css">
+  <link rel="stylesheet" href="components/DomeGallery.css">
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0ZMZ5WZ968"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-0ZMZ5WZ968');
+  </script>
+</head>
+<body class="gallery-page">
+  <main class="gallery-main">
+    <p id="gallery-status" class="gallery-status" hidden>Loading gallery…</p>
+    <div id="gallery-dome" class="gallery-dome" aria-label="Interactive photo gallery"></div>
+  </main>
+
+  <footer class="home-footer">
+    <nav class="home-footer__nav" aria-label="Site navigation">
+      <a href="index.html">Home</a>
+      <a href="ai-portfolio.html">AI Portfolio</a>
+      <a href="gallery.html" aria-current="page">Gallery</a>
+      <a href="mailto:dc@dylanchesney.com?subject=DylanChesney.com%20Inquiry&body=Hi%20Dylan,%0D%0A%0D%0AI%20came%20across%20your%20website%20and%20wanted%20to%20reach%20out...">Contact</a>
+      <a href="https://www.linkedin.com/in/dylan-chesney/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    </nav>
+  </footer>
+
+  <script type="module" src="gallery.js"></script>
+</body>
+</html>
