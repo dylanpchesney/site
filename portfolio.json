@@ -1,0 +1,22 @@
+{
+  "articles": [
+    {
+      "id": "homepage-intro-text-reveal",
+      "title": "Homepage Intro Text Reveal",
+      "publishedDate": "2025-06-27",
+      "problem": "The homepage intro needed a polished entrance animation without adding React or a heavy animation framework to a static GitHub Pages site.",
+      "aiSolution": "Used Cursor to port React Bits BlurText into vanilla JavaScript with GSAP, matching the existing component pattern used for TextType, ClickSpark, and Magnet.",
+      "results": "Shipped a word-by-word blur reveal that triggers on scroll, keeps the page lightweight, and stays consistent with the rest of the site's motion design.",
+      "imageUrl": "images/portfolio/HeyImDylanText.png"
+    },
+    {
+      "id": "automating-client-onboarding-with-ai-ingestion",
+      "title": "Automating Client Onboarding with AI Ingestion",
+      "publishedDate": "2026-06-29",
+      "problem": "During the critical onboarding phase for mid-market clients, migrating historical data and documentation into a secure investor portal presented a massive manual bottleneck. Internal teams were forced to manually rename, format, structure, and upload thousands of highly confidential financial and legal documents. This tedious, administrative grind bloated client Time-to-Value (TTV) to upwards of four weeks, creating severe change-management friction and significantly delaying time-to-activation for new users.",
+      "aiSolution": "To transform this high-friction data entry process into an intelligent software pipeline, I built an AI-assisted bulk-processing and ingestion tool powered by Large Language Models (LLMs). The tool programmatically processed massive document batches simultaneously, using the LLM to dynamically parse file contents, extract key metadata, and automatically rename files according to strict internal conventions. Additionally, it validated secure data formatting and dynamically mapped the processed files directly to their precise destinations within the platform\u2019s architecture.",
+      "results": "By engineering this automated workflow, customer onboarding timelines were slashed by 50%, completely reducing the platform activation cycle from four weeks down to just two weeks. This drastically mitigated implementation friction, allowing clients to experience immediate platform value while securing deep institutional trust from day one. Furthermore, eliminating hours of repetitive operational overhead allowed internal account teams to shift away from manual troubleshooting and focus entirely on driving strategic account growth and expansion opportunities.",
+      "imageUrl": "images/portfolio/AIBulkDocumentUploads.jpeg"
+    }
+  ]
+}

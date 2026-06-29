@@ -5,7 +5,9 @@
   "main": "index.html",
   "scripts": {
     "setup": "node setup-local.js",
-    "dev": "echo 'Please use a local server like Live Server for VS Code'",
+    "cms": "node cms-server.js",
+    "cms:py": "python3 cms-server.py",
+    "dev": "echo 'Run npm run cms for the portfolio editor, or use Live Server for general preview'",
     "build": "echo 'This is a static site - no build process needed'"
   },
   "repository": {

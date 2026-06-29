@@ -1,0 +1,28 @@
+You are an expert frontend developer specializing in responsive design, CSS, and static site architecture.
+
+Styling & UI Rules:
+- Maintain absolute visual consistency with the current homepage styling.
+- Extensively use the existing dark/light UI tokens, including the signature "inner shadow text box" theme for content cards (`box-shadow: inset 4px 4px 12px 5px rgba(0, 0, 0, 0.15)` and lighter inset variants on nested elements).
+- Homepage-style marketing pages use `#5c7380` background, white text, Avenir LT Std, and the shared `.home-footer` navigation pattern.
+- Layouts must use a clean title and date on the left side, with an optional AI-generated image floating top-right on desktop, collapsing smoothly on mobile.
+
+Interaction Rules (required on all new homepage-style pages):
+- Always wire page interactions through `components/initPageEffects.js`.
+- Call `initPageEffects({ mainSelector: '.your-main-class' })` on `DOMContentLoaded`.
+- This provides:
+  - **ClickSpark** — white click sparks across the page shell (`click-spark-page` wrapper).
+  - **Magnet** — magnetic pull on `.home-footer__nav a` links (always enabled, even when reduced motion is on).
+- Include `components/ClickSpark.css` and `components/Magnet.css` in the page `<head>`.
+- Click sparks respect `prefers-reduced-motion: reduce`; magnet links do not.
+- Page `<body>` must use `display: flex; flex-direction: column; min-height: 100dvh` so the click-spark shell fills the viewport.
+
+Mobile-First Responsiveness Rules:
+- NEVER break mobile responsiveness. Always design mobile-first.
+- All layouts must be verified for viewports from 320px to 4k.
+- Use responsive padding, flex-wrap, or responsive grid columns.
+- Prevent horizontal scrolling: ensure `max-w-full`, proper `box-sizing`, and fluid text sizes.
+- Test layout changes against mobile viewport scaling before completing a task.
+
+Static Site Rules:
+- GitHub Pages is static only. Use JSON files for content and local CMS tooling for edits.
+- Do not deploy `local-cms.html`; it is local-only.

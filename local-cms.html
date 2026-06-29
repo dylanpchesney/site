@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Local Portfolio CMS — Dylan Chesney</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body.local-cms-page {
+      background-color: #5c7380;
+      color: #fff;
+      min-height: 100dvh;
+      margin: 0;
+      padding: 2rem 1rem 3rem;
+      box-sizing: border-box;
+    }
+
+    .local-cms {
+      width: min(100%, 720px);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .local-cms__panel {
+      padding: 1.25rem;
+      box-sizing: border-box;
+      box-shadow: inset 4px 4px 12px 5px rgba(0, 0, 0, 0.15);
+    }
+
+    .local-cms h1,
+    .local-cms h2 {
+      margin: 0 0 0.5rem;
+      font-weight: 300;
+    }
+
+    .local-cms h1 {
+      font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
+    }
+
+    .local-cms h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .local-cms p {
+      margin: 0;
+      line-height: 1.65;
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .local-cms__hint {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .local-cms__hint code {
+      color: #fff;
+    }
+
+    .local-cms__status {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .local-cms__status--error {
+      color: #ffd5d5;
+    }
+
+    .local-cms__form {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .local-cms__form--editing {
+      outline: 1px solid rgba(255, 255, 255, 0.2);
+      outline-offset: 6px;
+    }
+
+    .local-cms__field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .local-cms__field label {
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .local-cms__field input,
+    .local-cms__field textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.65rem 0.75rem;
+      border: none;
+      font: inherit;
+      color: #333;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: inset 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
+    }
+
+    .local-cms__field textarea {
+      min-height: 110px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .local-cms__form-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .local-cms__button {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px 12px;
+      font: inherit;
+      color: #fff;
+      background: transparent;
+      box-shadow: inset 4px 4px 12px 0px rgba(0, 0, 0, 0.15);
+      transition: opacity 0.2s ease;
+    }
+
+    .local-cms__button:hover {
+      opacity: 0.8;
+    }
+
+    .local-cms__button--danger {
+      color: #ffd5d5;
+    }
+
+    .local-cms__button--ghost {
+      opacity: 0.85;
+    }
+
+    .local-cms__articles {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .local-cms__article {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem;
+      box-shadow: inset 0px 4px 12px 0px rgba(0, 0, 0, 0.15);
+    }
+
+    .local-cms__article--active {
+      outline: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .local-cms__article-copy strong {
+      display: block;
+      font-weight: 300;
+      margin-bottom: 0.25rem;
+    }
+
+    .local-cms__article-copy small {
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .local-cms__article-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body class="local-cms-page">
+  <div class="local-cms">
+    <section class="local-cms__panel">
+      <h1>Local Portfolio CMS</h1>
+      <p>This editor only manages <code>portfolio.json</code>. Add or edit articles here, then commit and push to publish on GitHub Pages.</p>
+      <p class="local-cms__hint">Start it with <code>python3 cms-server.py</code> (or <code>./start-cms.sh</code>), then open <code>http://localhost:3000/local-cms.html</code>. Changes save automatically.</p>
+    </section>
+
+    <section class="local-cms__panel">
+      <p class="local-cms__status" id="status">Loading portfolio.json…</p>
+    </section>
+
+    <section class="local-cms__panel">
+      <h2 id="form-heading">Add article</h2>
+      <form class="local-cms__form" id="article-form">
+        <div class="local-cms__field">
+          <label for="title">Title</label>
+          <input id="title" name="title" type="text" required>
+        </div>
+        <div class="local-cms__field">
+          <label for="date">Date</label>
+          <input id="date" name="date" type="date" required>
+        </div>
+        <div class="local-cms__field">
+          <label for="problem">Problem</label>
+          <textarea id="problem" name="problem" required></textarea>
+        </div>
+        <div class="local-cms__field">
+          <label for="aiSolution">AI Solution</label>
+          <textarea id="aiSolution" name="aiSolution" required></textarea>
+        </div>
+        <div class="local-cms__field">
+          <label for="results">Results</label>
+          <textarea id="results" name="results" required></textarea>
+        </div>
+        <div class="local-cms__field">
+          <label for="imageName">Image Name</label>
+          <input id="imageName" name="imageName" type="text" placeholder="example.jpg" required>
+        </div>
+        <div class="local-cms__form-actions">
+          <button type="submit" class="local-cms__button" id="submit-btn">Add article</button>
+          <button type="button" class="local-cms__button local-cms__button--ghost" id="cancel-edit-btn" hidden>Cancel edit</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="local-cms__panel">
+      <h2>Current articles</h2>
+      <ul class="local-cms__articles" id="article-list"></ul>
+    </section>
+  </div>
+
+  <script>
+    const statusEl = document.getElementById('status');
+    const articleListEl = document.getElementById('article-list');
+    const formEl = document.getElementById('article-form');
+    const formHeadingEl = document.getElementById('form-heading');
+    const submitBtn = document.getElementById('submit-btn');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+    const dateInput = document.getElementById('date');
+
+    let portfolio = { articles: [] };
+    let editingId = null;
+    let cmsReady = false;
+
+    dateInput.value = new Date().toISOString().slice(0, 10);
+
+    function setStatus(message, isError = false) {
+      statusEl.textContent = message;
+      statusEl.classList.toggle('local-cms__status--error', isError);
+    }
+
+    function slugify(text) {
+      return text
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+
+    function normalizeImagePath(imageName) {
+      const trimmed = imageName.trim();
+      if (!trimmed) return '';
+      if (trimmed.startsWith('images/')) return trimmed;
+      if (trimmed.includes('/')) return `images/${trimmed}`;
+      return `images/portfolio/${trimmed}`;
+    }
+
+    function imagePathToName(imageUrl) {
+      if (!imageUrl) return '';
+      return imageUrl.replace(/^images\/portfolio\//, '');
+    }
+
+    function getFormValues() {
+      const formData = new FormData(formEl);
+      return {
+        title: String(formData.get('title')).trim(),
+        publishedDate: String(formData.get('date')).trim(),
+        problem: String(formData.get('problem')).trim(),
+        aiSolution: String(formData.get('aiSolution')).trim(),
+        results: String(formData.get('results')).trim(),
+        imageName: String(formData.get('imageName')).trim(),
+      };
+    }
+
+    function resetForm() {
+      editingId = null;
+      formEl.reset();
+      formEl.classList.remove('local-cms__form--editing');
+      formHeadingEl.textContent = 'Add article';
+      submitBtn.textContent = 'Add article';
+      cancelEditBtn.hidden = true;
+      dateInput.value = new Date().toISOString().slice(0, 10);
+      renderArticles();
+    }
+
+    function startEdit(article) {
+      editingId = article.id;
+      document.getElementById('title').value = article.title;
+      dateInput.value = article.publishedDate;
+      document.getElementById('problem').value = article.problem;
+      document.getElementById('aiSolution').value = article.aiSolution;
+      document.getElementById('results').value = article.results;
+      document.getElementById('imageName').value = imagePathToName(article.imageUrl);
+      formEl.classList.add('local-cms__form--editing');
+      formHeadingEl.textContent = 'Edit article';
+      submitBtn.textContent = 'Save changes';
+      cancelEditBtn.hidden = false;
+      renderArticles();
+      formEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setStatus(`Editing "${article.title}". Changes save automatically when you submit.`);
+    }
+
+    function createUniqueId(title, ignoreId = null) {
+      let id = slugify(title);
+      const existingIds = new Set(
+        portfolio.articles
+          .filter((article) => article.id !== ignoreId)
+          .map((article) => article.id)
+      );
+
+      if (!existingIds.has(id)) return id;
+
+      let suffix = 2;
+      while (existingIds.has(`${slugify(title)}-${suffix}`)) {
+        suffix += 1;
+      }
+      return `${slugify(title)}-${suffix}`;
+    }
+
+    async function loadPortfolio() {
+      const response = await fetch('/api/portfolio', { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error('Could not load portfolio.json. Run python3 cms-server.py first.');
+      }
+      return response.json();
+    }
+
+    async function savePortfolio(message) {
+      const response = await fetch('/api/portfolio', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(portfolio),
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error || 'Could not save portfolio.json.');
+      }
+
+      setStatus(message);
+    }
+
+    function renderArticles() {
+      articleListEl.textContent = '';
+
+      if (!portfolio.articles.length) {
+        const empty = document.createElement('li');
+        empty.textContent = 'No articles yet.';
+        articleListEl.appendChild(empty);
+        return;
+      }
+
+      portfolio.articles
+        .slice()
+        .sort((a, b) => new Date(`${b.publishedDate}T12:00:00`) - new Date(`${a.publishedDate}T12:00:00`))
+        .forEach((article) => {
+          const item = document.createElement('li');
+          item.className = 'local-cms__article';
+          if (article.id === editingId) {
+            item.classList.add('local-cms__article--active');
+          }
+
+          const copy = document.createElement('div');
+          copy.className = 'local-cms__article-copy';
+          copy.innerHTML = `<strong>${article.title}</strong><small>${article.publishedDate} · ${article.id}</small>`;
+
+          const actions = document.createElement('div');
+          actions.className = 'local-cms__article-actions';
+
+          const editBtn = document.createElement('button');
+          editBtn.type = 'button';
+          editBtn.className = 'local-cms__button';
+          editBtn.textContent = 'Edit';
+          editBtn.addEventListener('click', () => startEdit(article));
+
+          const removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'local-cms__button local-cms__button--danger';
+          removeBtn.textContent = 'Delete';
+          removeBtn.addEventListener('click', async () => {
+            if (!window.confirm(`Delete "${article.title}"?`)) return;
+
+            portfolio.articles = portfolio.articles.filter((entry) => entry.id !== article.id);
+            if (editingId === article.id) {
+              resetForm();
+            } else {
+              renderArticles();
+            }
+
+            try {
+              await savePortfolio(`Deleted "${article.title}" and saved portfolio.json.`);
+            } catch (error) {
+              setStatus(error.message, true);
+            }
+          });
+
+          actions.append(editBtn, removeBtn);
+          item.append(copy, actions);
+          articleListEl.appendChild(item);
+        });
+    }
+
+    function applyPortfolio(data) {
+      portfolio = {
+        articles: Array.isArray(data.articles) ? data.articles : [],
+      };
+      renderArticles();
+    }
+
+    formEl.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const values = getFormValues();
+      const articleData = {
+        title: values.title,
+        publishedDate: values.publishedDate,
+        problem: values.problem,
+        aiSolution: values.aiSolution,
+        results: values.results,
+        imageUrl: normalizeImagePath(values.imageName),
+      };
+
+      try {
+        if (editingId) {
+          const index = portfolio.articles.findIndex((article) => article.id === editingId);
+          if (index === -1) {
+            throw new Error('Could not find the article you were editing.');
+          }
+
+          const nextId = createUniqueId(values.title, editingId);
+          portfolio.articles[index] = {
+            ...portfolio.articles[index],
+            ...articleData,
+            id: nextId,
+          };
+
+          await savePortfolio(`Updated "${values.title}" and saved portfolio.json.`);
+          resetForm();
+          return;
+        }
+
+        portfolio.articles.push({
+          id: createUniqueId(values.title),
+          ...articleData,
+        });
+
+        await savePortfolio(`Added "${values.title}" and saved portfolio.json.`);
+        resetForm();
+      } catch (error) {
+        setStatus(error.message, true);
+      }
+    });
+
+    cancelEditBtn.addEventListener('click', () => {
+      resetForm();
+      setStatus(`Loaded ${portfolio.articles.length} article(s).`);
+    });
+
+    loadPortfolio()
+      .then((data) => {
+        cmsReady = true;
+        applyPortfolio(data);
+        setStatus(`Loaded ${portfolio.articles.length} article(s) from portfolio.json.`);
+      })
+      .catch((error) => {
+        cmsReady = false;
+        setStatus(
+          `${error.message} Use: python3 cms-server.py`,
+          true
+        );
+      });
+  </script>
+</body>
+</html>
